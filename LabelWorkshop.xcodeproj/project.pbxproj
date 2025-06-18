@@ -19,6 +19,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A2125B692E02E63A0063F489 /* .github */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = .github;
+			sourceTree = "<group>";
+		};
 		A26207732DFE0ECC00A82BA6 /* LabelWorkshop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = LabelWorkshop;
@@ -41,6 +46,7 @@
 		A26207682DFE0ECC00A82BA6 = {
 			isa = PBXGroup;
 			children = (
+				A2125B692E02E63A0063F489 /* .github */,
 				A2125B672E02682F0063F489 /* README.md */,
 				A262079D2DFE0F1C00A82BA6 /* .gitignore */,
 				A26207732DFE0ECC00A82BA6 /* LabelWorkshop */,
@@ -72,6 +78,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				A2125B692E02E63A0063F489 /* .github */,
 				A26207732DFE0ECC00A82BA6 /* LabelWorkshop */,
 			);
 			name = LabelWorkshop;

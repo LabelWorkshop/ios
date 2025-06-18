@@ -1,0 +1,28 @@
+---
+name: Feature Request
+description: Request that a new feature be added.
+title: '[Feature Request]: '
+labels: ['Type: Enhancement']
+body:
+  - type: checkboxes
+    attributes:
+      label: Before you continue...
+      options:
+        - label: I am using the latest version or commit.
+          required: true
+        - label: I have checked and found no similar issues.
+          required: true
+  - type: textarea
+    attributes:
+      label: Description
+      description: A description of what is missing/requested.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Solution
+      description: How it can be fixed.
+  - type: textarea
+    attributes:
+      label: Extra Details
+      description: Anything else that should be made aware.
