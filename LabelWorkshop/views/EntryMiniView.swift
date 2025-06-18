@@ -23,6 +23,16 @@ struct EntryMiniView: View {
                         .aspectRatio(1 / 1, contentMode: .fit)
                         .clipShape(Rectangle())
                         .cornerRadius(8)
+                } else {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .symbolRenderingMode(.multicolor)
+                        .font(.system(size: 32))
+                        .frame(
+                            minWidth: 0,
+                            maxWidth: .infinity,
+                            minHeight: 0,
+                            maxHeight: .infinity
+                        )
                 }
                 Text(entry.path)
                     .font(.caption)
