@@ -15,6 +15,8 @@ struct EntryView: View {
                         .resizable()
                         .scaledToFit()
                         .cornerRadius(8)
+                } else {
+                    Text("No preview available")
                 }
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 8) {
