@@ -1,0 +1,89 @@
+import Foundation
+import SwiftData
+import SQLite
+
+enum LibraryError: Error {
+    case databaseInvalid
+}
+
+func loadBookmark(key: String) -> URL? {
+    guard let data = UserDefaults.standard.data(forKey: key) else {
+        return nil
+    }
+
+    var isStale = false
+    do {
+        let url = try URL(
+            resolvingBookmarkData: data,
+            options: [],
+            relativeTo: nil,
+            bookmarkDataIsStale: &isStale
+        )
+        if isStale {return nil}
+        return url
+    } catch {return nil}
+}
+
+@Model
+class Library {
+    @Attribute(.unique) var bookmarkKey: String
+    
+    @Transient var _bookmark: URL?
+    @Transient var bookmark: URL? {
+        get {
+            if self._bookmark == nil {
+                self._bookmark = loadBookmark(key: self.bookmarkKey)
+            }
+            return self._bookmark
+        }
+    }
+    @Transient var _db: Connection?
+    @Transient var db: Connection? {
+        get {
+            if self._db == nil {
+                do {
+                    let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
+                    self._db = try Connection(dbFile)
+                } catch {}
+            }
+            return self._db
+        }
+    }
+    @Transient var entriesTable: Table = Table("entries")
+    @Transient var pathColumn = Expression<String>("path")
+    @Transient var entryIdColumn = Expression<Int>("id")
+    
+    init(bookmarkKey: String) {
+        self.bookmarkKey = bookmarkKey
+    }
+    
+    func getName() -> (String) {
+        guard bookmark?.startAccessingSecurityScopedResource() == true else { return "Unknown" }
+        defer { bookmark?.stopAccessingSecurityScopedResource() }
+        let name = bookmark?.absoluteString.removingPercentEncoding?.split(separator: "/").last ?? "Unknown"
+        return String(name)
+    }
+    
+    func getEntries() throws -> [Entry] {
+        if self.db == nil { throw LibraryError.databaseInvalid }
+        var entries: [Entry] = []
+        do {
+            for rawEntry in try self.db!.prepare(entriesTable) {
+                let path: String = rawEntry[pathColumn]
+                let id: Int = rawEntry[entryIdColumn]
+                entries.append(Entry(library: self, path: path, id: id))
+            }
+        } catch {
+            throw LibraryError.databaseInvalid
+        }
+        return entries
+    }
+    
+    func safeGetEntries() -> [Entry] {
+        do {
+            return try self.getEntries()
+        } catch {
+            return []
+        }
+    }
+}
