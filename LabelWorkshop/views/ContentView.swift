@@ -6,12 +6,15 @@ struct ContentView: View {
     @Environment(\.modelContext) private var context
     @Query var libraries: [Library]
     
+    @State private var selectedLibrary: Library?
+    @State private var visibility: NavigationSplitViewVisibility = .all
     @State private var showFileImporter = false
+    
     var body: some View {
-        NavigationView {
-            List {
+        NavigationSplitView(columnVisibility: $visibility) {
+            List(selection: $selectedLibrary) {
                 ForEach(libraries){ library in
-                    NavigationLink(destination: LibraryView(library: library)){
+                    NavigationLink(value: library){
                         Text(library.getName())
                     }
                 }
@@ -24,10 +27,22 @@ struct ContentView: View {
                         Image(systemName: "plus")
                     }
                 }
+                ToolbarItem( placement: .topBarLeading){
+                    let btn = Button(action: {
+                        visibility = .doubleColumn
+                    }) {
+                        Image(systemName: "sidebar.leading")
+                    }
+                    if UIDevice.current.userInterfaceIdiom == .phone {btn.hidden()}
+                    btn
+                }
             }
             .navigationTitle("LabelWorkshop")
-            .listStyle(SidebarListStyle())
-        }
+        } content: {
+            if let selectedLibrary {
+                LibraryView(library: selectedLibrary).navigationSplitViewColumnWidth(700)
+            }
+        } detail: {}
         .fileImporter(
             isPresented: $showFileImporter,
             allowedContentTypes: [.folder]
