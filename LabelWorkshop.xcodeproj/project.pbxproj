@@ -10,7 +10,6 @@
 		A2125B682E02682F0063F489 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A2125B672E02682F0063F489 /* README.md */; };
 		A222273C2DFFF4DA003A782E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = A222273B2DFFF4DA003A782E /* SQLite */; };
 		A262079E2DFE0F2200A82BA6 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = A262079D2DFE0F1C00A82BA6 /* .gitignore */; };
-		A2DD42672E03B3FD00766174 /* LICENSE in Sources */ = {isa = PBXBuildFile; fileRef = A2DD42662E03B3F800766174 /* LICENSE */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -146,7 +145,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A2DD42672E03B3FD00766174 /* LICENSE in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
