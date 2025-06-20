@@ -5,6 +5,7 @@ struct TagDetailsView: View {
     
     @State private var name: String
     @State private var shorthand: String
+    @Environment(\.dismiss) private var dismiss
     
     init(tag: Tag) {
         self.tag = tag
@@ -45,6 +46,7 @@ struct TagDetailsView: View {
                     Button(role: .destructive, action: {
                         do {
                             try tag.delete() // Add confimation
+                            dismiss()
                         } catch {}
                     }) {
                         HStack {
