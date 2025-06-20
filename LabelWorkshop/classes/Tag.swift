@@ -36,18 +36,34 @@ class Tag {
     var name: String
     var id: Int
     var colors: TagColor
+    var shorthand: String?
     
     static var tagsTable: Table = Table("tags")
     static var idColumn = Expression<Int>("id")
     static var nameColumn = Expression<String>("name")
+    static var shorthandColumn = Expression<String?>("shorthand")
     static var tagColorNamespaceColumn = Expression<String?>("color_namespace")
     static var tagColorSlugColumn = Expression<String?>("color_slug")
     
-    init(library: Library, name: String, id: Int, colors: TagColor){
+    static var tagColorsTable: Table = Table("tag_colors")
+    static var slugColumn = Expression<String>("slug")
+    static var namespaceColumn = Expression<String>("namespace")
+    static var primaryColumn = Expression<String>("primary")
+    static var secondaryColumn = Expression<String?>("secondary")
+    static var colorBorderColumn = Expression<Bool>("color_border")
+    
+    init(
+        library: Library,
+        name: String,
+        id: Int,
+        colors: TagColor,
+        shorthand: String?
+    ){
         self.library = library
         self.name = name
         self.id = id
         self.colors = colors
+        self.shorthand = shorthand
     }
     
     func delete() throws {
@@ -76,7 +92,8 @@ class Tag {
             idColumn,
             nameColumn,
             tagColorSlugColumn,
-            tagColorNamespaceColumn
+            tagColorNamespaceColumn,
+            shorthandColumn
         ).filter(Tag.idColumn == id)
         do {
             for rawTag in try library.db!.prepare(query) {
@@ -84,11 +101,13 @@ class Tag {
                 let namespace = rawTag[Tag.tagColorNamespaceColumn] ?? ""
                 let slug = rawTag[Tag.tagColorSlugColumn] ?? ""
                 let colors = library.tagColors?.find(namespace: namespace, slug: slug) ?? TagColor.none
+                let shorthand = rawTag[Tag.shorthandColumn]
                 return Tag(
                     library: library,
                     name: name,
                     id: id,
-                    colors: colors
+                    colors: colors,
+                    shorthand: shorthand
                 )
             }
         } catch {print(error)}
