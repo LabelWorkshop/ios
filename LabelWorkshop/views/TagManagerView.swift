@@ -11,7 +11,9 @@ struct TagManagerView: View {
         ScrollView {
             VStack {
                 ForEach(Tag.fetchAll(library: library), id: \.id){ tag in
-                    TagView(tag: tag, fullWidth: true)
+                    NavigationLink(destination: TagDetailsView(tag: tag)){
+                        TagView(tag: tag, fullWidth: true)
+                    }
                 }
             }.padding(16)
         }

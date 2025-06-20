@@ -49,6 +49,20 @@ class Tag {
         self.colors = colors
     }
     
+    func delete() throws {
+        let query = Tag.tagsTable.filter(Tag.idColumn == self.id)
+        if let db = self.library.db {
+            try db.run(query.delete())
+        }
+    }
+    
+    func setName(name: String) throws {
+        let query = Tag.tagsTable.filter(Tag.idColumn == self.id)
+        if let db = self.library.db {
+            try db.run(query.update(Tag.nameColumn <- name))
+        }
+    }
+    
     static func fetch(library: Library, id: Int) -> Tag? {
         let query = Tag.tagsTable.select(
             idColumn,
