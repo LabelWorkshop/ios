@@ -72,4 +72,19 @@ class Tag {
         } catch {print(error)}
         return nil
     }
+    
+    static func fetchAll(library: Library) -> [Tag] {
+        var tags: [Tag] = []
+        let query = Tag.tagsTable.select(idColumn)
+        do {
+            for rawPartialTag in try library.db!.prepare(query) {
+                let tag = Tag.fetch(
+                    library: library,
+                    id: rawPartialTag[Tag.idColumn]
+                )
+                if let tag = tag { tags.append(tag) }
+            }
+        } catch {}
+        return tags
+    }
 }
