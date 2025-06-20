@@ -2,6 +2,7 @@ import struct SwiftUI.Color
 import UIKit
 import Foundation
 import SQLite
+import struct SQLite.Expression
 
 extension Color {
     init(hex: String) {
@@ -72,10 +73,10 @@ class Tag {
         }
     }
     
-    func setName(name: String) throws {
+    func setColumn<T: Value>(column: SQLite.Expression<T>, value: T) throws {
         let query = Tag.tagsTable.filter(Tag.idColumn == self.id)
         if let db = self.library.db {
-            try db.run(query.update(Tag.nameColumn <- name))
+            try db.run(query.update(column <- value))
         }
     }
     
