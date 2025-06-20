@@ -38,6 +38,17 @@ struct LibraryView: View {
                 }
             }.padding(16)
         }
+        .toolbar {
+            ToolbarItem( placement: .navigationBarTrailing){
+                Menu {
+                    NavigationLink(destination: TagManagerView(library: library)) {
+                        Label("Tag Manager", systemImage: "tag")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+        }
         .navigationTitle(library.getName())
     }
 }
