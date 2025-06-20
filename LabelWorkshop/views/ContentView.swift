@@ -17,7 +17,7 @@ struct ContentView: View {
                     NavigationLink(value: library){
                         Text(library.getName())
                     }
-                }
+                }.onDelete(perform: removeLibrary)
             }
             .toolbar {
                 ToolbarItem( placement: .navigationBarTrailing){
@@ -67,6 +67,12 @@ struct ContentView: View {
             case .failure(let error):
                 print(error)
             }
+        }
+    }
+    
+    private func removeLibrary(at indexSet: IndexSet){
+        for index in indexSet {
+            context.delete(libraries[index])
         }
     }
 }
