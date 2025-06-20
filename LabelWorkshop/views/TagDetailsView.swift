@@ -4,10 +4,12 @@ struct TagDetailsView: View {
     let tag: Tag
     
     @State private var name: String
+    @State private var shorthand: String
     
     init(tag: Tag) {
         self.tag = tag
         self.name = tag.name
+        self.shorthand = tag.shorthand ?? ""
     }
     
     var body: some View {
@@ -19,12 +21,16 @@ struct TagDetailsView: View {
                     .frame(maxWidth: .infinity)
                     .background(Color(UIColor.tertiarySystemFill))
                     .cornerRadius(8)
-                TextField("Tag Name", text: $name)
+                HStack {
+                    TextBox(title: "Name", value: $name)
+                    TextBox(title: "Shorthand", value: $shorthand)
+                }
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 HStack {
                     Button(action: {
                         do {
                             try tag.setColumn(column: Tag.nameColumn, value: self.name)
+                            try tag.setColumn(column: Tag.shorthandColumn, value: self.shorthand)
                         } catch {}
                     }) {
                         HStack {

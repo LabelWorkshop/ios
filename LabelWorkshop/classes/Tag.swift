@@ -38,10 +38,12 @@ class Tag {
     var color: Color
     var borderColor: Color
     var textColor: Color
+    var shorthand: String?
     
     static var tagsTable: Table = Table("tags")
     static var idColumn = Expression<Int>("id")
     static var nameColumn = Expression<String>("name")
+    static var shorthandColumn = Expression<String?>("shorthand")
     static var tagColorNamespaceColumn = Expression<String?>("color_namespace")
     static var tagColorSlugColumn = Expression<String?>("color_slug")
     
@@ -52,12 +54,20 @@ class Tag {
     static var secondaryColumn = Expression<String?>("secondary")
     static var colorBorderColumn = Expression<Bool>("color_border")
     
-    init(library: Library, name: String, id: Int, color: Color? = nil, borderColor: Color? = nil){
+    init(
+        library: Library,
+        name: String,
+        id: Int,
+        color: Color? = nil,
+        borderColor: Color? = nil,
+        shorthand: String?
+    ){
         self.library = library
         self.name = name
         self.id = id
         self.color = color ?? Color(UIColor.tertiarySystemFill)
         self.borderColor = borderColor ?? self.color
+        self.shorthand = shorthand
         var r, g, b, a: CGFloat
         (r, g, b, a) = (0, 0, 0, 0)
         UIColor(self.color).getRed(&r, green: &g, blue: &b, alpha: &a)
@@ -92,13 +102,15 @@ class Tag {
             idColumn,
             nameColumn,
             tagColorSlugColumn,
-            tagColorNamespaceColumn
+            tagColorNamespaceColumn,
+            shorthandColumn
         ).filter(Tag.idColumn == id)
         do {
             for rawTag in try library.db!.prepare(query) {
                 let name = rawTag[Tag.nameColumn]
                 let namespace = rawTag[Tag.tagColorNamespaceColumn] ?? ""
                 let slug = rawTag[Tag.tagColorSlugColumn] ?? ""
+                let shorthand = rawTag[Tag.shorthandColumn]
                 let colorQuery = Tag.tagColorsTable.select(
                     primaryColumn,
                     secondaryColumn,
@@ -120,7 +132,8 @@ class Tag {
                     name: name,
                     id: id,
                     color: color,
-                    borderColor: borderColor
+                    borderColor: borderColor,
+                    shorthand: shorthand
                 )
             }
         } catch {print(error)}
