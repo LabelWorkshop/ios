@@ -41,8 +41,8 @@ class Tag {
     static var tagsTable: Table = Table("tags")
     static var idColumn = Expression<Int>("id")
     static var nameColumn = Expression<String>("name")
-    static var tagColorNamespaceColumn = Expression<String>("color_namespace")
-    static var tagColorSlugColumn = Expression<String>("color_slug")
+    static var tagColorNamespaceColumn = Expression<String?>("color_namespace")
+    static var tagColorSlugColumn = Expression<String?>("color_slug")
     
     static var tagColorsTable: Table = Table("tag_colors")
     static var slugColumn = Expression<String>("slug")
@@ -75,8 +75,8 @@ class Tag {
         do {
             for rawTag in try library.db!.prepare(query) {
                 let name = rawTag[Tag.nameColumn]
-                let namespace = rawTag[Tag.tagColorNamespaceColumn]
-                let slug = rawTag[Tag.tagColorSlugColumn]
+                let namespace = rawTag[Tag.tagColorNamespaceColumn] ?? ""
+                let slug = rawTag[Tag.tagColorSlugColumn] ?? ""
                 let colorQuery = Tag.tagColorsTable.select(
                     primaryColumn,
                     secondaryColumn,
