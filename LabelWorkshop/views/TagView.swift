@@ -4,13 +4,16 @@ import SwiftUI
 
 struct TagView: View {
     let tag: Tag
+    let fullWidth: Bool
     
-    init(tag: Tag) {
+    init(tag: Tag, fullWidth: Bool = false) {
         self.tag = tag
+        self.fullWidth = fullWidth
     }
     
     var body: some View {
         Text(tag.name)
+            .frame(maxWidth: fullWidth ? .infinity : nil)
             .foregroundStyle(tag.colors.text)
             .font(.body)
             .padding(8)
