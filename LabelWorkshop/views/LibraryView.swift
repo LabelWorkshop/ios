@@ -16,6 +16,8 @@ struct LibraryView: View {
     let library: Library
     let columns: [GridItem]
     
+    @State private var showTagManager: Bool = false
+    
     private static let columnsPhone: [GridItem] = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     private static let columnsPad: [GridItem] = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
@@ -41,13 +43,18 @@ struct LibraryView: View {
         .toolbar {
             ToolbarItem( placement: .navigationBarTrailing){
                 Menu {
-                    NavigationLink(destination: TagManagerView(library: library)) {
+                    Button(action: {
+                        showTagManager = true
+                    }) {
                         Label("Tag Manager", systemImage: "tag")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
             }
+        }
+        .sheet(isPresented: $showTagManager) {
+            TagManagerView(library: library)
         }
         .navigationTitle(library.getName())
     }
