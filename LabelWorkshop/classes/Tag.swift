@@ -64,6 +64,13 @@ class Tag {
         }
     }
     
+    func setColumn<T: Value>(column: SQLite.Expression<T?>, value: T?) throws {
+        let query = Tag.tagsTable.filter(Tag.idColumn == self.id)
+        if let db = self.library.db {
+            try db.run(query.update(column <- value))
+        }
+    }
+    
     static func fetch(library: Library, id: Int) -> Tag? {
         let query = Tag.tagsTable.select(
             idColumn,
