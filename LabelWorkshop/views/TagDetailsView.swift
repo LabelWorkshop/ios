@@ -24,7 +24,7 @@ struct TagDetailsView: View {
                 HStack {
                     Button(action: {
                         do {
-                            try tag.setName(name: self.name)
+                            try tag.setColumn(column: Tag.nameColumn, value: self.name)
                         } catch {}
                     }) {
                         HStack {
