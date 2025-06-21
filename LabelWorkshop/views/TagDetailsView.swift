@@ -5,20 +5,30 @@ struct TagDetailsView: View {
     
     @State private var name: String
     @State private var shorthand: String
+    @State private var color: Color
+    @State private var borderColor: Color
+    @State private var textColor: Color
     @Environment(\.dismiss) private var dismiss
     
     init(tag: Tag) {
         self.tag = tag
         self.name = tag.name
         self.shorthand = tag.shorthand ?? ""
+        self.color = tag.color
+        self.borderColor = tag.borderColor
+        self.textColor = tag.textColor
     }
     
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
-                TagView(tag: tag)
-                    .padding(.top, 50)
-                    .padding(.bottom, 50)
+                TagPreView(
+                    name: $name,
+                    color: $color,
+                    borderColor: $borderColor,
+                    textColor: $textColor
+                )
+                    .padding(50)
                     .frame(maxWidth: .infinity)
                     .background(Color(UIColor.tertiarySystemFill))
                     .background(
