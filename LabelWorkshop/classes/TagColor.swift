@@ -3,20 +3,31 @@ import struct SwiftUI.Color
 import class SwiftUI.UIColor
 import Foundation
 
-class TagColor {
-    let namespace: String
-    let slug: String
+class TagColor: Hashable, Identifiable {
+    static func == (lhs: TagColor, rhs: TagColor) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+      hasher.combine(id)
+    }
+    
+    let namespace: String?
+    let slug: String?
+    let id: UUID
     var background: Color
     var border: Color
     var text: Color
+    var name: String
     private let primaryColor: String?
     private let secondaryColor: String?
     
     static var none: TagColor = TagColor(
-        namespace: "",
-        slug: "",
+        namespace: nil,
+        slug: nil,
         primaryColor: nil,
-        secondaryColor: nil
+        secondaryColor: nil,
+        name: "No Color"
     )
     
     static var tagColorsTable: Table = Table("tag_colors")
@@ -25,10 +36,19 @@ class TagColor {
     static var primaryColumn = Expression<String>("primary")
     static var secondaryColumn = Expression<String?>("secondary")
     static var colorBorderColumn = Expression<Bool>("color_border")
+    static var nameColumn = Expression<String>("name")
     
-    init(namespace: String, slug: String, primaryColor: String?, secondaryColor: String?){
+    init(
+        namespace: String?,
+        slug: String?,
+        primaryColor: String?,
+        secondaryColor: String?,
+        name: String
+    ){
         self.namespace = namespace
         self.slug = slug
+        self.name = name
+        self.id = UUID()
         self.primaryColor = primaryColor
         self.secondaryColor = secondaryColor
         if let primaryColor = primaryColor {
