@@ -21,7 +21,18 @@ struct TagDetailsView: View {
                     .padding(.bottom, 50)
                     .frame(maxWidth: .infinity)
                     .background(Color(UIColor.tertiarySystemFill))
+                    .background(
+                        Image("dots")
+                            .opacity(0.3)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 2)
+                            .blur(radius: 14)
+                            .opacity(0.6)
+                    )
                     .cornerRadius(8)
+                    .shadow(radius: 8)
                 HStack {
                     TextBox(title: "Name", value: $name)
                     TextBox(title: "Shorthand", value: $shorthand)
