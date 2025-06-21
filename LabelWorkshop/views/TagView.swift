@@ -11,13 +11,13 @@ struct TagView: View {
     
     var body: some View {
         Text(tag.name)
-            .foregroundStyle(tag.textColor)
+            .foregroundStyle(tag.colors.text)
             .font(.body)
             .padding(8)
-            .background(tag.color)
+            .background(tag.colors.background)
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(tag.borderColor, lineWidth: 8)
+                    .stroke(tag.colors.border, lineWidth: 8)
             )
             .cornerRadius(8)
     }

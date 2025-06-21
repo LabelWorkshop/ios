@@ -34,9 +34,7 @@ class Tag {
     var library: Library
     var name: String
     var id: Int
-    var color: Color
-    var borderColor: Color
-    var textColor: Color
+    var colors: TagColor
     
     static var tagsTable: Table = Table("tags")
     static var idColumn = Expression<Int>("id")
@@ -44,25 +42,11 @@ class Tag {
     static var tagColorNamespaceColumn = Expression<String?>("color_namespace")
     static var tagColorSlugColumn = Expression<String?>("color_slug")
     
-    static var tagColorsTable: Table = Table("tag_colors")
-    static var slugColumn = Expression<String>("slug")
-    static var namespaceColumn = Expression<String>("namespace")
-    static var primaryColumn = Expression<String>("primary")
-    static var secondaryColumn = Expression<String?>("secondary")
-    static var colorBorderColumn = Expression<Bool>("color_border")
-    
-    init(library: Library, name: String, id: Int, color: Color? = nil, borderColor: Color? = nil){
+    init(library: Library, name: String, id: Int, colors: TagColor){
         self.library = library
         self.name = name
         self.id = id
-        self.color = color ?? Color(UIColor.tertiarySystemFill)
-        self.borderColor = borderColor ?? self.color
-        var r, g, b, a: CGFloat
-        (r, g, b, a) = (0, 0, 0, 0)
-        UIColor(self.color).getRed(&r, green: &g, blue: &b, alpha: &a)
-        let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
-        self.textColor = luminance < 0.6 ? .white : .black
-        if borderColor != nil { self.textColor = self.borderColor }
+        self.colors = colors
     }
     
     static func fetch(library: Library, id: Int) -> Tag? {
@@ -77,28 +61,12 @@ class Tag {
                 let name = rawTag[Tag.nameColumn]
                 let namespace = rawTag[Tag.tagColorNamespaceColumn] ?? ""
                 let slug = rawTag[Tag.tagColorSlugColumn] ?? ""
-                let colorQuery = Tag.tagColorsTable.select(
-                    primaryColumn,
-                    secondaryColumn,
-                    slugColumn,
-                    namespaceColumn
-                )
-                .filter(Tag.slugColumn == slug)
-                .filter(Tag.namespaceColumn == namespace)
-                var color: Color?
-                var borderColor: Color?
-                for raw in try library.db!.prepare(colorQuery) {
-                    color = Color.init(hex: raw[Tag.primaryColumn])
-                    if let secondary = raw[Tag.secondaryColumn] {
-                        borderColor = Color.init(hex: secondary)
-                    }
-                }
+                let colors = library.tagColors?.find(namespace: namespace, slug: slug) ?? TagColor.none
                 return Tag(
                     library: library,
                     name: name,
                     id: id,
-                    color: color,
-                    borderColor: borderColor
+                    colors: colors
                 )
             }
         } catch {print(error)}
