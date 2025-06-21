@@ -20,7 +20,7 @@ struct TagDetailsView: View {
             VStack(spacing: 8) {
                 TagPreView(
                     name: $name,
-                    colors: $colors,
+                    colors: $colors
                 )
                     .padding(50)
                     .frame(maxWidth: .infinity)
