@@ -3,9 +3,11 @@ import SwiftUI
 struct TagPreView: View {
     @Binding public var name: String
     @Binding public var colors: TagColor
+    public var fullWidth: Bool = false
     
     var body: some View {
         Text(name)
+            .frame(maxWidth: fullWidth ? .infinity : nil)
             .foregroundStyle(colors.text)
             .font(.body)
             .padding(8)

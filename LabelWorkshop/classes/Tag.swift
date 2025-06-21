@@ -80,6 +80,12 @@ class Tag {
         }
     }
     
+    func setColor(_ color: TagColor) throws {
+        try setColumn(column: Tag.tagColorSlugColumn, value: color.slug)
+        try setColumn(column: Tag.tagColorNamespaceColumn, value: color.namespace)
+        self.colors = color
+    }
+    
     static func fetch(library: Library, id: Int) -> Tag? {
         let query = Tag.tagsTable.select(
             idColumn,
