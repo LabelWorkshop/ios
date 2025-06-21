@@ -5,18 +5,14 @@ struct TagDetailsView: View {
     
     @State private var name: String
     @State private var shorthand: String
-    @State private var color: Color
-    @State private var borderColor: Color
-    @State private var textColor: Color
+    @State private var colors: TagColor
     @Environment(\.dismiss) private var dismiss
     
     init(tag: Tag) {
         self.tag = tag
         self.name = tag.name
         self.shorthand = tag.shorthand ?? ""
-        self.color = tag.color
-        self.borderColor = tag.borderColor
-        self.textColor = tag.textColor
+        self.colors = tag.colors
     }
     
     var body: some View {
@@ -24,9 +20,7 @@ struct TagDetailsView: View {
             VStack(spacing: 8) {
                 TagPreView(
                     name: $name,
-                    color: $color,
-                    borderColor: $borderColor,
-                    textColor: $textColor
+                    colors: $colors,
                 )
                     .padding(50)
                     .frame(maxWidth: .infinity)

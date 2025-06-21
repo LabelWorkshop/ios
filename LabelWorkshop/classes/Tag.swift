@@ -45,13 +45,6 @@ class Tag {
     static var tagColorNamespaceColumn = Expression<String?>("color_namespace")
     static var tagColorSlugColumn = Expression<String?>("color_slug")
     
-    static var tagColorsTable: Table = Table("tag_colors")
-    static var slugColumn = Expression<String>("slug")
-    static var namespaceColumn = Expression<String>("namespace")
-    static var primaryColumn = Expression<String>("primary")
-    static var secondaryColumn = Expression<String?>("secondary")
-    static var colorBorderColumn = Expression<Bool>("color_border")
-    
     init(
         library: Library,
         name: String,
