@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A2125B682E02682F0063F489 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A2125B672E02682F0063F489 /* README.md */; };
 		A222273C2DFFF4DA003A782E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = A222273B2DFFF4DA003A782E /* SQLite */; };
-		A262079E2DFE0F2200A82BA6 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = A262079D2DFE0F1C00A82BA6 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,7 +78,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				A2125B692E02E63A0063F489 /* .github */,
 				A26207732DFE0ECC00A82BA6 /* LabelWorkshop */,
 			);
 			name = LabelWorkshop;
@@ -133,8 +130,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A2125B682E02682F0063F489 /* README.md in Resources */,
-				A262079E2DFE0F2200A82BA6 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
