@@ -49,6 +49,18 @@ class Library {
             return self._db
         }
     }
+    
+    @Transient var _tagColors: TagColorManager?
+    @Transient var tagColors: TagColorManager? {
+        get {
+            if self._tagColors == nil {
+                self._tagColors = TagColorManager(library: self)
+            }
+            return self._tagColors
+        }
+    }
+    
+    
     @Transient var entriesTable: Table = Table("entries")
     @Transient var pathColumn = Expression<String>("path")
     @Transient var entryIdColumn = Expression<Int>("id")
