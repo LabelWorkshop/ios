@@ -29,6 +29,7 @@ struct TagDetailsView: View {
                     name: $name,
                     colors: $colors
                 )
+                    .shadow(color: colors.border, radius: 16)
                     .padding(50)
                     .frame(maxWidth: .infinity)
                     .background(Color(UIColor.tertiarySystemFill))
@@ -40,10 +41,8 @@ struct TagDetailsView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(Color.black, lineWidth: 2)
                             .blur(radius: 14)
-                            .opacity(0.6)
                     )
                     .cornerRadius(8)
-                    .shadow(radius: 8)
                 HStack {
                     TextBox(title: "Name", value: $name)
                     TextBox(title: "Shorthand", value: $shorthand)
