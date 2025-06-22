@@ -101,6 +101,54 @@ class Tag {
         self.colors = color
     }
     
+    func getAliases() -> [TagAlias] {
+        let query = TagAlias.tagAliasesTable.select(*).filter(TagAlias.tagIdColumn == id)
+        var tagAliases: [TagAlias] = []
+        do {
+            for rawAlias in try self.library.db!.prepare(query) {
+                tagAliases.append(
+                    TagAlias(
+                        id: rawAlias[TagAlias.idColumn],
+                        name: rawAlias[TagAlias.nameColumn],
+                        tagId: rawAlias[TagAlias.tagIdColumn],
+                        tag: self
+                    )
+                )
+            }
+        } catch {}
+        return tagAliases
+    }
+    
+    func newAlias(_ name: String) {
+        let query = TagAlias.tagAliasesTable.insert(
+            TagAlias.nameColumn <- name,
+            TagAlias.tagIdColumn <- self.id
+        )
+        do {
+            try library.db?.run(query)
+        } catch {}
+    }
+    
+    func setAliases(_ aliases: [TagAlias]) {
+        let currentAliases = self.getAliases()
+        for alias in aliases {
+            // New Aliases
+            if alias.tag == nil {
+                self.newAlias(alias.name)
+                continue
+            }
+            // Updated Aliases
+            if var oldAlias = currentAliases.first(where: {$0.id == alias.id}) {
+                oldAlias.setName(alias.name)
+                continue
+            }
+        }
+        // Deleted Aliases
+        for alias in currentAliases {
+            aliases.filter({$0.id == alias.id}).count == 0 ? alias.delete() : ()
+        }
+    }
+    
     static func fetch(library: Library, id: Int) -> Tag? {
         let query = Tag.tagsTable.select(
             idColumn,
