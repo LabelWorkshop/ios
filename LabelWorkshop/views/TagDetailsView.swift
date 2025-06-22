@@ -13,7 +13,7 @@ struct TagDetailsView: View {
     
     init(tag: Tag) {
         self.tag = tag
-        self.name = tag.name
+        self.name = tag.realName
         self.shorthand = tag.shorthand ?? ""
         self.colors = tag.colors
         self.isCategory = tag.isCategory
