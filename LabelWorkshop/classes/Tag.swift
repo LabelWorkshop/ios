@@ -37,6 +37,7 @@ class Tag {
     var id: Int
     var colors: TagColor
     var shorthand: String?
+    var isCategory: Bool
     
     static var tagsTable: Table = Table("tags")
     static var idColumn = Expression<Int>("id")
@@ -44,19 +45,22 @@ class Tag {
     static var shorthandColumn = Expression<String?>("shorthand")
     static var tagColorNamespaceColumn = Expression<String?>("color_namespace")
     static var tagColorSlugColumn = Expression<String?>("color_slug")
+    static var isCategoryColumn = Expression<Bool>("is_category")
     
     init(
         library: Library,
         name: String,
         id: Int,
         colors: TagColor,
-        shorthand: String?
+        shorthand: String?,
+        isCategory: Bool
     ){
         self.library = library
         self.name = name
         self.id = id
         self.colors = colors
         self.shorthand = shorthand
+        self.isCategory = isCategory
     }
     
     func delete() throws {
@@ -92,7 +96,8 @@ class Tag {
             nameColumn,
             tagColorSlugColumn,
             tagColorNamespaceColumn,
-            shorthandColumn
+            shorthandColumn,
+            isCategoryColumn
         ).filter(Tag.idColumn == id)
         do {
             for rawTag in try library.db!.prepare(query) {
@@ -101,12 +106,14 @@ class Tag {
                 let slug = rawTag[Tag.tagColorSlugColumn] ?? ""
                 let colors = library.tagColors?.find(namespace: namespace, slug: slug) ?? TagColor.none
                 let shorthand = rawTag[Tag.shorthandColumn]
+                let isCategory = rawTag[Tag.isCategoryColumn]
                 return Tag(
                     library: library,
                     name: name,
                     id: id,
                     colors: colors,
-                    shorthand: shorthand
+                    shorthand: shorthand,
+                    isCategory: isCategory
                 )
             }
         } catch {print(error)}

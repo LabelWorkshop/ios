@@ -6,6 +6,7 @@ struct TagDetailsView: View {
     @State private var name: String
     @State private var shorthand: String
     @State private var colors: TagColor
+    @State private var isCategory: Bool
     @State private var showTagColorSelector: Bool = false
     @Environment(\.dismiss) private var dismiss
     @State private var tagColors: [TagColor]
@@ -15,6 +16,7 @@ struct TagDetailsView: View {
         self.name = tag.name
         self.shorthand = tag.shorthand ?? ""
         self.colors = tag.colors
+        self.isCategory = tag.isCategory
         self.tagColors = tag.library.tagColors?.colors ?? []
     }
     
@@ -45,48 +47,54 @@ struct TagDetailsView: View {
                     TextBox(title: "Shorthand", value: $shorthand)
                 }
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                VStack {
-                    Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                    Button(action: {
-                        showTagColorSelector.toggle()
-                    }) {
-                        TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
-                    }
-                    .popover(isPresented: $showTagColorSelector) {
-                        NavigationView {
-                            ScrollView {
-                                VStack {
-                                    ForEach($tagColors) { tagColor in
-                                        Button(action: {
-                                            colors = tagColor.wrappedValue
-                                            showTagColorSelector = false
-                                        }) {
-                                            TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
+                HStack{
+                    VStack {
+                        Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                        Button(action: {
+                            showTagColorSelector.toggle()
+                        }) {
+                            TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
+                        }
+                        .popover(isPresented: $showTagColorSelector) {
+                            NavigationView {
+                                ScrollView {
+                                    VStack {
+                                        ForEach($tagColors) { tagColor in
+                                            Button(action: {
+                                                colors = tagColor.wrappedValue
+                                                showTagColorSelector = false
+                                            }) {
+                                                TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
+                                            }
                                         }
                                     }
+                                    .padding(16)
                                 }
-                                .padding(16)
-                            }
-                            .navigationTitle("Color")
-                            .toolbar {
-                                ToolbarItem(placement: .navigationBarLeading){
-                                    Button(action: {
-                                        showTagColorSelector = false
-                                    }) {
-                                        Image(systemName: "chevron.backward")
-                                        Text("Back")
+                                .navigationTitle("Color")
+                                .toolbar {
+                                    ToolbarItem(placement: .navigationBarLeading){
+                                        Button(action: {
+                                            showTagColorSelector = false
+                                        }) {
+                                            Image(systemName: "chevron.backward")
+                                            Text("Back")
+                                        }
                                     }
                                 }
                             }
                         }
+                    }.frame(maxWidth: .infinity, alignment: .leading)
+                    VStack {
+                        Text("Is Category?").font(.caption2)
+                        Toggle("Is Category?", isOn: $isCategory).labelsHidden()
                     }
-                }.frame(maxWidth: .infinity, alignment: .leading)
+                }
                 HStack {
                     Button(action: {
                         do {
                             try tag.setColumn(column: Tag.nameColumn, value: self.name)
                             try tag.setColumn(column: Tag.shorthandColumn, value: self.shorthand)
+                            try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
                             try tag.setColor(self.colors)
                         } catch {}
                     }) {
