@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct TagDetailsView: View {
-    @Environment(\.presentationMode) var presentationMode
-    
     let tag: Tag
     
     @State private var name: String
@@ -99,7 +97,7 @@ struct TagDetailsView: View {
                             try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
                             try tag.setColor(self.colors)
                         } catch {}
-                        self.presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         HStack {
                             Image(systemName: "checkmark")
