@@ -23,105 +23,111 @@ struct TagDetailsView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 8) {
-                TagPreView(
-                    name: $name,
-                    colors: $colors
-                )
-                    .shadow(color: colors.border, radius: 16)
-                    .padding(50)
-                    .frame(maxWidth: .infinity)
-                    .background(Color(UIColor.tertiarySystemFill))
-                    .background(
-                        Image("dots")
-                            .opacity(0.3)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.black, lineWidth: 2)
-                            .blur(radius: 14)
-                    )
-                    .cornerRadius(8)
-                HStack {
-                    TextBox(title: "Name", value: $name)
-                    TextBox(title: "Shorthand", value: $shorthand)
-                }
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                HStack{
-                    VStack {
-                        Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                        Button(action: {
-                            showTagColorSelector.toggle()
-                        }) {
-                            TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
+        ZStack(alignment: .bottom) {
+                ScrollView {
+                    VStack(spacing: 8) {
+                        TagPreView(
+                            name: $name,
+                            colors: $colors
+                        )
+                        .shadow(color: colors.border, radius: 16)
+                        .padding(50)
+                        .frame(maxWidth: .infinity)
+                        .background(Color(UIColor.tertiarySystemFill))
+                        .background(
+                            Image("dots")
+                                .opacity(0.3)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.black, lineWidth: 2)
+                                .blur(radius: 14)
+                        )
+                        .cornerRadius(8)
+                        HStack {
+                            TextBox(title: "Name", value: $name)
+                            TextBox(title: "Shorthand", value: $shorthand)
                         }
-                        .popover(isPresented: $showTagColorSelector) {
-                            NavigationView {
-                                ScrollView {
-                                    VStack {
-                                        ForEach($tagColors) { tagColor in
-                                            Button(action: {
-                                                colors = tagColor.wrappedValue
-                                                showTagColorSelector = false
-                                            }) {
-                                                TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        HStack{
+                            VStack {
+                                Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                                Button(action: {
+                                    showTagColorSelector.toggle()
+                                }) {
+                                    TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
+                                }
+                                .popover(isPresented: $showTagColorSelector) {
+                                    NavigationView {
+                                        ScrollView {
+                                            VStack {
+                                                ForEach($tagColors) { tagColor in
+                                                    Button(action: {
+                                                        colors = tagColor.wrappedValue
+                                                        showTagColorSelector = false
+                                                    }) {
+                                                        TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
+                                                    }
+                                                }
+                                            }
+                                            .padding(16)
+                                        }
+                                        .navigationTitle("Color")
+                                        .toolbar {
+                                            ToolbarItem(placement: .navigationBarLeading){
+                                                Button(action: {
+                                                    showTagColorSelector = false
+                                                }) {
+                                                    Image(systemName: "chevron.backward")
+                                                    Text("Back")
+                                                }
                                             }
                                         }
                                     }
-                                    .padding(16)
                                 }
-                                .navigationTitle("Color")
-                                .toolbar {
-                                    ToolbarItem(placement: .navigationBarLeading){
-                                        Button(action: {
-                                            showTagColorSelector = false
-                                        }) {
-                                            Image(systemName: "chevron.backward")
-                                            Text("Back")
-                                        }
-                                    }
-                                }
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                            VStack {
+                                Text("Is Category?").font(.caption2)
+                                Toggle("Is Category?", isOn: $isCategory).labelsHidden()
                             }
                         }
-                    }.frame(maxWidth: .infinity, alignment: .leading)
-                    VStack {
-                        Text("Is Category?").font(.caption2)
-                        Toggle("Is Category?", isOn: $isCategory).labelsHidden()
-                    }
-                }
-                VStack {
-                    Text("Aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                    VStack {
-                        ForEach($aliases){ $alias in
-                            HStack {
-                                TextField("Alias", text: $alias.name)
-                                Button(role: .destructive, action: {
-                                    if let index = aliases.firstIndex(where: {$0.id == alias.id}) {
-                                        aliases.remove(at: index)
+                        VStack {
+                            Text("Aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            VStack {
+                                ForEach($aliases){ $alias in
+                                    HStack {
+                                        TextField("Alias", text: $alias.name)
+                                        Button(role: .destructive, action: {
+                                            if let index = aliases.firstIndex(where: {$0.id == alias.id}) {
+                                                aliases.remove(at: index)
+                                            }
+                                        }) {
+                                            Image(systemName: "minus")
+                                                .frame(minHeight: 0, maxHeight: .infinity)
+                                        }
+                                        .tint(.red)
+                                        .buttonStyle(.bordered)
                                     }
-                                }) {
-                                    Image(systemName: "minus")
-                                        .frame(minHeight: 0, maxHeight: .infinity)
                                 }
-                                .tint(.red)
+                                Button(action: {
+                                    aliases.append(TagAlias(id: Int.random(in: (-9999)..<(-1)), name: "", tagId: tag.id))
+                                }) {
+                                    Label("New Alias", systemImage: "plus")
+                                        .frame(minWidth: 0, maxWidth: .infinity)
+                                }
+                                .tint(.blue)
                                 .buttonStyle(.bordered)
                             }
+                            .padding(8)
+                            .background(Color(UIColor.tertiarySystemFill))
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .cornerRadius(8)
                         }
-                        Button(action: {
-                            aliases.append(TagAlias(id: Int.random(in: (-9999)..<(-1)), name: "", tagId: tag.id))
-                        }) {
-                            Label("New Alias", systemImage: "plus")
-                                .frame(minWidth: 0, maxWidth: .infinity)
-                        }
-                        .tint(.blue)
-                        .buttonStyle(.bordered)
                     }
-                    .padding(8)
-                    .background(Color(UIColor.tertiarySystemFill))
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .cornerRadius(8)
-                }
+                    .padding(16)
+                    .padding(.bottom, 80)
+                }.navigationTitle(tag.name)
+                
                 HStack {
                     Button(action: {
                         do {
@@ -160,7 +166,9 @@ struct TagDetailsView: View {
                 }
                 .controlSize(.large)
                 .buttonStyle(.bordered)
-            }.padding(16)
-        }.navigationTitle(tag.name)
+                .padding(8)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal, 8)
+        }
     }
 }
