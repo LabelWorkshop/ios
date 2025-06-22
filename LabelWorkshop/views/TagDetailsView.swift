@@ -8,6 +8,8 @@ struct TagDetailsView: View {
     @State private var colors: TagColor
     @State private var isCategory: Bool
     @State var aliases: [TagAlias]
+    @State var parentTags: [Tag]
+    @State private var showTagParentSelector: Bool = false
     @State private var showTagColorSelector: Bool = false
     @Environment(\.dismiss) private var dismiss
     @State private var tagColors: [TagColor]
@@ -20,6 +22,7 @@ struct TagDetailsView: View {
         self.isCategory = tag.isCategory
         self.tagColors = tag.library.tagColors?.colors ?? []
         self.aliases = tag.getAliases()
+        self.parentTags = tag.getParentTags()
     }
     
     var body: some View {
@@ -123,6 +126,66 @@ struct TagDetailsView: View {
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .cornerRadius(8)
                         }
+                        VStack {
+                            Text("Parent Tags").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            VStack {
+                                ForEach($parentTags){ $tag in
+                                    HStack {
+                                        TagView(tag: tag, fullWidth: true)
+                                        Button(role: .destructive, action: {
+                                            if let index = parentTags.firstIndex(where: {$0.id == tag.id}) {
+                                                parentTags.remove(at: index)
+                                            }
+                                        }) {
+                                            Image(systemName: "minus")
+                                                .frame(minHeight: 0, maxHeight: .infinity)
+                                        }
+                                        .tint(.red)
+                                        .buttonStyle(.bordered)
+                                    }
+                                }
+                                Button(action: {
+                                    showTagParentSelector = true
+                                }) {
+                                    Label("Add Parent", systemImage: "plus")
+                                        .frame(minWidth: 0, maxWidth: .infinity)
+                                }
+                                .tint(.blue)
+                                .buttonStyle(.bordered)
+                                .popover(isPresented: $showTagParentSelector) {
+                                    NavigationView {
+                                        ScrollView {
+                                            VStack {
+                                                ForEach(Tag.fetchAll(library: tag.library)) { tag in
+                                                    Button(action: {
+                                                        parentTags.filter({$0.id == tag.id}).count == 0 ? parentTags.append(tag) : ()
+                                                        showTagParentSelector = false
+                                                    }) {
+                                                        TagView(tag: tag, fullWidth: true)
+                                                    }
+                                                }
+                                            }
+                                            .padding(16)
+                                        }
+                                        .navigationTitle("Tags")
+                                        .toolbar {
+                                            ToolbarItem(placement: .navigationBarLeading){
+                                                Button(action: {
+                                                    showTagParentSelector = false
+                                                }) {
+                                                    Image(systemName: "chevron.backward")
+                                                    Text("Back")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(8)
+                            .background(Color(UIColor.tertiarySystemFill))
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .cornerRadius(8)
+                        }
                     }
                     .padding(16)
                     .padding(.bottom, 80)
@@ -136,6 +199,7 @@ struct TagDetailsView: View {
                             try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
                             tag.setAliases(self.aliases)
                             try tag.setColor(self.colors)
+                            tag.setParentTags(self.parentTags)
                         } catch {}
                         dismiss()
                     }) {

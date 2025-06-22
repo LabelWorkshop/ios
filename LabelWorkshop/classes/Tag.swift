@@ -31,7 +31,7 @@ extension Color {
     }
 }
 
-class Tag {
+class Tag: Identifiable {
     var library: Library
     var realName: String
     var name: String
@@ -49,6 +49,11 @@ class Tag {
     static var tagColorSlugColumn = Expression<String?>("color_slug")
     static var isCategoryColumn = Expression<Bool>("is_category")
     static var disambiguationIdColumn = Expression<Int?>("disambiguation_id")
+    
+    static var tagParentsTable: Table = Table("tag_parents")
+    // Yes these are meant to be flipped around.
+    static var childIdColumn = Expression<Int>("parent_id")
+    static var parentIdColumn = Expression<Int>("child_id")
     
     init(
         library: Library,
@@ -146,6 +151,56 @@ class Tag {
         // Deleted Aliases
         for alias in currentAliases {
             aliases.filter({$0.id == alias.id}).count == 0 ? alias.delete() : ()
+        }
+    }
+    
+    func getParentTags() -> [Tag] {
+        var parentTags: [Tag] = []
+        let query = Tag.tagParentsTable
+            .select(*)
+            .filter(Tag.childIdColumn == self.id)
+        do {
+            for raw in try self.library.db!.prepare(query) {
+                let tag = Tag.fetch(library: library, id: raw[Tag.parentIdColumn])
+                if let tag = tag {
+                    parentTags.append(tag)
+                }
+            }
+        } catch {}
+        return parentTags
+    }
+    
+    func setParentTags(_ parentTags: [Tag]) {
+        let currentParentTags = self.getParentTags()
+        for parentTag in parentTags {
+            // New Parent Tags
+            var isNew = true
+            for currentParentTag in currentParentTags {
+                if currentParentTag.id == parentTag.id {
+                    isNew = false
+                }
+            }
+            if isNew {
+                let query = Tag.tagParentsTable.insert(
+                    Tag.parentIdColumn <- parentTag.id,
+                    Tag.childIdColumn <- self.id
+                )
+                do {
+                    try self.library.db?.run(query)
+                } catch {}
+                continue
+            }
+        }
+        for currentParentTag in currentParentTags {
+            // Deleted Parent Tags
+            if parentTags.filter({$0.id == currentParentTag.id}).count == 0 {
+                let query = Tag.tagParentsTable
+                    .filter(Tag.parentIdColumn == currentParentTag.id && Tag.childIdColumn == self.id)
+                    .delete()
+                do {
+                    try self.library.db?.run(query)
+                } catch {}
+            }
         }
     }
     
