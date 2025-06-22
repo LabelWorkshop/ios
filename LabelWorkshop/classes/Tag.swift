@@ -33,11 +33,13 @@ extension Color {
 
 class Tag {
     var library: Library
+    var realName: String
     var name: String
     var id: Int
     var colors: TagColor
     var shorthand: String?
     var isCategory: Bool
+    var disambiguationId: Int?
     
     static var tagsTable: Table = Table("tags")
     static var idColumn = Expression<Int>("id")
@@ -46,6 +48,7 @@ class Tag {
     static var tagColorNamespaceColumn = Expression<String?>("color_namespace")
     static var tagColorSlugColumn = Expression<String?>("color_slug")
     static var isCategoryColumn = Expression<Bool>("is_category")
+    static var disambiguationIdColumn = Expression<Int?>("disambiguation_id")
     
     init(
         library: Library,
@@ -53,14 +56,22 @@ class Tag {
         id: Int,
         colors: TagColor,
         shorthand: String?,
-        isCategory: Bool
+        isCategory: Bool,
+        disambiguationId: Int?
     ){
         self.library = library
-        self.name = name
+        self.realName = name
         self.id = id
         self.colors = colors
         self.shorthand = shorthand
         self.isCategory = isCategory
+        self.disambiguationId = disambiguationId
+        self.name = realName
+        if let disambiguationId = disambiguationId {
+            if let tag = Tag.fetch(library: library, id: disambiguationId) {
+                self.name = "\(self.realName) (\(tag.name))"
+            }
+        }
     }
     
     func delete() throws {
@@ -97,7 +108,8 @@ class Tag {
             tagColorSlugColumn,
             tagColorNamespaceColumn,
             shorthandColumn,
-            isCategoryColumn
+            isCategoryColumn,
+            disambiguationIdColumn
         ).filter(Tag.idColumn == id)
         do {
             for rawTag in try library.db!.prepare(query) {
@@ -107,13 +119,15 @@ class Tag {
                 let colors = library.tagColors?.find(namespace: namespace, slug: slug) ?? TagColor.none
                 let shorthand = rawTag[Tag.shorthandColumn]
                 let isCategory = rawTag[Tag.isCategoryColumn]
+                let disambiguationId = rawTag[Tag.disambiguationIdColumn]
                 return Tag(
                     library: library,
                     name: name,
                     id: id,
                     colors: colors,
                     shorthand: shorthand,
-                    isCategory: isCategory
+                    isCategory: isCategory,
+                    disambiguationId: disambiguationId
                 )
             }
         } catch {print(error)}
