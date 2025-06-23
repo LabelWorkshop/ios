@@ -1,5 +1,5 @@
 class TagColorManager {
-    var colors: [TagColor] = []
+    var colors: [TagColor] = [TagColor.none]
     let library: Library
     
     init(library: Library) {
@@ -8,7 +8,8 @@ class TagColorManager {
             TagColor.primaryColumn,
             TagColor.secondaryColumn,
             TagColor.slugColumn,
-            TagColor.namespaceColumn
+            TagColor.namespaceColumn,
+            TagColor.nameColumn
         )
         do {
             for rawColor in try library.db!.prepare(query) {
@@ -17,7 +18,8 @@ class TagColorManager {
                         namespace: rawColor[TagColor.namespaceColumn],
                         slug: rawColor[TagColor.slugColumn],
                         primaryColor: rawColor[TagColor.primaryColumn],
-                        secondaryColor: rawColor[TagColor.secondaryColumn]
+                        secondaryColor: rawColor[TagColor.secondaryColumn],
+                        name: "\(rawColor[TagColor.namespaceColumn]): \(rawColor[TagColor.nameColumn])"
                     )
                 )
             }
