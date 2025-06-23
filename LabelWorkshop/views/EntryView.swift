@@ -21,6 +21,37 @@ struct EntryView: View {
                 } else {
                     Text("No preview available")
                 }
+                HStack {
+                    if let fullPath: URL = entry.fullPath {
+                        ShareLink(item: fullPath, message: Text(entry.path)) {
+                            HStack {
+                                Image(systemName: "square.and.arrow.up")
+                                Text("Share")
+                            }
+                            .frame(
+                                minWidth: 0,
+                                maxWidth: .infinity
+                            )
+                        }.tint(.blue)
+                        Button(role: .destructive, action: {
+                            do {
+                                try FileManager.default.removeItem(at: entry.fullPath!)
+                                entry.delete()
+                            } catch {}
+                        }) {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text("Delete")
+                            }
+                            .frame(
+                                minWidth: 0,
+                                maxWidth: .infinity
+                            )
+                        }.tint(.red)
+                    }
+                }
+                .controlSize(.large)
+                .buttonStyle(.bordered)
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 8) {
                     Text("Tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
