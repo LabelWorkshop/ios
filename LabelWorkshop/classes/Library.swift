@@ -50,6 +50,10 @@ class Library {
         }
     }
     
+    @Transient static var entriesTable: Table = Table("entries")
+    @Transient static var pathColumn = Expression<String>("path")
+    @Transient static var entryIdColumn = Expression<Int>("id")
+    
     @Transient var _tagColors: TagColorManager?
     @Transient var tagColors: TagColorManager? {
         get {
@@ -59,11 +63,6 @@ class Library {
             return self._tagColors
         }
     }
-    
-    
-    @Transient var entriesTable: Table = Table("entries")
-    @Transient var pathColumn = Expression<String>("path")
-    @Transient var entryIdColumn = Expression<Int>("id")
     
     @Transient static var sequenceTable = Table("sqlite_sequence")
     @Transient static var nameColumn = Expression<String?>("name")
@@ -84,9 +83,9 @@ class Library {
         if self.db == nil { throw LibraryError.databaseInvalid }
         var entries: [Entry] = []
         do {
-            for rawEntry in try self.db!.prepare(entriesTable) {
-                let path: String = rawEntry[pathColumn]
-                let id: Int = rawEntry[entryIdColumn]
+            for rawEntry in try self.db!.prepare(Library.entriesTable) {
+                let path: String = rawEntry[Library.pathColumn]
+                let id: Int = rawEntry[Library.entryIdColumn]
                 entries.append(Entry(library: self, path: path, id: id))
             }
         } catch {
