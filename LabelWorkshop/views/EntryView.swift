@@ -31,6 +31,10 @@ struct EntryView: View {
                             )
                         }.tint(.blue)
                         Button(role: .destructive, action: {
+                            do {
+                                try FileManager.default.removeItem(at: entry.fullPath!)
+                                entry.delete()
+                            } catch {}
                         }) {
                             HStack {
                                 Image(systemName: "trash")
@@ -40,7 +44,7 @@ struct EntryView: View {
                                 minWidth: 0,
                                 maxWidth: .infinity
                             )
-                        }.tint(.red).disabled(true)
+                        }.tint(.red)
                     }
                 }
                 .controlSize(.large)
