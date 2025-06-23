@@ -3,6 +3,7 @@ import SwiftUI
 struct TagManagerView: View {
     @Environment(\.dismiss) private var dismiss
     let library: Library
+    @State var showNewTag: Bool = false
     
     init(library: Library) {
         self.library = library
@@ -27,6 +28,32 @@ struct TagManagerView: View {
                     }) {
                         Image(systemName: "chevron.backward")
                         Text("Back")
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button(action: {
+                        showNewTag = true
+                    }) {
+                        Image(systemName: "plus")
+                    }
+                    .sheet(isPresented: $showNewTag) {
+                        let newTag = library.newTag("New Tag")
+                        if let newTag = newTag {
+                            NavigationView {
+                                TagDetailsView(tag: newTag)
+                                .toolbar {
+                                    ToolbarItem(placement: .navigationBarLeading){
+                                        Button(action: {
+                                            dismiss()
+                                        }) {
+                                            Image(systemName: "chevron.backward")
+                                            Text("Back")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
