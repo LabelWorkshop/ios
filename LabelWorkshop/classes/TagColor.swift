@@ -17,7 +17,11 @@ class TagColor: Hashable, Identifiable {
     let id: UUID
     var background: Color
     var border: Color
-    var text: Color
+    var text: Color {
+        get {
+            return self.border == self.background ? TagColor.getTextColor(bg: self.background) : self.border
+        }
+    }
     var name: String
     private let primaryColor: String?
     private let secondaryColor: String?
@@ -61,7 +65,6 @@ class TagColor: Hashable, Identifiable {
         } else {
             self.border = self.background
         }
-        self.text = self.border == self.background ? TagColor.getTextColor(bg: self.background) : self.border
     }
     
     static func getTextColor(bg: Color) -> Color {
