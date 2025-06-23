@@ -31,4 +31,36 @@ class Entry {
         } catch {}
         return tags
     }
+    
+    func delete() {
+        let queries = [
+            Table("boolean_fields")
+                .filter(Expression<Int>("entry_id") == self.id)
+                .delete(),
+            Table("datetime_fields")
+                .filter(Expression<Int>("entry_id") == self.id)
+                .delete(),
+            Table("text_fields")
+                .filter(Expression<Int>("entry_id") == self.id)
+                .delete(),
+            Table("tag_entries")
+                .filter(Expression<Int>("entry_id") == self.id)
+                .delete(),
+            Library.entriesTable
+                .filter(Library.entryIdColumn == self.id)
+                .delete()
+        ]
+        do {
+            for query in queries {
+                try self.library.db!.run(query)
+            }
+        } catch {}
+    }
+    
+    func addTag(_ tag: Tag) {
+        let query = Entry.tagEntriesTable.insert(Entry.idColumn <- tag.id, Entry.entryColumn <- self.id)
+        do {
+            try self.library.db!.run(query)
+        } catch {}
+    }
 }
