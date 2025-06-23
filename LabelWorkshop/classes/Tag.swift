@@ -80,9 +80,17 @@ class Tag: Identifiable {
     }
     
     func delete() throws {
-        let query = Tag.tagsTable.filter(Tag.idColumn == self.id)
+        let query = Tag.tagsTable.filter(Tag.idColumn == self.id).delete()
+        let query2 = Entry.tagEntriesTable.filter(Entry.idColumn == self.id).delete()
+        let query3 = TagAlias.tagAliasesTable.filter(TagAlias.tagIdColumn == self.id).delete()
+        let query4 = Tag.tagParentsTable.filter(
+            Tag.childIdColumn == self.id || Tag.parentIdColumn == self.id
+        ).delete()
         if let db = self.library.db {
-            try db.run(query.delete())
+            try db.run(query)
+            try db.run(query2)
+            try db.run(query3)
+            try db.run(query4)
         }
     }
     
