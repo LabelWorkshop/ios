@@ -7,13 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A2125B682E02682F0063F489 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A2125B672E02682F0063F489 /* README.md */; };
 		A222273C2DFFF4DA003A782E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = A222273B2DFFF4DA003A782E /* SQLite */; };
-		A262079E2DFE0F2200A82BA6 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = A262079D2DFE0F1C00A82BA6 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A2125B672E02682F0063F489 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A229DAFA2E06E70A007E5655 /* CONTRIBUTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
 		A26207712DFE0ECC00A82BA6 /* LabelWorkshop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LabelWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A262079D2DFE0F1C00A82BA6 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		A2DD42662E03B3F800766174 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LICENSE; sourceTree = "<group>"; };
@@ -47,6 +46,7 @@
 		A26207682DFE0ECC00A82BA6 = {
 			isa = PBXGroup;
 			children = (
+				A229DAFA2E06E70A007E5655 /* CONTRIBUTING.md */,
 				A2DD42662E03B3F800766174 /* LICENSE */,
 				A2125B692E02E63A0063F489 /* .github */,
 				A2125B672E02682F0063F489 /* README.md */,
@@ -80,7 +80,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				A2125B692E02E63A0063F489 /* .github */,
 				A26207732DFE0ECC00A82BA6 /* LabelWorkshop */,
 			);
 			name = LabelWorkshop;
@@ -133,8 +132,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A2125B682E02682F0063F489 /* README.md in Resources */,
-				A262079E2DFE0F2200A82BA6 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,6 +284,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -318,6 +316,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
