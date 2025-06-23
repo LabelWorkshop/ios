@@ -8,7 +8,7 @@ struct EntryMiniView: View {
     }
     
     var body: some View {
-        NavigationLink(destination: EntryView(entry: entry)){
+        NavigationLink(destination: EntryView(entry: entry).id(entry.id)){
             VStack(spacing: 0) {
                 if let image = loadImage(for: entry) {
                     Image(uiImage: image)
