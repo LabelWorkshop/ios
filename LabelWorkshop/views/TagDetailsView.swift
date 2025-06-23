@@ -61,7 +61,7 @@ struct TagDetailsView: View {
                                 }) {
                                     TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
                                 }
-                                .popover(isPresented: $showTagColorSelector) {
+                                .sheet(isPresented: $showTagColorSelector) {
                                     NavigationView {
                                         ScrollView {
                                             VStack {
@@ -153,7 +153,7 @@ struct TagDetailsView: View {
                                 }
                                 .tint(.blue)
                                 .buttonStyle(.bordered)
-                                .popover(isPresented: $showTagParentSelector) {
+                                .sheet(isPresented: $showTagParentSelector) {
                                     NavigationView {
                                         ScrollView {
                                             VStack {
