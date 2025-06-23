@@ -65,6 +65,10 @@ class Library {
     @Transient var pathColumn = Expression<String>("path")
     @Transient var entryIdColumn = Expression<Int>("id")
     
+    @Transient static var sequenceTable = Table("sqlite_sequence")
+    @Transient static var nameColumn = Expression<String?>("name")
+    @Transient static var sequenceColumn = Expression<Int?>("seq")
+    
     init(bookmarkKey: String) {
         self.bookmarkKey = bookmarkKey
     }
@@ -97,5 +101,31 @@ class Library {
         } catch {
             return []
         }
+    }
+    
+    func newTag(_ name: String) -> Tag? {
+        let sequenceQuery = Library.sequenceTable.filter(Library.nameColumn == "tags")
+        do {
+            if let raw = try self.db?.pluck(sequenceQuery) {
+                let sequence = raw[Library.sequenceColumn]
+                if let sequence = sequence {
+                    let query = Tag.tagsTable.insert(
+                        Tag.nameColumn <- name,
+                        Tag.isCategoryColumn <- false,
+                    )
+                    try self.db?.run(query)
+                    return Tag (
+                        library: self,
+                        name: name,
+                        id: sequence,
+                        colors: TagColor.none,
+                        shorthand: nil,
+                        isCategory: false,
+                        disambiguationId: nil
+                    )
+                }
+            }
+        } catch {}
+        return nil
     }
 }
