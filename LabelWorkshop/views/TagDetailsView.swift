@@ -245,7 +245,7 @@ struct TagDetailsView: View {
                 .buttonStyle(.bordered)
                 .padding(8)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-                .padding(.horizontal, 8)
+                .padding(8)
         }
     }
 }
