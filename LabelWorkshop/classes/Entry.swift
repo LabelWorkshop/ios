@@ -31,4 +31,11 @@ class Entry {
         } catch {}
         return tags
     }
+    
+    func addTag(_ tag: Tag) {
+        let query = Entry.tagEntriesTable.insert(Entry.idColumn <- tag.id, Entry.entryColumn <- self.id)
+        do {
+            try self.library.db!.run(query)
+        } catch {}
+    }
 }
