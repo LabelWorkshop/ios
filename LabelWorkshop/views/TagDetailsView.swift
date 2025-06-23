@@ -11,6 +11,7 @@ struct TagDetailsView: View {
     @State var parentTags: [Tag]
     @State private var showTagParentSelector: Bool = false
     @State private var showTagColorSelector: Bool = false
+    @State private var tagDeleteConfirmation: Bool = false
     @Environment(\.dismiss) private var dismiss
     @State private var tagColors: [TagColor]
     
@@ -213,10 +214,7 @@ struct TagDetailsView: View {
                         )
                     }.tint(.blue)
                     Button(role: .destructive, action: {
-                        do {
-                            try tag.delete() // Add confimation
-                            dismiss()
-                        } catch {}
+                        tagDeleteConfirmation = true
                     }) {
                         HStack {
                             Image(systemName: "trash")
@@ -227,6 +225,21 @@ struct TagDetailsView: View {
                             maxWidth: .infinity
                         )
                     }.tint(.red)
+                    .confirmationDialog(
+                        Text("This tag and all references of it will be deleted."),
+                        isPresented: $tagDeleteConfirmation,
+                        titleVisibility: .visible
+                    ) {
+                        Button(role: .destructive, action: {
+                            do {
+                                try tag.delete()
+                                tagDeleteConfirmation = false
+                                dismiss()
+                            } catch {}
+                        }) {
+                            Text("Delete Tag")
+                        }
+                    }
                 }
                 .controlSize(.large)
                 .buttonStyle(.bordered)
