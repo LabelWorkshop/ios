@@ -1,14 +1,38 @@
 import SwiftUI
-import SwiftData
 import Foundation
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var context
-    @Query var libraries: [Library]
+    @State private var libraries: [Library]
     
     @State private var selectedLibrary: Library?
     @State private var visibility: NavigationSplitViewVisibility = .all
     @State private var showFileImporter = false
+    
+    init() {
+        let rawLibraries: [String] = ContentView.getRawLibraries()
+        var newLibraries: [Library] = []
+        for rawLibrary in rawLibraries {
+            newLibraries.append(
+                Library(bookmarkKey: rawLibrary)
+            )
+        }
+        self.libraries = newLibraries
+    }
+    
+    static func getRawLibraries() -> [String] {
+        return UserDefaults.standard.object(forKey: "libraries") as? [String] ?? [String]()
+    }
+    
+    static func setRawLibraries(_ rawLibraries: [String]) {
+        UserDefaults.standard.set(rawLibraries, forKey: "libraries")
+    }
+    
+    func addLibrary(_ bookmarkKey: String) {
+        var rawLibraries = ContentView.getRawLibraries()
+        rawLibraries.append(bookmarkKey)
+        ContentView.setRawLibraries(rawLibraries)
+        libraries.append(Library(bookmarkKey: bookmarkKey))
+    }
     
     var body: some View {
         NavigationSplitView(columnVisibility: $visibility) {
@@ -61,8 +85,7 @@ struct ContentView: View {
                 } catch {
                     print(error)
                 }
-                let newLibrary: Library = Library(bookmarkKey: id)
-                context.insert(newLibrary)
+                addLibrary(id)
                 folder.stopAccessingSecurityScopedResource()
             case .failure(let error):
                 print(error)
@@ -71,9 +94,11 @@ struct ContentView: View {
     }
     
     private func removeLibrary(at indexSet: IndexSet){
+        var rawLibraries = ContentView.getRawLibraries()
         for index in indexSet {
-            context.delete(libraries[index])
+            rawLibraries.remove(at: index)
         }
+        ContentView.setRawLibraries(rawLibraries)
     }
 }
 
