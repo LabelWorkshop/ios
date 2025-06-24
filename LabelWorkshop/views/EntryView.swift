@@ -4,11 +4,13 @@ import Flow
 struct EntryView: View {
     let entry: Entry
     @State var tags: [Tag]
+    @State var fields: [Field]
     @State var showTagSelector: Bool = false
     
     init(entry: Entry) {
         self.entry = entry
         self.tags = entry.getTags()
+        self.fields = entry.getFields()
     }
     
     var body: some View {
@@ -99,6 +101,16 @@ struct EntryView: View {
                         .cornerRadius(8)
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
+                VStack(spacing: 8) {
+                    Text("Fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach($fields){ $field in
+                        VStack {
+                            Text(field.name).font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            TextField(field.name, text: $field.text)
+                        }
+                    }
+                }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
             }.padding(16)
         }.navigationTitle(entry.path)
     }
