@@ -1,4 +1,5 @@
 import SwiftUI
+import Flow
 
 struct EntryView: View {
     let entry: Entry
@@ -55,7 +56,7 @@ struct EntryView: View {
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 8) {
                     Text("Tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
-                    HStack {
+                    HFlow {
                         ForEach($tags){ $tag in
                             TagView(tag: tag)
                         }
