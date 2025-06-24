@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A222273C2DFFF4DA003A782E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = A222273B2DFFF4DA003A782E /* SQLite */; };
+		A248772B2E0A31B3006D086E /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = A248772A2E0A31B3006D086E /* Flow */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A248772B2E0A31B3006D086E /* Flow in Frameworks */,
 				A222273C2DFFF4DA003A782E /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -85,6 +87,7 @@
 			name = LabelWorkshop;
 			packageProductDependencies = (
 				A222273B2DFFF4DA003A782E /* SQLite */,
+				A248772A2E0A31B3006D086E /* Flow */,
 			);
 			productName = LabelWorkshop;
 			productReference = A26207712DFE0ECC00A82BA6 /* LabelWorkshop.app */;
@@ -116,6 +119,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A222273A2DFFF4DA003A782E /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+				A24877292E0A31B3006D086E /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A26207722DFE0ECC00A82BA6 /* Products */;
@@ -363,6 +367,14 @@
 				version = 0.15.4;
 			};
 		};
+		A24877292E0A31B3006D086E /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tevelee/SwiftUI-Flow";
+			requirement = {
+				kind = exactVersion;
+				version = 3.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -370,6 +382,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A222273A2DFFF4DA003A782E /* XCRemoteSwiftPackageReference "SQLite.swift" */;
 			productName = SQLite;
+		};
+		A248772A2E0A31B3006D086E /* Flow */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A24877292E0A31B3006D086E /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */;
+			productName = Flow;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
