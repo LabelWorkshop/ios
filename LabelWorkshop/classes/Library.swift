@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 import SQLite
 
 enum LibraryError: Error {
@@ -24,12 +23,19 @@ func loadBookmark(key: String) -> URL? {
     } catch {return nil}
 }
 
-@Model
-class Library {
-    @Attribute(.unique) var bookmarkKey: String
+class Library: Hashable, Identifiable {
+    static func == (lhs: Library, rhs: Library) -> Bool {
+        return lhs.bookmarkKey == rhs.bookmarkKey
+    }
     
-    @Transient var _bookmark: URL?
-    @Transient var bookmark: URL? {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(bookmarkKey)
+    }
+    
+    var bookmarkKey: String
+    
+    var _bookmark: URL?
+    var bookmark: URL? {
         get {
             if self._bookmark == nil {
                 self._bookmark = loadBookmark(key: self.bookmarkKey)
@@ -37,8 +43,8 @@ class Library {
             return self._bookmark
         }
     }
-    @Transient var _db: Connection?
-    @Transient var db: Connection? {
+    var _db: Connection?
+    var db: Connection? {
         get {
             if self._db == nil {
                 do {
@@ -50,12 +56,12 @@ class Library {
         }
     }
     
-    @Transient static var entriesTable: Table = Table("entries")
-    @Transient static var pathColumn = Expression<String>("path")
-    @Transient static var entryIdColumn = Expression<Int>("id")
+    static var entriesTable: Table = Table("entries")
+    static var pathColumn = Expression<String>("path")
+    static var entryIdColumn = Expression<Int>("id")
     
-    @Transient var _tagColors: TagColorManager?
-    @Transient var tagColors: TagColorManager? {
+    var _tagColors: TagColorManager?
+    var tagColors: TagColorManager? {
         get {
             if self._tagColors == nil {
                 self._tagColors = TagColorManager(library: self)
@@ -64,9 +70,9 @@ class Library {
         }
     }
     
-    @Transient static var sequenceTable = Table("sqlite_sequence")
-    @Transient static var nameColumn = Expression<String?>("name")
-    @Transient static var sequenceColumn = Expression<Int?>("seq")
+    static var sequenceTable = Table("sqlite_sequence")
+    static var nameColumn = Expression<String?>("name")
+    static var sequenceColumn = Expression<Int?>("seq")
     
     init(bookmarkKey: String) {
         self.bookmarkKey = bookmarkKey
