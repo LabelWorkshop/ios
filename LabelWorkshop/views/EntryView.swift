@@ -6,6 +6,7 @@ struct EntryView: View {
     @State var tags: [Tag]
     @State var fields: [Field]
     @State var showTagSelector: Bool = false
+    @State var showFieldTypeSelector: Bool = false
     
     init(entry: Entry) {
         self.entry = entry
@@ -107,6 +108,49 @@ struct EntryView: View {
                         VStack {
                             Text(field.name).font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
                             TextField(field.name, text: $field.text)
+                        }
+                    }
+                    Button(action: {
+                        showFieldTypeSelector = true
+                    }) {
+                        Label("Add Field", systemImage: "plus")
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(10)
+                    .background(Color(UIColor.tertiarySystemFill))
+                    .tint(.gray)
+                    .cornerRadius(8)
+                    .sheet(isPresented: $showFieldTypeSelector) {
+                        NavigationView {
+                            ScrollView {
+                                VStack {
+                                    ForEach(entry.library.fieldTypes) { fieldType in
+                                        Button(action: {
+                                            if let field = entry.addField(fieldType.key) {
+                                                fields.append(field)
+                                            }
+                                            showFieldTypeSelector = false
+                                        }) {
+                                            TagPreView(
+                                                name: .constant(fieldType.name),
+                                                colors: .constant(TagColor.none),
+                                                fullWidth: true
+                                            )
+                                        }
+                                    }
+                                }
+                                .padding(16)
+                            }
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarLeading){
+                                    Button(action: {
+                                        showTagSelector = false
+                                    }) {
+                                        Image(systemName: "chevron.backward")
+                                        Text("Back")
+                                    }
+                                }
+                            }
                         }
                     }
                 }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)

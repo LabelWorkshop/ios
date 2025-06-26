@@ -1,7 +1,7 @@
 import SQLite
 import struct Foundation.Date
 
-class FieldType {
+class FieldType: Identifiable {
     static let fieldTypesTable: Table = Table("value_type")
     
     static let keyColumn: Expression = Expression<String>("key")

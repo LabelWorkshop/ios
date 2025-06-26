@@ -52,6 +52,29 @@ class Entry {
         return fields
     }
     
+    func addField(_ key: String) -> Field? {
+        let query = Field.textFieldsTable.insert(
+            Field.typeColumn <- key,
+            Field.entryIdColumn <- self.id,
+            Field.positionColumn <- 0,
+            Field.textValueColumn <- ""
+        )
+        do {
+            let id: Int64? = try self.library.db!.run(query)
+            if let id = id {
+                return Field(
+                    id: Int(id),
+                    entryId: self.id,
+                    key: key,
+                    position: 0,
+                    entry: self,
+                    value: ""
+                )
+            }
+        } catch {}
+        return nil
+    }
+    
     func delete() {
         let queries = [
             Table("boolean_fields")
