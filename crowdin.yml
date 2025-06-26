@@ -1,5 +1,6 @@
 base_path: .
 files:
   - source: LabelWorkshop/Localizable.xcstrings
+    translations: LabelWorkshop/Localizable.xcstrings
 bundles:
   - 2
