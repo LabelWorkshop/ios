@@ -49,7 +49,7 @@ class TagColor: Hashable, Identifiable {
     ){
         self.namespace = namespace ?? "none"
         self.slug = slug ?? "none"
-        self.name = "colors.\(self.namespace).\(self.slug)"
+        self.name = NSLocalizedString("colors.\(self.namespace).\(self.slug)", comment: "")
         self.id = UUID()
         self.primaryColor = primaryColor
         self.secondaryColor = secondaryColor
