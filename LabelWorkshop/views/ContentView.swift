@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var selectedLibrary: Library?
     @State private var visibility: NavigationSplitViewVisibility = .all
     @State private var showFileImporter = false
+    @State private var showAbout = false
     
     init() {
         let rawLibraries: [String] = ContentView.getRawLibraries()
@@ -50,6 +51,14 @@ struct ContentView: View {
                     }) {
                         Image(systemName: "plus")
                     }
+                }
+                ToolbarItem(placement: .topBarLeading){
+                    Button(action: {
+                        showAbout = true
+                    }) {
+                        Image(systemName: "info.circle")
+                    }
+                    .sheet(isPresented: $showAbout, content: { AboutView() })
                 }
                 ToolbarItem( placement: .topBarLeading){
                     let btn = Button(action: {
