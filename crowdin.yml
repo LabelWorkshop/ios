@@ -1,0 +1,5 @@
+base_path: '.'
+
+files:
+  - source: 'LabelWorkshop/en.xcstrings'
+    translation: 'LabelWorkshop/%locale%.xcstrings'

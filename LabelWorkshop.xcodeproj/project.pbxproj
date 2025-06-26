@@ -16,6 +16,7 @@
 		A229DAFA2E06E70A007E5655 /* CONTRIBUTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
 		A26207712DFE0ECC00A82BA6 /* LabelWorkshop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LabelWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A262079D2DFE0F1C00A82BA6 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		A2DBFC382E0DE68800E28E39 /* crowdin.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = crowdin.yml; sourceTree = "<group>"; };
 		A2DD42662E03B3F800766174 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -48,6 +49,7 @@
 		A26207682DFE0ECC00A82BA6 = {
 			isa = PBXGroup;
 			children = (
+				A2DBFC382E0DE68800E28E39 /* crowdin.yml */,
 				A229DAFA2E06E70A007E5655 /* CONTRIBUTING.md */,
 				A2DD42662E03B3F800766174 /* LICENSE */,
 				A2125B692E02E63A0063F489 /* .github */,
