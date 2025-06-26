@@ -138,17 +138,19 @@ struct EntryView: View {
                             ScrollView {
                                 VStack {
                                     ForEach(entry.library.fieldTypes) { fieldType in
-                                        Button(action: {
-                                            if let field = entry.addField(fieldType.key) {
-                                                fields.append(field)
+                                        if fieldType.type != "DATETIME" {
+                                            Button(action: {
+                                                if let field = entry.addField(fieldType.key) {
+                                                    fields.append(field)
+                                                }
+                                                showFieldTypeSelector = false
+                                            }) {
+                                                TagPreView(
+                                                    name: .constant(fieldType.name),
+                                                    colors: .constant(TagColor.none),
+                                                    fullWidth: true
+                                                )
                                             }
-                                            showFieldTypeSelector = false
-                                        }) {
-                                            TagPreView(
-                                                name: .constant(fieldType.name),
-                                                colors: .constant(TagColor.none),
-                                                fullWidth: true
-                                            )
                                         }
                                     }
                                 }
