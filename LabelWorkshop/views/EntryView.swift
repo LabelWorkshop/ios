@@ -159,7 +159,7 @@ struct EntryView: View {
                             .toolbar {
                                 ToolbarItem(placement: .navigationBarLeading){
                                     Button(action: {
-                                        showTagSelector = false
+                                        showFieldTypeSelector = false
                                     }) {
                                         Image(systemName: "chevron.backward")
                                         Text("Back")
