@@ -53,10 +53,14 @@ class Entry {
     }
     
     func addField(_ key: String) -> Field? {
+        let position = (self.getFields()
+            .filter { $0.key == key }
+            .sorted{ $0.position < $1.position }
+            .last?.position ?? -1) + 1
         let query = Field.textFieldsTable.insert(
             Field.typeColumn <- key,
             Field.entryIdColumn <- self.id,
-            Field.positionColumn <- 0,
+            Field.positionColumn <- position,
             Field.textValueColumn <- ""
         )
         do {
@@ -66,7 +70,7 @@ class Entry {
                     id: Int(id),
                     entryId: self.id,
                     key: key,
-                    position: 0,
+                    position: position,
                     entry: self,
                     value: ""
                 )
