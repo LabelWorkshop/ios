@@ -33,52 +33,27 @@ class Library: Hashable, Identifiable {
     }
     
     var bookmarkKey: String
-    
-    var _bookmark: URL?
-    var bookmark: URL? {
-        get {
-            if self._bookmark == nil {
-                self._bookmark = loadBookmark(key: self.bookmarkKey)
-            }
-            return self._bookmark
-        }
-    }
-    var _db: Connection?
-    var db: Connection? {
-        get {
-            if self._db == nil {
-                do {
-                    let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
-                    self._db = try Connection(dbFile)
-                } catch {}
-            }
-            return self._db
-        }
-    }
+    var bookmark: URL?
+    var db: Connection?
+    var tagColors: TagColorManager!
+    var fieldTypes: [FieldType] = []
     
     static var entriesTable: Table = Table("entries")
     static var pathColumn = Expression<String>("path")
     static var entryIdColumn = Expression<Int>("id")
     
-    var _tagColors: TagColorManager?
-    var tagColors: TagColorManager? {
-        get {
-            if self._tagColors == nil {
-                self._tagColors = TagColorManager(library: self)
-            }
-            return self._tagColors
-        }
-    }
-    
     static var sequenceTable = Table("sqlite_sequence")
     static var nameColumn = Expression<String?>("name")
     static var sequenceColumn = Expression<Int?>("seq")
     
-    var fieldTypes: [FieldType] = []
-    
     init(bookmarkKey: String) {
         self.bookmarkKey = bookmarkKey
+        self.bookmark = loadBookmark(key: self.bookmarkKey)
         do {
+            // Inititalize Database
+            let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
+            self.db = try Connection(dbFile)
+            // Get Field Types
             for rawFieldType in try self.db!.prepare(FieldType.fieldTypesTable) {
                 self.fieldTypes.append(
                     FieldType(
@@ -91,6 +66,7 @@ class Library: Hashable, Identifiable {
                 )
             }
         } catch {}
+        self.tagColors = TagColorManager(library: self)
     }
     
     func getName() -> (String) {
