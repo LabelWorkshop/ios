@@ -13,13 +13,14 @@ class TagColorManager {
         )
         do {
             for rawColor in try library.db!.prepare(query) {
+                let namespace = rawColor[TagColor.namespaceColumn]
+                let slug = rawColor[TagColor.slugColumn]
                 self.colors.append(
                     TagColor(
-                        namespace: rawColor[TagColor.namespaceColumn],
-                        slug: rawColor[TagColor.slugColumn],
+                        namespace: namespace,
+                        slug: slug,
                         primaryColor: rawColor[TagColor.primaryColumn],
-                        secondaryColor: rawColor[TagColor.secondaryColumn],
-                        name: "\(rawColor[TagColor.namespaceColumn]): \(rawColor[TagColor.nameColumn])"
+                        secondaryColor: rawColor[TagColor.secondaryColumn]
                     )
                 )
             }

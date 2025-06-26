@@ -12,8 +12,8 @@ class TagColor: Hashable, Identifiable {
       hasher.combine(id)
     }
     
-    let namespace: String?
-    let slug: String?
+    let namespace: String
+    let slug: String
     let id: UUID
     var background: Color
     var border: Color
@@ -30,8 +30,7 @@ class TagColor: Hashable, Identifiable {
         namespace: nil,
         slug: nil,
         primaryColor: nil,
-        secondaryColor: nil,
-        name: "No Color"
+        secondaryColor: nil
     )
     
     static var tagColorsTable: Table = Table("tag_colors")
@@ -46,12 +45,11 @@ class TagColor: Hashable, Identifiable {
         namespace: String?,
         slug: String?,
         primaryColor: String?,
-        secondaryColor: String?,
-        name: String
+        secondaryColor: String?
     ){
-        self.namespace = namespace
-        self.slug = slug
-        self.name = name
+        self.namespace = namespace ?? "none"
+        self.slug = slug ?? "none"
+        self.name = "colors.\(self.namespace).\(self.slug)"
         self.id = UUID()
         self.primaryColor = primaryColor
         self.secondaryColor = secondaryColor

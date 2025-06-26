@@ -20,14 +20,14 @@ struct TagManagerView: View {
                     }
                 }.padding(16)
             }
-            .navigationTitle("Tag Manager")
+            .navigationTitle("tag.manager")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){
                     Button(action: {
                         dismiss()
                     }) {
                         Image(systemName: "chevron.backward")
-                        Text("Back")
+                        Text("back")
                     }
                 }
                 
@@ -48,7 +48,7 @@ struct TagManagerView: View {
                                             dismiss()
                                         }) {
                                             Image(systemName: "chevron.backward")
-                                            Text("Back")
+                                            Text("back")
                                         }
                                     }
                                 }

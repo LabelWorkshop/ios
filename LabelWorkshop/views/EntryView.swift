@@ -23,14 +23,14 @@ struct EntryView: View {
                         .scaledToFit()
                         .cornerRadius(8)
                 } else {
-                    Text("No preview available")
+                    Text("entry.previewUnavailable")
                 }
                 HStack {
                     if let fullPath: URL = entry.fullPath {
                         ShareLink(item: fullPath, message: Text(entry.path)) {
                             HStack {
                                 Image(systemName: "square.and.arrow.up")
-                                Text("Share")
+                                Text("share")
                             }
                             .frame(
                                 minWidth: 0,
@@ -45,7 +45,7 @@ struct EntryView: View {
                         }) {
                             HStack {
                                 Image(systemName: "trash")
-                                Text("Delete")
+                                Text("delete")
                             }
                             .frame(
                                 minWidth: 0,
@@ -58,7 +58,7 @@ struct EntryView: View {
                 .buttonStyle(.bordered)
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 8) {
-                    Text("Tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    Text("entry.tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                     HFlow {
                         ForEach($tags){ $tag in
                             TagView(tag: tag)
@@ -85,7 +85,7 @@ struct EntryView: View {
                                             showTagSelector = false
                                         }) {
                                             Image(systemName: "chevron.backward")
-                                            Text("Back")
+                                            Text("back")
                                         }
                                     }
                                 }
@@ -103,7 +103,7 @@ struct EntryView: View {
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
                 VStack(spacing: 8) {
-                    Text("Fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    Text("entry.fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                     ForEach($fields){ $field in
                         VStack {
                             Text(field.name).font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
@@ -128,7 +128,7 @@ struct EntryView: View {
                     Button(action: {
                         showFieldTypeSelector = true
                     }) {
-                        Label("Add Field", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
+                        Label("entry.fields.add", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
                     }
                     .buttonStyle(.bordered)
                     .tint(.blue)
@@ -162,7 +162,7 @@ struct EntryView: View {
                                         showFieldTypeSelector = false
                                     }) {
                                         Image(systemName: "chevron.backward")
-                                        Text("Back")
+                                        Text("back")
                                     }
                                 }
                             }

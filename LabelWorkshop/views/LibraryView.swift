@@ -42,7 +42,7 @@ struct LibraryView: View {
                     Button(action: {
                         showTagManager = true
                     }) {
-                        Label("Tag Manager", systemImage: "tag")
+                        Label("tag.manager", systemImage: "tag")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
