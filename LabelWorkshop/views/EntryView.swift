@@ -128,12 +128,10 @@ struct EntryView: View {
                     Button(action: {
                         showFieldTypeSelector = true
                     }) {
-                        Label("Add Field", systemImage: "plus")
+                        Label("Add Field", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(10)
-                    .background(Color(UIColor.tertiarySystemFill))
-                    .tint(.gray)
+                    .buttonStyle(.bordered)
+                    .tint(.blue)
                     .cornerRadius(8)
                     .sheet(isPresented: $showFieldTypeSelector) {
                         NavigationView {
