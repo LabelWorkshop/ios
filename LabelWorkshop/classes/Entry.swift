@@ -75,6 +75,13 @@ class Entry {
         return nil
     }
     
+    func deleteField(_ id: Int) throws {
+        let query = Field.textFieldsTable
+            .filter(Field.idColumn == id)
+            .delete()
+        try self.library.db!.run(query)
+    }
+    
     func delete() {
         let queries = [
             Table("boolean_fields")
