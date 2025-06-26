@@ -150,6 +150,12 @@
             "state" : "translated",
             "value" : "Black"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noir"
+          }
         }
       }
     },
@@ -172,6 +178,12 @@
             "state" : "translated",
             "value" : "Gray"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gris"
+          }
         }
       }
     },
@@ -193,6 +205,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "White"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blanc"
           }
         }
       }
@@ -601,6 +619,12 @@
             "state" : "translated",
             "value" : "Blue"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bleu"
+          }
         }
       }
     },
@@ -622,6 +646,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Green"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verte"
           }
         }
       }
@@ -667,6 +697,12 @@
             "state" : "translated",
             "value" : "Orange"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange"
+          }
         }
       }
     },
@@ -677,6 +713,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pink"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rose"
           }
         }
       }
@@ -700,6 +742,12 @@
             "state" : "translated",
             "value" : "Red"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rouge"
+          }
         }
       }
     },
@@ -710,6 +758,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Red Orange"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange Rouge"
           }
         }
       }
@@ -732,6 +786,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yellow"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaune"
           }
         }
       }
