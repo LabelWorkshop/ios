@@ -4,11 +4,14 @@ import Flow
 struct EntryView: View {
     let entry: Entry
     @State var tags: [Tag]
+    @State var fields: [Field]
     @State var showTagSelector: Bool = false
+    @State var showFieldTypeSelector: Bool = false
     
     init(entry: Entry) {
         self.entry = entry
         self.tags = entry.getTags()
+        self.fields = entry.getFields()
     }
     
     var body: some View {
@@ -99,6 +102,74 @@ struct EntryView: View {
                         .cornerRadius(8)
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
+                VStack(spacing: 8) {
+                    Text("Fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach($fields){ $field in
+                        VStack {
+                            Text(field.name).font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            HStack {
+                                TextField(field.name, text: $field.text)
+                                Button(role: .destructive, action: {
+                                    do {
+                                        try entry.deleteField($field.id)
+                                        if let index = fields.firstIndex(where: { $0.id == $field.id }) {
+                                            fields.remove(at: index)
+                                        }
+                                    } catch {}
+                                }) {
+                                    Image(systemName: "minus")
+                                        .frame(minHeight: 0, maxHeight: .infinity)
+                                }
+                                .tint(.red)
+                                .buttonStyle(.bordered)
+                            }
+                        }
+                    }
+                    Button(action: {
+                        showFieldTypeSelector = true
+                    }) {
+                        Label("Add Field", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.blue)
+                    .cornerRadius(8)
+                    .sheet(isPresented: $showFieldTypeSelector) {
+                        NavigationView {
+                            ScrollView {
+                                VStack {
+                                    ForEach(entry.library.fieldTypes) { fieldType in
+                                        if fieldType.type != "DATETIME" {
+                                            Button(action: {
+                                                if let field = entry.addField(fieldType.key) {
+                                                    fields.append(field)
+                                                }
+                                                showFieldTypeSelector = false
+                                            }) {
+                                                TagPreView(
+                                                    name: .constant(fieldType.name),
+                                                    colors: .constant(TagColor.none),
+                                                    fullWidth: true
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(16)
+                            }
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarLeading){
+                                    Button(action: {
+                                        showFieldTypeSelector = false
+                                    }) {
+                                        Image(systemName: "chevron.backward")
+                                        Text("Back")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
             }.padding(16)
         }.navigationTitle(entry.path)
     }

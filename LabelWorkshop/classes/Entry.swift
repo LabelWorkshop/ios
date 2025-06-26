@@ -32,6 +32,60 @@ class Entry {
         return tags
     }
     
+    func getFields() -> [Field] {
+        var fields: [Field] = []
+        let query = Field.textFieldsTable
+            .select(*).filter(Field.entryIdColumn == self.id)
+        do {
+            for rawField in try self.library.db!.prepare(query) {
+                let field = Field(
+                    id: rawField[Field.idColumn],
+                    entryId: rawField[Field.entryIdColumn],
+                    key: rawField[Field.typeColumn],
+                    position: rawField[Field.positionColumn],
+                    entry: self,
+                    value: rawField[Field.textValueColumn],
+                )
+                fields.append(field)
+            }
+        } catch {}
+        return fields
+    }
+    
+    func addField(_ key: String) -> Field? {
+        let position = (self.getFields()
+            .filter { $0.key == key }
+            .sorted{ $0.position < $1.position }
+            .last?.position ?? -1) + 1
+        let query = Field.textFieldsTable.insert(
+            Field.typeColumn <- key,
+            Field.entryIdColumn <- self.id,
+            Field.positionColumn <- position,
+            Field.textValueColumn <- ""
+        )
+        do {
+            let id: Int64? = try self.library.db!.run(query)
+            if let id = id {
+                return Field(
+                    id: Int(id),
+                    entryId: self.id,
+                    key: key,
+                    position: position,
+                    entry: self,
+                    value: ""
+                )
+            }
+        } catch {}
+        return nil
+    }
+    
+    func deleteField(_ id: Int) throws {
+        let query = Field.textFieldsTable
+            .filter(Field.idColumn == id)
+            .delete()
+        try self.library.db!.run(query)
+    }
+    
     func delete() {
         let queries = [
             Table("boolean_fields")
