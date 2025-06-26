@@ -14,7 +14,6 @@ func loadImage(for entry: Entry) -> UIImage? {
 
 struct LibraryView: View {
     let library: Library
-    let columns: [GridItem]
     
     @State private var showTagManager: Bool = false
     
@@ -23,22 +22,19 @@ struct LibraryView: View {
     
     init(library: Library) {
         self.library = library
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            self.columns = LibraryView.columnsPhone
-        } else {
-            self.columns = LibraryView.columnsPad
-        }
     }
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns) {
-                ForEach (library.safeGetEntries(), id: \.path) { entry in
-                    GridRow {
-                        EntryMiniView(entry: entry)
+        GeometryReader { geometry in
+            ScrollView {
+                LazyVGrid(columns: geometry.size.width < 600 ? LibraryView.columnsPhone : LibraryView.columnsPad) {
+                    ForEach (library.safeGetEntries(), id: \.path) { entry in
+                        GridRow {
+                            EntryMiniView(entry: entry)
+                        }
                     }
-                }
-            }.padding(16)
+                }.padding(16)
+            }
         }
         .toolbar {
             ToolbarItem( placement: .navigationBarTrailing){
