@@ -1,4 +1,5 @@
-base_path: '.'
-
+base_path: .
 files:
-  - source: 'LabelWorkshop/Localizable.xcstrings'
+  - source: LabelWorkshop/Localizable.xcstrings
+bundles:
+  - 2
