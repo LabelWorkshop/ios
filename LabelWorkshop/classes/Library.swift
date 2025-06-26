@@ -74,8 +74,23 @@ class Library: Hashable, Identifiable {
     static var nameColumn = Expression<String?>("name")
     static var sequenceColumn = Expression<Int?>("seq")
     
+    var fieldTypes: [FieldType] = []
+    
     init(bookmarkKey: String) {
         self.bookmarkKey = bookmarkKey
+        do {
+            for rawFieldType in try self.db!.prepare(FieldType.fieldTypesTable) {
+                self.fieldTypes.append(
+                    FieldType(
+                        key: rawFieldType[FieldType.keyColumn],
+                        name: rawFieldType[FieldType.nameColumn],
+                        type: rawFieldType[FieldType.typeColumn],
+                        isDefault: rawFieldType[FieldType.isDefaultColumn],
+                        position: rawFieldType[FieldType.positionColumn]
+                    )
+                )
+            }
+        } catch {}
     }
     
     func getName() -> (String) {
