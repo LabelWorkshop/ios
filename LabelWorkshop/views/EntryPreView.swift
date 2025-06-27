@@ -48,51 +48,50 @@ struct EntryPreView: View {
     }
     
     var body: some View {
-        if let image = loadImage(for: entry) {
-            if square {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(
-                        minWidth: 0,
-                        maxWidth: .infinity,
-                        minHeight: 0,
-                        maxHeight: .infinity
-                    )
-                    .aspectRatio(1 / 1, contentMode: .fit)
-                    .clipShape(Rectangle())
-                    .cornerRadius(8)
-                
-            } else {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .cornerRadius(8)
+        Group {
+            if let image = loadImage(for: entry) {
+                if square {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(
+                            minWidth: 0,
+                            maxWidth: .infinity,
+                            minHeight: 0,
+                            maxHeight: .infinity
+                        )
+                        .aspectRatio(1 / 1, contentMode: .fit)
+                    
+                } else {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                }
+            } else if entry.path.hasSuffix(".mov") ||
+                        entry.path.hasSuffix(".mp4") ||
+                        entry.path.hasSuffix(".m4v") ||
+                        entry.path.hasSuffix(".3gp")
+            {
+                VideoPlayerContainer(entry: entry, square: square)
+                    .scaledToFill()
             }
-        } else if entry.path.hasSuffix(".mov") ||
-                entry.path.hasSuffix(".mp4") ||
-                entry.path.hasSuffix(".m4v") ||
-                entry.path.hasSuffix(".3gp")
-        {
-            VideoPlayerContainer(entry: entry, square: square)
-                .scaledToFill()
-                .clipped()
-                .cornerRadius(8)
-        }
-        else {
-            LazyVStack {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 32))
-                Text("entry.previewUnavailable")
-                    .foregroundStyle(Color(UIColor.label))
+            else {
+                LazyVStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 32))
+                    Text("entry.previewUnavailable")
+                        .foregroundStyle(Color(UIColor.label))
+                }
+                .symbolRenderingMode(.multicolor)
+                .frame(
+                    minWidth: 0,
+                    maxWidth: .infinity,
+                    minHeight: 0,
+                    maxHeight: .infinity
+                )
             }
-            .symbolRenderingMode(.multicolor)
-            .frame(
-                minWidth: 0,
-                maxWidth: .infinity,
-                minHeight: 0,
-                maxHeight: .infinity
-            )
         }
+        .clipped()
+        .cornerRadius(8)
     }
 }
