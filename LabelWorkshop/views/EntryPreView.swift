@@ -1,4 +1,5 @@
 import SwiftUI
+import AVKit
 
 func loadImage(for entry: Entry) -> UIImage? {
     guard let path = entry.fullPath else { return nil }
@@ -12,9 +13,39 @@ func loadImage(for entry: Entry) -> UIImage? {
     return nil
 }
 
+struct VideoPlayerContainer: UIViewControllerRepresentable {
+    let entry: Entry
+    let square: Bool
+    
+    func makeUIViewController(context: Context) -> AVPlayerViewController {
+        let player = AVPlayer(url: entry.fullPath!)
+        player.isMuted = true
+        let controller = AVPlayerViewController()
+        controller.player = player
+        if square {
+            controller.showsPlaybackControls = false
+            player.pause()
+            player.seek(to: .zero)
+            controller.allowsVideoFrameAnalysis = false
+        } else {
+            player.play()
+        }
+        controller.videoGravity = .resizeAspectFill
+        
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {}
+}
+
 struct EntryPreView: View {
     public var entry: Entry
     public var square: Bool = false
+    
+    init(entry: Entry, square: Bool = false) {
+        self.entry = entry
+        self.square = square
+    }
     
     var body: some View {
         if let image = loadImage(for: entry) {
@@ -38,7 +69,17 @@ struct EntryPreView: View {
                     .scaledToFit()
                     .cornerRadius(8)
             }
-        } else {
+        } else if entry.path.hasSuffix(".mov") ||
+                entry.path.hasSuffix(".mp4") ||
+                entry.path.hasSuffix(".m4v") ||
+                entry.path.hasSuffix(".3gp")
+        {
+            VideoPlayerContainer(entry: entry, square: square)
+                .scaledToFill()
+                .clipped()
+                .cornerRadius(8)
+        }
+        else {
             LazyVStack {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 32))
