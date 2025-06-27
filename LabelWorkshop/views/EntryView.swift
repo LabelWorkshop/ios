@@ -17,14 +17,7 @@ struct EntryView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
-                if let image = loadImage(for: entry) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .cornerRadius(8)
-                } else {
-                    Text("entry.previewUnavailable")
-                }
+                EntryPreView(entry: entry)
                 HStack {
                     if let fullPath: URL = entry.fullPath {
                         ShareLink(item: fullPath, message: Text(entry.path)) {
