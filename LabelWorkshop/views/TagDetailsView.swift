@@ -93,7 +93,7 @@ struct TagDetailsView: View {
                             VStack {
                                 Text("tag.isCategory").font(.caption2)
                                 Toggle("tag.isCategory", isOn: $isCategory).labelsHidden()
-                            }
+                            }.frame(maxHeight: .infinity, alignment: .top)
                         }
                         VStack {
                             Text("tag.aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
