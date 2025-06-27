@@ -41,6 +41,12 @@
             "state" : "translated",
             "value" : "Back"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detour"
+          }
         }
       }
     },
