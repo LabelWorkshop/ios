@@ -89,6 +89,8 @@ struct EntryPreView: View {
                     minHeight: 0,
                     maxHeight: .infinity
                 )
+                .aspectRatio(1/1, contentMode: .fill)
+                .background(Color(UIColor.secondarySystemBackground))
             }
         }
         .clipped()
