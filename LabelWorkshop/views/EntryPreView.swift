@@ -13,23 +13,34 @@ func loadImage(for entry: Entry) -> UIImage? {
     return nil
 }
 
+func getVideoThumbnail(url: URL) -> UIImage? {
+    let asset = AVURLAsset(url: url)
+
+    let assetIG = AVAssetImageGenerator(asset: asset)
+    assetIG.appliesPreferredTrackTransform = true
+    assetIG.apertureMode = AVAssetImageGenerator.ApertureMode.encodedPixels
+    assetIG.maximumSize = CGSize(width: 300, height: 300)
+
+    let cmTime = CMTime(seconds: 0, preferredTimescale: 60)
+    let thumbnailImageRef: CGImage
+    do {
+        thumbnailImageRef = try assetIG.copyCGImage(at: cmTime, actualTime: nil)
+    } catch {
+        return nil
+    }
+
+    return UIImage(cgImage: thumbnailImageRef)
+}
+
 struct VideoPlayerContainer: UIViewControllerRepresentable {
     let entry: Entry
-    let square: Bool
     
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         let player = AVPlayer(url: entry.fullPath!)
-        player.isMuted = true
         let controller = AVPlayerViewController()
         controller.player = player
-        if square {
-            controller.showsPlaybackControls = false
-            player.pause()
-            player.seek(to: .zero)
-            controller.allowsVideoFrameAnalysis = false
-        } else {
-            player.play()
-        }
+        player.isMuted = true
+        player.play()
         controller.videoGravity = .resizeAspectFill
         
         return controller
@@ -72,8 +83,23 @@ struct EntryPreView: View {
                         entry.path.hasSuffix(".m4v") ||
                         entry.path.hasSuffix(".3gp")
             {
-                VideoPlayerContainer(entry: entry, square: square)
-                    .scaledToFill()
+                if square {
+                    if let thumbnail = getVideoThumbnail(url: entry.fullPath!) {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(
+                                minWidth: 0,
+                                maxWidth: .infinity,
+                                minHeight: 0,
+                                maxHeight: .infinity
+                            )
+                            .aspectRatio(1 / 1, contentMode: .fit)
+                    }
+                } else {
+                    VideoPlayerContainer(entry: entry)
+                        .scaledToFill()
+                }
             }
             else {
                 LazyVStack {
