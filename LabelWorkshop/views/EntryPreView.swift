@@ -1,13 +1,17 @@
 import SwiftUI
 import AVKit
 
-func loadImage(for entry: Entry) -> UIImage? {
+func loadImage(for entry: Entry, thumbnail: Bool = false) -> UIImage? {
     guard let path = entry.fullPath else { return nil }
     guard let bookmark = entry.library.bookmark else { return nil }
     guard bookmark.startAccessingSecurityScopedResource() else { return nil }
     defer { bookmark.stopAccessingSecurityScopedResource() }
     if let data = try? Data(contentsOf: path) {
         let uiImage = UIImage(data: data)
+        if thumbnail {
+            let thumbnail = uiImage?.preparingThumbnail(of: CGSize(width: 300, height: 300))
+            return thumbnail
+        }
         return uiImage
     }
     return nil
@@ -60,7 +64,7 @@ struct EntryPreView: View {
     
     var body: some View {
         Group {
-            if let image = loadImage(for: entry) {
+            if let image = loadImage(for: entry, thumbnail: square) {
                 if square {
                     Image(uiImage: image)
                         .resizable()
