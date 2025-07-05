@@ -9,6 +9,9 @@ struct TagDetailsView: View {
     @State private var isCategory: Bool
     @State var aliases: [TagAlias]
     @State var parentTags: [Tag]
+    @State var disambiguationId: Int?
+    @State var disambiguationName: String?
+    @State var displayName: String = ""
     @State private var showTagParentSelector: Bool = false
     @State private var showTagColorSelector: Bool = false
     @State private var tagDeleteConfirmation: Bool = false
@@ -31,7 +34,7 @@ struct TagDetailsView: View {
                 ScrollView {
                     VStack(spacing: 8) {
                         TagPreView(
-                            name: $name,
+                            name: $displayName,
                             colors: $colors
                         )
                         .shadow(color: colors.border, radius: 16)
@@ -247,5 +250,31 @@ struct TagDetailsView: View {
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
                 .padding(8)
         }
+        .onAppear {
+            self.disambiguationId = tag.disambiguationId
+            updateName()
+        }
+        .onChange(of: disambiguationId) { _ in
+            print(1)
+            self.disambiguationName = nil
+            if let disambiguationId = disambiguationId {
+                let tag: Tag? = Tag.fetch(library: tag.library, id: disambiguationId)
+                if let tag = tag {
+                    self.disambiguationName = tag.name
+                }
+            }
+            updateName()
+        }
+        .onChange(of: name) { _ in
+            updateName()
+        }
+    }
+    
+    func updateName() {
+        var suffix = ""
+        if let disambiguationName = disambiguationName {
+            suffix = " (\(disambiguationName))"
+        }
+        self.displayName = "\(name)\(suffix)"
     }
 }
