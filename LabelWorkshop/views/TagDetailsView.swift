@@ -135,6 +135,17 @@ struct TagDetailsView: View {
                             VStack {
                                 ForEach($parentTags){ $tag in
                                     HStack {
+                                        Button(action: {
+                                            if disambiguationId != tag.id {
+                                                disambiguationId = tag.id
+                                            } else {
+                                                disambiguationId = nil
+                                            }
+                                        }, label: {
+                                            HStack {
+                                                Image(systemName: disambiguationId == tag.id ? "checkmark.square" : "square")
+                                            }
+                                        })
                                         TagView(tag: tag, fullWidth: true)
                                         Button(role: .destructive, action: {
                                             if let index = parentTags.firstIndex(where: {$0.id == tag.id}) {
@@ -201,6 +212,7 @@ struct TagDetailsView: View {
                             try tag.setColumn(column: Tag.nameColumn, value: self.name)
                             try tag.setColumn(column: Tag.shorthandColumn, value: self.shorthand)
                             try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
+                            try tag.setColumn(column: Tag.disambiguationIdColumn, value: self.disambiguationId)
                             tag.setAliases(self.aliases)
                             try tag.setColor(self.colors)
                             tag.setParentTags(self.parentTags)
