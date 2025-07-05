@@ -9,6 +9,9 @@ struct TagDetailsView: View {
     @State private var isCategory: Bool
     @State var aliases: [TagAlias]
     @State var parentTags: [Tag]
+    @State var disambiguationId: Int?
+    @State var disambiguationName: String?
+    @State var displayName: String = ""
     @State private var showTagParentSelector: Bool = false
     @State private var showTagColorSelector: Bool = false
     @State private var tagDeleteConfirmation: Bool = false
@@ -31,7 +34,7 @@ struct TagDetailsView: View {
                 ScrollView {
                     VStack(spacing: 8) {
                         TagPreView(
-                            name: $name,
+                            name: $displayName,
                             colors: $colors
                         )
                         .shadow(color: colors.border, radius: 16)
@@ -132,6 +135,17 @@ struct TagDetailsView: View {
                             VStack {
                                 ForEach($parentTags){ $tag in
                                     HStack {
+                                        Button(action: {
+                                            if disambiguationId != tag.id {
+                                                disambiguationId = tag.id
+                                            } else {
+                                                disambiguationId = nil
+                                            }
+                                        }, label: {
+                                            HStack {
+                                                Image(systemName: disambiguationId == tag.id ? "checkmark.square" : "square")
+                                            }
+                                        })
                                         TagView(tag: tag, fullWidth: true)
                                         Button(role: .destructive, action: {
                                             if let index = parentTags.firstIndex(where: {$0.id == tag.id}) {
@@ -198,6 +212,7 @@ struct TagDetailsView: View {
                             try tag.setColumn(column: Tag.nameColumn, value: self.name)
                             try tag.setColumn(column: Tag.shorthandColumn, value: self.shorthand)
                             try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
+                            try tag.setColumn(column: Tag.disambiguationIdColumn, value: self.disambiguationId)
                             tag.setAliases(self.aliases)
                             try tag.setColor(self.colors)
                             tag.setParentTags(self.parentTags)
@@ -247,5 +262,30 @@ struct TagDetailsView: View {
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
                 .padding(8)
         }
+        .onAppear {
+            self.disambiguationId = tag.disambiguationId
+            updateName()
+        }
+        .onChange(of: disambiguationId) { _ in
+            self.disambiguationName = nil
+            if let disambiguationId = disambiguationId {
+                let tag: Tag? = Tag.fetch(library: tag.library, id: disambiguationId)
+                if let tag = tag {
+                    self.disambiguationName = tag.name
+                }
+            }
+            updateName()
+        }
+        .onChange(of: name) { _ in
+            updateName()
+        }
+    }
+    
+    func updateName() {
+        var suffix = ""
+        if let disambiguationName = disambiguationName {
+            suffix = " (\(disambiguationName))"
+        }
+        self.displayName = "\(name)\(suffix)"
     }
 }
