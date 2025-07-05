@@ -267,7 +267,6 @@ struct TagDetailsView: View {
             updateName()
         }
         .onChange(of: disambiguationId) { _ in
-            print(1)
             self.disambiguationName = nil
             if let disambiguationId = disambiguationId {
                 let tag: Tag? = Tag.fetch(library: tag.library, id: disambiguationId)
