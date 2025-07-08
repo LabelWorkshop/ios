@@ -171,5 +171,23 @@ struct EntryView: View {
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
             .padding(8)
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing){
+                Button(action: {
+                    print(1)
+                }) {
+                    Image(systemName: tags.filter{ $0.id == 1 }.isEmpty ? "star": "star.fill")
+                }
+                .tint(.yellow)
+            }
+            ToolbarItem(placement: .topBarTrailing){
+                Button(action: {
+                    print(2)
+                }) {
+                    Image(systemName: tags.filter{ $0.id == 0 }.isEmpty ? "archivebox": "archivebox.fill")
+                }
+                .tint(.red)
+            }
+        }
     }
 }
