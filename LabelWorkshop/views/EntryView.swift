@@ -134,6 +134,7 @@ struct EntryView: View {
                     }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }.padding(16)
+                .padding(.bottom, 80)
             }.navigationTitle(entry.path)
             HStack {
                 if let fullPath: URL = entry.fullPath {
