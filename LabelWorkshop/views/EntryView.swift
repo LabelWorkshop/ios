@@ -174,7 +174,15 @@ struct EntryView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing){
                 Button(action: {
-                    print(1)
+                    if let tag = Tag.fetch(library: entry.library, id: 1) {
+                        if tags.filter({$0.id == tag.id}).isEmpty {
+                            self.entry.addTag(tag)
+                            tags.append(tag)
+                        } else {
+                            self.entry.removeTag(tag)
+                            self.tags = entry.getTags()
+                        }
+                    }
                 }) {
                     Image(systemName: tags.filter{ $0.id == 1 }.isEmpty ? "star": "star.fill")
                 }
@@ -182,7 +190,15 @@ struct EntryView: View {
             }
             ToolbarItem(placement: .topBarTrailing){
                 Button(action: {
-                    print(2)
+                    if let tag = Tag.fetch(library: entry.library, id: 0) {
+                        if tags.filter({$0.id == tag.id}).isEmpty {
+                            self.entry.addTag(tag)
+                            tags.append(tag)
+                        } else {
+                            self.entry.removeTag(tag)
+                            self.tags = entry.getTags()
+                        }
+                    }
                 }) {
                     Image(systemName: tags.filter{ $0.id == 0 }.isEmpty ? "archivebox": "archivebox.fill")
                 }
