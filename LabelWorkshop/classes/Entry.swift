@@ -117,4 +117,14 @@ class Entry {
             try self.library.db!.run(query)
         } catch {}
     }
+    
+    func removeTag(_ tag: Tag) {
+        let query = Entry.tagEntriesTable
+            .filter(Entry.idColumn == tag.id)
+            .filter(Entry.entryColumn == self.id)
+            .delete()
+        do {
+            try self.library.db!.run(query)
+        } catch {}
+    }
 }
