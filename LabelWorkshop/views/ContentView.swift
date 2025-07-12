@@ -10,6 +10,11 @@ struct ContentView: View {
     @State private var showAbout = false
     
     init() {
+        if UserDefaults.standard.bool(forKey: "reset_on_launch") {
+            UserDefaults.standard.set(false, forKey: "reset_on_launch")
+            ContentView.setRawLibraries([])
+        }
+        
         let rawLibraries: [String] = ContentView.getRawLibraries()
         var newLibraries: [Library] = []
         for rawLibrary in rawLibraries {
