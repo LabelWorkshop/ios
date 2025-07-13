@@ -34,6 +34,7 @@ struct EntryView: View {
                                 } label: {
                                     TagView(tag: tag)
                                 }
+                                .buttonStyle(.plain)
                             }
                             .sheet(isPresented: $showTagSelector) {
                                 NavigationView {
