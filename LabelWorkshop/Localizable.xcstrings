@@ -858,6 +858,17 @@
     "LabelWorkshop" : {
       "shouldTranslate" : false
     },
+    "remove" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        }
+      }
+    },
     "save" : {
       "localizations" : {
         "en" : {

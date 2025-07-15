@@ -24,7 +24,17 @@ struct EntryView: View {
                         Text("entry.tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                         HFlow {
                             ForEach($tags){ $tag in
-                                TagView(tag: tag)
+                                Menu {
+                                    Button(role: .destructive, action: {
+                                        self.entry.removeTag(tag)
+                                        self.tags = entry.getTags()
+                                    }) {
+                                        Label("remove", systemImage: "minus")
+                                    }
+                                } label: {
+                                    TagView(tag: tag)
+                                }
+                                .buttonStyle(.plain)
                             }
                             .sheet(isPresented: $showTagSelector) {
                                 NavigationView {
