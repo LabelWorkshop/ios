@@ -8,7 +8,7 @@
 - Make sure no one else has opened a PR for the same issue
 - If a fix is something super small such as a typo then don't worry about creating an issue
 
-## 🧑‍💻 Developent
+## 🧑‍💻 Development
 Open the project in the latest version of [Xcode](https://developer.apple.com/xcode/) or [Xcode-beta](https://developer.apple.com/download/applications/). For testing have an iOS Simulator of 17.0 or later (preferably the newest).
 
 ## 🎨 Code Style
