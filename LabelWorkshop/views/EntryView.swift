@@ -36,6 +36,15 @@ struct EntryView: View {
                                 }
                                 .buttonStyle(.plain)
                             }
+                            Button(action: {
+                                showTagSelector = true
+                            }) {
+                                Image(systemName: "plus")
+                            }
+                            .padding(10)
+                            .background(Color(UIColor.tertiarySystemFill))
+                            .tint(.gray)
+                            .cornerRadius(8)
                             .sheet(isPresented: $showTagSelector) {
                                 NavigationView {
                                     ScrollView {
@@ -64,15 +73,6 @@ struct EntryView: View {
                                     }
                                 }
                             }
-                            Button(action: {
-                                showTagSelector = true
-                            }) {
-                                Image(systemName: "plus")
-                            }
-                            .padding(10)
-                            .background(Color(UIColor.tertiarySystemFill))
-                            .tint(.gray)
-                            .cornerRadius(8)
                         }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
                     VStack(spacing: 8) {
