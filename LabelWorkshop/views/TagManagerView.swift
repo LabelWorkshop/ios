@@ -3,6 +3,7 @@ import SwiftUI
 struct TagManagerView: View {
     @Environment(\.dismiss) private var dismiss
     let library: Library
+    @State var tags: [Tag] = []
     @State var showNewTag: Bool = false
     
     init(library: Library) {
@@ -13,7 +14,7 @@ struct TagManagerView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    ForEach(Tag.fetchAll(library: library), id: \.id){ tag in
+                    ForEach($tags, id: \.id){ $tag in
                         NavigationLink(destination: TagDetailsView(tag: tag)){
                             TagView(tag: tag, fullWidth: true)
                         }
@@ -56,6 +57,8 @@ struct TagManagerView: View {
                         }
                     }
                 }
+            }.onAppear {
+                self.tags = Tag.fetchAll(library: library)
             }
         }
     }
