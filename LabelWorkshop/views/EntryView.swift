@@ -3,15 +3,13 @@ import Flow
 
 struct EntryView: View {
     let entry: Entry
-    @State var tags: [Tag]
-    @State var fields: [Field]
+    @State var tags: [Tag] = []
+    @State var fields: [Field] = []
     @State var showTagSelector: Bool = false
     @State var showFieldTypeSelector: Bool = false
     
     init(entry: Entry) {
         self.entry = entry
-        self.tags = entry.getTags()
-        self.fields = entry.getFields()
     }
     
     var body: some View {
@@ -214,6 +212,9 @@ struct EntryView: View {
                 }
                 .tint(.red)
             }
+        }.onAppear {
+            self.tags = entry.getTags()
+            self.fields = entry.getFields()
         }
     }
 }
