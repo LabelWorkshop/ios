@@ -42,14 +42,7 @@ struct AboutView: View {
             .navigationTitle("about")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing){
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .font(.system(size: 24))
-                    .tint(.secondary)
-                    .symbolRenderingMode(.hierarchical)
+                    CloseButton(dismiss: dismiss)
                 }
             }
         }
