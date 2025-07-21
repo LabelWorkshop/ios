@@ -41,13 +41,15 @@ struct AboutView: View {
             }
             .navigationTitle("about")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading){
+                ToolbarItem(placement: .navigationBarTrailing){
                     Button(action: {
                         dismiss()
                     }) {
-                        Image(systemName: "chevron.backward")
-                        Text("back")
+                        Image(systemName: "xmark.circle.fill")
                     }
+                    .font(.system(size: 24))
+                    .tint(.secondary)
+                    .symbolRenderingMode(.hierarchical)
                 }
             }
         }
