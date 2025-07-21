@@ -23,11 +23,7 @@ struct TagManagerView: View {
             }
             .navigationTitle("tag.manager")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing){
-                    CloseButton(dismiss: dismiss)
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing){
+                ToolbarItem(placement: .navigationBarLeading){
                     Button(action: {
                         showNewTag = true
                     }) {
@@ -51,6 +47,10 @@ struct TagManagerView: View {
                             }
                         }
                     }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing){
+                    CloseButton(dismiss: dismiss)
                 }
             }.onAppear {
                 self.tags = Tag.fetchAll(library: library)
