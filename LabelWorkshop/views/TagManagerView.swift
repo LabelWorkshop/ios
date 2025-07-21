@@ -35,13 +35,8 @@ struct TagManagerView: View {
                             NavigationView {
                                 TagDetailsView(tag: newTag)
                                 .toolbar {
-                                    ToolbarItem(placement: .navigationBarLeading){
-                                        Button(action: {
-                                            dismiss()
-                                        }) {
-                                            Image(systemName: "chevron.backward")
-                                            Text("back")
-                                        }
+                                    ToolbarItem(placement: .navigationBarTrailing){
+                                        CloseButton(dismiss: dismiss)
                                     }
                                 }
                             }
