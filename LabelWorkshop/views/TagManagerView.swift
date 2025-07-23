@@ -25,15 +25,6 @@ struct TagManagerView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){
                     Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "chevron.backward")
-                        Text("back")
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing){
-                    Button(action: {
                         showNewTag = true
                     }) {
                         Image(systemName: "plus")
@@ -44,18 +35,17 @@ struct TagManagerView: View {
                             NavigationView {
                                 TagDetailsView(tag: newTag)
                                 .toolbar {
-                                    ToolbarItem(placement: .navigationBarLeading){
-                                        Button(action: {
-                                            dismiss()
-                                        }) {
-                                            Image(systemName: "chevron.backward")
-                                            Text("back")
-                                        }
+                                    ToolbarItem(placement: .navigationBarTrailing){
+                                        CloseButton(dismiss: dismiss)
                                     }
                                 }
                             }
                         }
                     }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing){
+                    CloseButton(dismiss: dismiss)
                 }
             }.onAppear {
                 self.tags = Tag.fetchAll(library: library)

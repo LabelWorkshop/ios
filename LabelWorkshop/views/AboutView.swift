@@ -41,13 +41,8 @@ struct AboutView: View {
             }
             .navigationTitle("about")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading){
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "chevron.backward")
-                        Text("back")
-                    }
+                ToolbarItem(placement: .navigationBarTrailing){
+                    CloseButton(dismiss: dismiss)
                 }
             }
         }
