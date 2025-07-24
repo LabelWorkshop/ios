@@ -65,15 +65,6 @@ struct ContentView: View {
                     }
                     .sheet(isPresented: $showAbout, content: { AboutView() })
                 }
-                ToolbarItem( placement: .topBarLeading){
-                    let btn = Button(action: {
-                        visibility = .doubleColumn
-                    }) {
-                        Image(systemName: "sidebar.leading")
-                    }
-                    if UIDevice.current.userInterfaceIdiom == .phone {btn.hidden()}
-                    btn
-                }
             }
             .navigationTitle("LabelWorkshop")
         } content: {
