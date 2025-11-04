@@ -41,7 +41,7 @@ struct EntryView: View {
                             .padding(10)
                             .background(Color(UIColor.tertiarySystemFill))
                             .tint(.gray)
-                            .cornerRadius(8)
+                            .containerShape(Capsule())
                             .sheet(isPresented: $showTagSelector) {
                                 NavigationView {
                                     ScrollView {
@@ -71,7 +71,7 @@ struct EntryView: View {
                                 }
                             }
                         }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
+                    }
                     VStack(spacing: 8) {
                         Text("entry.fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                         ForEach($fields){ $field in
@@ -138,8 +138,7 @@ struct EntryView: View {
                                 }
                             }
                         }
-                    }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    }
                 }.padding(16)
                 .padding(.bottom, 80)
             }.navigationTitle(entry.path)
