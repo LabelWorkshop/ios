@@ -13,10 +13,10 @@ struct TagPreView: View {
             .padding(8)
             .background(colors.background)
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(colors.border, lineWidth: 8)
+                Capsule()
+                    .stroke(colors.border, lineWidth: 2)
             )
-            .cornerRadius(8)
+            .containerShape(Capsule())
     }
 }
 
@@ -37,9 +37,9 @@ struct TagView: View {
             .padding(8)
             .background(tag.colors.background)
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(tag.colors.border, lineWidth: 8)
+                Capsule()
+                    .stroke(tag.colors.border, lineWidth: 2)
             )
-            .cornerRadius(8)
+            .containerShape(Capsule())
     }
 }
