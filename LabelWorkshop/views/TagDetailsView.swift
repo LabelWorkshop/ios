@@ -30,7 +30,6 @@ struct TagDetailsView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
                 ScrollView {
                     VStack(spacing: 8) {
                         TagPreView(
@@ -205,63 +204,41 @@ struct TagDetailsView: View {
                     .padding(16)
                     .padding(.bottom, 80)
                 }.navigationTitle(tag.name)
-                
-                HStack {
-                    Button(action: {
-                        do {
-                            try tag.setColumn(column: Tag.nameColumn, value: self.name)
-                            try tag.setColumn(column: Tag.shorthandColumn, value: self.shorthand)
-                            try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
-                            try tag.setColumn(column: Tag.disambiguationIdColumn, value: self.disambiguationId)
-                            tag.setAliases(self.aliases)
-                            try tag.setColor(self.colors)
-                            tag.setParentTags(self.parentTags)
-                        } catch {}
-                        dismiss()
-                    }) {
-                        HStack {
-                            Image(systemName: "checkmark")
-                            Text("save")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing){
+                        if #available(iOS 26.0, *) {
+                            Button(role: .confirm, action: confirmEdits) {
+                                Image(systemName: "checkmark")
+                            }
+                        } else {
+                            Button(action: confirmEdits) {
+                                Image(systemName: "checkmark")
+                            }.tint(.blue)
                         }
-                        .frame(
-                            minWidth: 0,
-                            maxWidth: .infinity
-                        )
-                    }.tint(.blue)
-                    Button(role: .destructive, action: {
-                        tagDeleteConfirmation = true
-                    }) {
-                        HStack {
-                            Image(systemName: "trash")
-                            Text("delete")
-                        }
-                        .frame(
-                            minWidth: 0,
-                            maxWidth: .infinity
-                        )
-                    }.tint(.red)
-                    .confirmationDialog(
-                        Text("tag.delete.confirmation"),
-                        isPresented: $tagDeleteConfirmation,
-                        titleVisibility: .visible
-                    ) {
+                    }
+                    ToolbarItem(placement: .bottomBar){
                         Button(role: .destructive, action: {
-                            do {
-                                try tag.delete()
-                                tagDeleteConfirmation = false
-                                dismiss()
-                            } catch {}
+                            tagDeleteConfirmation = true
                         }) {
-                            Text("tag.delete")
+                            Image(systemName: "trash")
+                        }.tint(.red)
+                        .confirmationDialog(
+                            Text("tag.delete.confirmation"),
+                            isPresented: $tagDeleteConfirmation,
+                            titleVisibility: .visible
+                        ) {
+                            Button(role: .destructive, action: {
+                                do {
+                                    try tag.delete()
+                                    tagDeleteConfirmation = false
+                                    dismiss()
+                                } catch {}
+                            }) {
+                                Text("tag.delete")
+                            }
                         }
                     }
                 }
-                .controlSize(.large)
-                .buttonStyle(.bordered)
-                .padding(8)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-                .padding(8)
-        }
         .onAppear {
             self.disambiguationId = tag.disambiguationId
             updateName()
@@ -287,5 +264,18 @@ struct TagDetailsView: View {
             suffix = " (\(disambiguationName))"
         }
         self.displayName = "\(name)\(suffix)"
+    }
+    
+    func confirmEdits() {
+        do {
+            try tag.setColumn(column: Tag.nameColumn, value: self.name)
+            try tag.setColumn(column: Tag.shorthandColumn, value: self.shorthand)
+            try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
+            try tag.setColumn(column: Tag.disambiguationIdColumn, value: self.disambiguationId)
+            tag.setAliases(self.aliases)
+            try tag.setColor(self.colors)
+            tag.setParentTags(self.parentTags)
+        } catch {}
+        dismiss()
     }
 }
