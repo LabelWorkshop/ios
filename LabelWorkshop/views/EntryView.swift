@@ -13,7 +13,6 @@ struct EntryView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
             ScrollView {
                 VStack(spacing: 8) {
                     EntryPreView(entry: entry)
@@ -144,43 +143,16 @@ struct EntryView: View {
                 }.padding(16)
                 .padding(.bottom, 80)
             }.navigationTitle(entry.path)
-            HStack {
-                if let fullPath: URL = entry.fullPath {
-                    ShareLink(item: fullPath, message: Text(entry.path)) {
-                        HStack {
-                            Image(systemName: "square.and.arrow.up")
-                            Text("share")
-                        }
-                        .frame(
-                            minWidth: 0,
-                            maxWidth: .infinity
-                        )
-                    }.tint(.blue)
-                    Button(role: .destructive, action: {
-                        do {
-                            try FileManager.default.removeItem(at: entry.fullPath!)
-                            entry.delete()
-                        } catch {}
-                    }) {
-                        HStack {
-                            Image(systemName: "trash")
-                            Text("delete")
-                        }
-                        .frame(
-                            minWidth: 0,
-                            maxWidth: .infinity
-                        )
-                    }.tint(.red)
+        .toolbar {
+            ToolbarItem(placement: .bottomBar) {
+                ShareLink(item: entry.fullPath!, message: Text(entry.path)) {
+                    Image(systemName: "square.and.arrow.up")
                 }
             }
-            .controlSize(.large)
-            .buttonStyle(.bordered)
-            .padding(8)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-            .padding(8)
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing){
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+            }
+            ToolbarItemGroup(placement: .bottomBar) {
                 Button(action: {
                     if let tag = Tag.fetch(library: entry.library, id: 1) {
                         if tags.filter({$0.id == tag.id}).isEmpty {
@@ -195,8 +167,6 @@ struct EntryView: View {
                     Image(systemName: tags.filter{ $0.id == 1 }.isEmpty ? "star": "star.fill")
                 }
                 .tint(.yellow)
-            }
-            ToolbarItem(placement: .topBarTrailing){
                 Button(action: {
                     if let tag = Tag.fetch(library: entry.library, id: 0) {
                         if tags.filter({$0.id == tag.id}).isEmpty {
@@ -211,6 +181,19 @@ struct EntryView: View {
                     Image(systemName: tags.filter{ $0.id == 0 }.isEmpty ? "archivebox": "archivebox.fill")
                 }
                 .tint(.red)
+            }
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+            }
+            ToolbarItem(placement: .bottomBar) {
+                Button(role: .destructive, action: {
+                    do {
+                        try FileManager.default.removeItem(at: entry.fullPath!)
+                        entry.delete()
+                    } catch {}
+                }) {
+                    Image(systemName: "trash")
+                }
             }
         }.onAppear {
             self.tags = entry.getTags()

@@ -880,6 +880,7 @@
       }
     },
     "share" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
