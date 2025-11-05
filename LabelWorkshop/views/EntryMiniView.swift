@@ -17,7 +17,8 @@ struct EntryMiniView: View {
                     .padding(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .foregroundStyle(Color(UIColor.label))
-            }.background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
+            }.background(Color(UIColor.secondarySystemFill))
+            .clipShape(RoundedRectangle(cornerRadius: 24))
         }
     }
 }
