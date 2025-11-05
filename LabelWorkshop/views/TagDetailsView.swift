@@ -49,12 +49,11 @@ struct TagDetailsView: View {
                                 .stroke(Color.black, lineWidth: 2)
                                 .blur(radius: 14)
                         )
-                        .cornerRadius(8)
+                        .cornerRadius(40)
                         HStack {
                             TextBox(title: "Name", value: $name)
                             TextBox(title: "Shorthand", value: $shorthand)
                         }
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
                         HStack{
                             VStack {
                                 Text("color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
@@ -124,13 +123,10 @@ struct TagDetailsView: View {
                                 .tint(.blue)
                                 .buttonStyle(.bordered)
                             }
-                            .padding(8)
-                            .background(Color(UIColor.tertiarySystemFill))
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .cornerRadius(8)
                         }
                         VStack {
                             Text("tag.parents").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 8)
                             VStack {
                                 ForEach($parentTags){ $tag in
                                     HStack {
@@ -142,7 +138,7 @@ struct TagDetailsView: View {
                                             }
                                         }, label: {
                                             HStack {
-                                                Image(systemName: disambiguationId == tag.id ? "checkmark.square" : "square")
+                                                Image(systemName: disambiguationId == tag.id ? "checkmark.circle" : "circle").font(.title)
                                             }
                                         })
                                         TagView(tag: tag, fullWidth: true)
@@ -195,10 +191,6 @@ struct TagDetailsView: View {
                                     }
                                 }
                             }
-                            .padding(8)
-                            .background(Color(UIColor.tertiarySystemFill))
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .cornerRadius(8)
                         }
                     }
                     .padding(16)
