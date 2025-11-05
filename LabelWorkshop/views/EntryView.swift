@@ -7,6 +7,7 @@ struct EntryView: View {
     @State var fields: [Field] = []
     @State var showTagSelector: Bool = false
     @State var showFieldTypeSelector: Bool = false
+    @State private var entryDeleteConfirmation: Bool = false
     
     init(entry: Entry) {
         self.entry = entry
@@ -186,12 +187,23 @@ struct EntryView: View {
             }
             ToolbarItem(placement: .bottomBar) {
                 Button(role: .destructive, action: {
-                    do {
-                        try FileManager.default.removeItem(at: entry.fullPath!)
-                        entry.delete()
-                    } catch {}
+                    entryDeleteConfirmation = true
                 }) {
                     Image(systemName: "trash")
+                }
+                .confirmationDialog(
+                    Text("entry.delete.confirmation"),
+                    isPresented: $entryDeleteConfirmation,
+                    titleVisibility: .visible
+                ){
+                    Button(role: .destructive, action: {
+                        do {
+                            try FileManager.default.removeItem(at: entry.fullPath!)
+                            entry.delete()
+                        } catch {}
+                    }) {
+                        Text("entry.delete")
+                    }
                 }
             }
         }.onAppear {

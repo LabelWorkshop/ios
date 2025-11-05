@@ -813,6 +813,26 @@
         }
       }
     },
+    "entry.delete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Entry"
+          }
+        }
+      }
+    },
+    "entry.delete.confirmation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This entry will be deleted from the library and from your files."
+          }
+        }
+      }
+    },
     "entry.fields" : {
       "extractionState" : "manual",
       "localizations" : {
