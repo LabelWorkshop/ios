@@ -23,7 +23,7 @@ struct TagManagerView: View {
             }
             .navigationTitle("tag.manager")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading){
+                ToolbarItem(placement: .navigationBarTrailing){
                     Button(action: {
                         showNewTag = true
                     }) {
@@ -42,9 +42,10 @@ struct TagManagerView: View {
                             }
                         }
                     }
+                    .buttonStyle(ProminentButtonStyle())
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing){
+                ToolbarItem(placement: .navigationBarLeading){
                     CloseButton(dismiss: dismiss)
                 }
             }.onAppear {
