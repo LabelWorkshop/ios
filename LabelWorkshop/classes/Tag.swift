@@ -51,9 +51,8 @@ class Tag: Identifiable {
     static var disambiguationIdColumn = Expression<Int?>("disambiguation_id")
     
     static var tagParentsTable: Table = Table("tag_parents")
-    // Yes these are meant to be flipped around.
-    static var childIdColumn = Expression<Int>("parent_id")
-    static var parentIdColumn = Expression<Int>("child_id")
+    static var childIdColumn = Expression<Int>("child_id")
+    static var parentIdColumn = Expression<Int>("parent_id")
     
     init(
         library: Library,
@@ -212,6 +211,43 @@ class Tag: Identifiable {
         }
     }
     
+    func getCategories() -> [Tag] {
+        var tags: [Tag] = []
+        let parentTags: [Tag] = self.getParentTags()
+        for parentTag in parentTags {
+            if parentTag.isCategory {
+                tags.append(parentTag)
+            }
+        }
+        return tags
+    }
+    
+    static func getNoCategoryTags(_ tags: [Tag]) -> [Tag] {
+        var noCategoryTags: [Tag] = []
+        for tag in tags {
+            if tag.getCategories().isEmpty {
+                noCategoryTags.append(tag)
+            }
+        }
+        return noCategoryTags
+    }
+    
+    static func getAllCategories(_ tags: [Tag]) -> [TagCategorySet] {
+        var categories: [TagCategorySet] = []
+        for tag in tags {
+            let tagCategories = tag.getCategories()
+            for category in tagCategories {
+                let existingCategory = categories.filter{ $0.parent.id == category.id }
+                if (existingCategory.isEmpty) {
+                    categories.append(TagCategorySet(parent: category, children: [tag]))
+                } else {
+                    existingCategory.first!.children.append(tag)
+                }
+            }
+        }
+        return categories
+    }
+    
     static func fetch(library: Library, id: Int) -> Tag? {
         let query = Tag.tagsTable.select(
             idColumn,
@@ -260,3 +296,4 @@ class Tag: Identifiable {
         return tags
     }
 }
+

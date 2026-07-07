@@ -21,19 +21,41 @@ struct EntryView: View {
                     VStack(spacing: 8) {
                         Text("entry.tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                         HFlow {
-                            ForEach($tags){ $tag in
-                                Menu {
-                                    Button(role: .destructive, action: {
-                                        self.entry.removeTag(tag)
-                                        self.tags = entry.getTags()
-                                    }) {
-                                        Label("remove", systemImage: "minus")
+                        ForEach (Tag.getNoCategoryTags(self.tags)) { tag in
+
+                            
+                                    Menu {
+                                        Button(role: .destructive, action: {
+                                            self.entry.removeTag(tag)
+                                            self.tags = entry.getTags()
+                                        }) {
+                                            Label("remove", systemImage: "minus")
+                                        }
+                                    } label: {
+                                        TagView(tag: tag)
                                     }
-                                } label: {
-                                    TagView(tag: tag)
-                                }
-                                .buttonStyle(.plain)
+                                    .buttonStyle(.plain)
                             }
+                        }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        ForEach (Tag.getAllCategories(self.tags), id: \.parent.id) { category in
+                            Text(category.parent.name).font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                            HFlow {
+                                ForEach(category.children){ tag in
+                                    Menu {
+                                        Button(role: .destructive, action: {
+                                            self.entry.removeTag(tag)
+                                            self.tags = entry.getTags()
+                                        }) {
+                                            Label("remove", systemImage: "minus")
+                                        }
+                                    } label: {
+                                        TagView(tag: tag)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        }
+                        
                             Button(action: {
                                 showTagSelector = true
                             }) {
@@ -71,7 +93,6 @@ struct EntryView: View {
                                     }
                                 }
                             }
-                        }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }.padding(8).background(Color(UIColor.secondarySystemFill)).cornerRadius(8)
                     VStack(spacing: 8) {
                         Text("entry.fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
@@ -215,6 +236,7 @@ struct EntryView: View {
         }.onAppear {
             self.tags = entry.getTags()
             self.fields = entry.getFields()
+            print(Tag.getAllCategories(self.tags))
         }
     }
 }
