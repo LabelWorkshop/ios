@@ -218,7 +218,6 @@ struct EntryView: View {
         .onAppear {
             self.tags = entry.getTags()
             self.fields = entry.getFields()
-            print(Tag.getAllCategories(self.tags))
         }
     }
 }
