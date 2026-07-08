@@ -56,10 +56,10 @@ struct EntryView: View {
                     Button(action: {
                         showTagSelector = true
                     }) {
-                        Image(systemName: "plus")
+                        Label("entry.tags.add", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
                     }
-                    .padding(10)
-                    .background(Color(UIColor.tertiarySystemFill))
+                    .buttonStyle(.bordered)
+                    .tint(.blue)
                     .containerShape(Capsule())
                     .sheet(isPresented: $showTagSelector) {
                         NavigationView {
