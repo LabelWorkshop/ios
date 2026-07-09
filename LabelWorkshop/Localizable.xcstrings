@@ -855,6 +855,16 @@
         }
       }
     },
+    "entry.tags.add" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Tags"
+          }
+        }
+      }
+    },
     "LabelWorkshop" : {
       "shouldTranslate" : false
     },
