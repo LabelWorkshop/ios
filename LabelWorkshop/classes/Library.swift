@@ -38,6 +38,8 @@ class Library: Hashable, Identifiable {
     var tagColors: TagColorManager!
     var fieldTypes: [FieldType] = []
     
+    var thumbnailCache: EntryThumbnailCache = EntryThumbnailCache()
+    
     static var entriesTable: Table = Table("entries")
     static var pathColumn = Expression<String>("path")
     static var entryIdColumn = Expression<Int>("id")
@@ -76,11 +78,11 @@ class Library: Hashable, Identifiable {
         return String(name)
     }
     
-    func getEntries() throws -> [Entry] {
+    func getEntries(limit: Int? = nil) throws -> [Entry] {
         if self.db == nil { throw LibraryError.databaseInvalid }
         var entries: [Entry] = []
         do {
-            for rawEntry in try self.db!.prepare(Library.entriesTable) {
+            for rawEntry in try self.db!.prepare(Library.entriesTable.limit(limit)) {
                 let path: String = rawEntry[Library.pathColumn]
                 let id: Int = rawEntry[Library.entryIdColumn]
                 entries.append(Entry(library: self, path: path, id: id))
@@ -91,7 +93,7 @@ class Library: Hashable, Identifiable {
         return entries
     }
     
-    func safeGetEntries() -> [Entry] {
+    func safeGetEntries(limit: Int? = nil) -> [Entry] {
         do {
             return try self.getEntries()
         } catch {
@@ -125,3 +127,4 @@ class Library: Hashable, Identifiable {
         return nil
     }
 }
+

@@ -1,7 +1,7 @@
 import SwiftUI
 import AVKit
 
-func loadImage(for entry: Entry, thumbnail: Bool = false) -> UIImage? {
+func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
     guard let path = entry.fullPath else { return nil }
     guard let bookmark = entry.library.bookmark else { return nil }
     guard bookmark.startAccessingSecurityScopedResource() else { return nil }
@@ -17,7 +17,7 @@ func loadImage(for entry: Entry, thumbnail: Bool = false) -> UIImage? {
     return nil
 }
 
-func getVideoThumbnail(url: URL) -> UIImage? {
+func getVideoThumbnail(url: URL) async -> UIImage? {
     let asset = AVURLAsset(url: url)
 
     let assetIG = AVAssetImageGenerator(asset: asset)
@@ -56,15 +56,24 @@ struct VideoPlayerContainer: UIViewControllerRepresentable {
 struct EntryPreView: View {
     public var entry: Entry
     public var square: Bool = false
+    var ext: String?
+    var isVideo: Bool
+    @State var image: UIImage? = nil
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
         self.square = square
+        self.ext = entry.path.split(separator: ".").last?.lowercased()
+        self.isVideo = ["mov","mp4","m4v","3gp"].contains(self.ext)
     }
     
     var body: some View {
         Group {
-            if let image = loadImage(for: entry, thumbnail: square) {
+            if self.isVideo && !square {
+                VideoPlayerContainer(entry: entry)
+                    .scaledToFill()
+            }
+            else if let image {
                 if square {
                     Image(uiImage: image)
                         .resizable()
@@ -81,28 +90,6 @@ struct EntryPreView: View {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
-                }
-            } else if entry.path.hasSuffix(".mov") ||
-                        entry.path.hasSuffix(".mp4") ||
-                        entry.path.hasSuffix(".m4v") ||
-                        entry.path.hasSuffix(".3gp")
-            {
-                if square {
-                    if let thumbnail = getVideoThumbnail(url: entry.fullPath!) {
-                        Image(uiImage: thumbnail)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(
-                                minWidth: 0,
-                                maxWidth: .infinity,
-                                minHeight: 0,
-                                maxHeight: .infinity
-                            )
-                            .aspectRatio(1 / 1, contentMode: .fit)
-                    }
-                } else {
-                    VideoPlayerContainer(entry: entry)
-                        .scaledToFill()
                 }
             }
             else {
@@ -125,5 +112,21 @@ struct EntryPreView: View {
         }
         .clipped()
         .cornerRadius(8)
+        .task {
+            let cacheName = "\(self.entry.id)-\(square)"
+            if let cachedThumbnail = self.entry.library.thumbnailCache.image(for: cacheName) {
+                self.image = cachedThumbnail
+                return
+            }
+            var image: UIImage?
+            if isVideo  {
+                image = await getVideoThumbnail(url: entry.fullPath!)
+            } else {
+                image = await loadImage(for: entry, thumbnail: square)
+            }
+            guard image != nil else {return}
+            self.entry.library.thumbnailCache.set(image!, for: cacheName)
+            self.image = image
+        }
     }
 }
