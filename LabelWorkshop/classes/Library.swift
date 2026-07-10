@@ -1,5 +1,6 @@
 import Foundation
 import SQLite
+import PathKit
 
 enum LibraryError: Error {
     case databaseInvalid
@@ -37,6 +38,8 @@ class Library: Hashable, Identifiable {
     var db: Connection?
     var tagColors: TagColorManager!
     var fieldTypes: [FieldType] = []
+    var ignoreList: String = ""
+    var matcher: TSIgnoreMatcher?
     
     var thumbnailCache: EntryThumbnailCache = EntryThumbnailCache()
     
@@ -68,7 +71,49 @@ class Library: Hashable, Identifiable {
                 )
             }
         } catch {print(error)}
+        
+        let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore")
+        do {
+            guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
+            defer { bookmark?.stopAccessingSecurityScopedResource() }
+            if let ignoreFile = ignoreFile {
+                let ignoreData = try Data(contentsOf: ignoreFile)
+                ignoreList = String(data: ignoreData, encoding: .utf8) ?? ""
+            }
+        } catch {print(error)}
+        
+        ignoreList.append("\n.TagStudio\n.DS_Store")
+        
         self.tagColors = TagColorManager(library: self)
+        self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark!)
+    }
+    
+    func findNewFiles() throws -> [Path] {
+        guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
+        defer { bookmark?.stopAccessingSecurityScopedResource() }
+        
+        let libPathString = bookmark?.path
+        guard libPathString != nil else {return []}
+        let libPath = Path(libPathString!)
+        
+        var allChildren: [Path] = try libPath.recursiveChildren()
+        var newFiles: [Path] = []
+        let entries: [Entry] = self.safeGetEntries()
+        
+        // Remove any paths that are already present as entries
+        allChildren.removeAll { child in
+            entries.contains { entry in
+                return entry.fullPath == child.url
+            }
+        }
+        
+        for child in allChildren {
+            if !(self.matcher?.isIgnored(relativePath: child.url.relativePath, isDirectory: child.isDirectory) ?? true) && !child.isDirectory {
+                newFiles.append(child)
+            }
+        }
+        
+        return newFiles
     }
     
     func getName() -> (String) {
