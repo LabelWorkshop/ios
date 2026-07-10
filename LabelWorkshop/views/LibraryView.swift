@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LibraryView: View {
     let library: Library
+    @State var entries: [Entry]
     
     @State private var showTagManager: Bool = false
     
@@ -10,13 +11,14 @@ struct LibraryView: View {
     
     init(library: Library) {
         self.library = library
+        self.entries = library.safeGetEntries(limit: 30)
     }
     
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
                 LazyVGrid(columns: geometry.size.width < 600 ? LibraryView.columnsPhone : LibraryView.columnsPad) {
-                    ForEach (library.safeGetEntries(), id: \.path) { entry in
+                    ForEach(entries, id: \.path) { entry in
                         GridRow {
                             EntryMiniView(entry: entry)
                         }
@@ -41,5 +43,8 @@ struct LibraryView: View {
             TagManagerView(library: library)
         }
         .navigationTitle(library.getName())
+        .onAppear {
+            self.entries = library.safeGetEntries()
+        }
     }
 }
