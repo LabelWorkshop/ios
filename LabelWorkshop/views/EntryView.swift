@@ -23,8 +23,8 @@ struct EntryView: View {
                         ForEach(Tag.getNoCategoryTags(self.tags)) { tag in
                             Menu {
                                 Button(role: .destructive, action: {
-                                    self.entry.removeTag(tag)
-                                    self.tags = entry.getTags()
+                                    self.entry.tags.remove(tag)
+                                    self.tags = entry.tags.all
                                 }) {
                                     Label("Remove", systemImage: "minus")
                                 }
@@ -41,8 +41,8 @@ struct EntryView: View {
                             ForEach(category.children) { tag in
                                 Menu {
                                     Button(role: .destructive, action: {
-                                        self.entry.removeTag(tag)
-                                        self.tags = entry.getTags()
+                                        self.entry.tags.remove(tag)
+                                        self.tags = entry.tags.all
                                     }) {
                                         Label("Remove", systemImage: "minus")
                                     }
@@ -67,7 +67,7 @@ struct EntryView: View {
                                 VStack {
                                     ForEach(Tag.fetchAll(library: self.entry.library)) { tag in
                                         Button(action: {
-                                            tags.filter { $0.id == tag.id }.count == 0 ? self.entry.addTag(tag) : ()
+                                            tags.filter { $0.id == tag.id }.count == 0 ? self.entry.tags.add(tag) : ()
                                             tags.append(tag)
                                             showTagSelector = false
                                         }) {
@@ -173,11 +173,11 @@ struct EntryView: View {
                 Button(action: {
                     if let tag = Tag.fetch(library: entry.library, id: 1) {
                         if tags.filter({ $0.id == tag.id }).isEmpty {
-                            self.entry.addTag(tag)
+                            self.entry.tags.add(tag)
                             tags.append(tag)
                         } else {
-                            self.entry.removeTag(tag)
-                            self.tags = entry.getTags()
+                            self.entry.tags.remove(tag)
+                            self.tags = entry.tags.all
                         }
                     }
                 }) {
@@ -187,11 +187,11 @@ struct EntryView: View {
                 Button(action: {
                     if let tag = Tag.fetch(library: entry.library, id: 0) {
                         if tags.filter({ $0.id == tag.id }).isEmpty {
-                            self.entry.addTag(tag)
+                            self.entry.tags.add(tag)
                             tags.append(tag)
                         } else {
-                            self.entry.removeTag(tag)
-                            self.tags = entry.getTags()
+                            self.entry.tags.remove(tag)
+                            self.tags = entry.tags.all
                         }
                     }
                 }) {
@@ -214,7 +214,7 @@ struct EntryView: View {
             }
         }
         .onAppear {
-            self.tags = entry.getTags()
+            self.tags = entry.tags.all
             self.fields = entry.getFields()
         }
     }

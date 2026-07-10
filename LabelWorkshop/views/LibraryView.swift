@@ -36,7 +36,7 @@ struct LibraryView: View {
             if searchQuery != "" {
                 qualifiesSearch = entry.path.lowercased().contains(searchQuery.lowercased())
             }
-            if qualifiesSearch && entry.containsAllTags(tagFilters)  {
+            if qualifiesSearch && entry.tags.containsAll(tagFilters)  {
                 updatedEntriesList.append(entry)
             }
         }

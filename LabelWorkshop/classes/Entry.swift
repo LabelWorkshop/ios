@@ -5,6 +5,7 @@ class Entry {
     var path: String
     var id: Int
     var fullPath: URL?
+    var tags: EntryTagManager!
     let library: Library
     
     static var tagEntriesTable: Table = Table("tag_entries")
@@ -16,8 +17,10 @@ class Entry {
         self.library = library
         self.id = id
         if library.bookmark != nil { self.fullPath = library.bookmark?.appendingPathComponent(path) }
+        self.tags = EntryTagManager(self)
     }
     
+    @available(*, deprecated)
     func getTags() -> [Tag] {
         let query = Entry.tagEntriesTable.select(*).filter(Entry.entryColumn == self.id)
         var tags: [Tag] = []
@@ -105,6 +108,7 @@ class Entry {
         } catch {print(error)}
     }
     
+    @available(*, deprecated)
     func addTag(_ tag: Tag) {
         let query = Entry.tagEntriesTable.insert(Entry.idColumn <- tag.id, Entry.entryColumn <- self.id)
         do {
@@ -112,6 +116,7 @@ class Entry {
         } catch {print(error)}
     }
     
+    @available(*, deprecated)
     func removeTag(_ tag: Tag) {
         let query = Entry.tagEntriesTable
             .filter(Entry.idColumn == tag.id)
@@ -122,6 +127,7 @@ class Entry {
         } catch {print(error)}
     }
     
+    @available(*, deprecated)
     func containsAllTags(_ tags: [Tag]) -> Bool {
         let entryTags = self.getTags()
         for tag in tags {
