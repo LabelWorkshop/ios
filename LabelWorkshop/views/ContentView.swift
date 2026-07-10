@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import TipKit
 
 struct ContentView: View {
     @State private var libraries: [Library]
@@ -23,6 +24,8 @@ struct ContentView: View {
             )
         }
         self.libraries = newLibraries
+        // try? Tips.resetDatastore()
+        try? Tips.configure()
     }
     
     static func getRawLibraries() -> [String] {

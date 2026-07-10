@@ -31,7 +31,7 @@ extension Color {
     }
 }
 
-class Tag: Identifiable {
+class Tag: Identifiable, Equatable {
     var library: Library
     var realName: String
     var name: String
@@ -301,6 +301,10 @@ class Tag: Identifiable {
             }
         } catch {print(error)}
         return tags
+    }
+    
+    static func == (lhs: Tag, rhs: Tag) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 

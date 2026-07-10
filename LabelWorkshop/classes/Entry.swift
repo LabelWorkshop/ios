@@ -127,4 +127,14 @@ class Entry {
             try self.library.db!.run(query)
         } catch {print(error)}
     }
+    
+    func containsAllTags(_ tags: [Tag]) -> Bool {
+        let entryTags = self.getTags()
+        for tag in tags {
+            if !entryTags.contains(where: { $0.id == tag.id }) {
+                return false
+            }
+        }
+        return true
+    }
 }

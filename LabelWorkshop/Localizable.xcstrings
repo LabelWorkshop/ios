@@ -813,6 +813,16 @@
         }
       }
     },
+    "deselect.all" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deselect All"
+          }
+        }
+      }
+    },
     "entry.fields" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -864,6 +874,9 @@
           }
         }
       }
+    },
+    "Filter by Tag" : {
+
     },
     "LabelWorkshop" : {
       "shouldTranslate" : false
@@ -971,6 +984,9 @@
           }
         }
       }
+    },
+    "Tap the tag icon to filter through entries with the selected tags." : {
+
     },
     "version %@" : {
       "localizations" : {
