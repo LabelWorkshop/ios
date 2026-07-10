@@ -2,32 +2,21 @@ import SQLite
 import struct Foundation.Date
 
 class FieldType: Identifiable {
-    static let fieldTypesTable: Table = Table("value_type")
+    static let textFieldsTable: Table = Table("text_field_templates")
     
-    static let keyColumn: Expression = Expression<String>("key")
+    static let idColumn: Expression = Expression<Int>("id")
     static let nameColumn: Expression = Expression<String>("name")
-    static let positionColumn: Expression = Expression<Int>("position")
-    static let typeColumn: Expression = Expression<String>("type")
-    static let isDefaultColumn: Expression = Expression<Bool>("is_default")
+    static let isMultilineColumn: Expression = Expression<Bool>("is_multiline")
     
-    let key: String
+    let id: Int
     let name: String
-    let type: String
-    let isDefault: Bool
-    let position: Int
     
     init(
-        key: String,
-        name: String,
-        type: String,
-        isDefault: Bool,
-        position: Int
+        id: Int,
+        name: String
     ) {
-        self.key = key
-        self.isDefault = isDefault
+        self.id = id
         self.name = name
-        self.type = type
-        self.position = position
     }
 }
 
@@ -43,16 +32,15 @@ class Field: Identifiable, Hashable {
     static let textFieldsTable: Table = Table("text_fields")
     static let dateFieldsTable: Table = Table("datetime_fields")
     
+    static let isMultilineColumn: Expression = Expression<Bool>("is_multiline")
     static let idColumn: Expression = Expression<Int>("id")
+    static let nameColumn: Expression = Expression<String>("name")
     static let entryIdColumn: Expression = Expression<Int>("entry_id")
-    static let positionColumn: Expression = Expression<Int>("position")
-    static let typeColumn: Expression = Expression<String>("type_key")
     static let textValueColumn: Expression = Expression<String?>("value")
     
     var id: Int
     var entryId: Int
-    var key: String
-    var position: Int
+    var name: String
     var value: String?
     var entry: Entry
     var type: FieldType?
@@ -70,26 +58,19 @@ class Field: Identifiable, Hashable {
             } catch {print(error)}
         }
     }
-    var name: String {
-        get {
-            self.type?.name ?? self.key
-        }
-    }
     
     init(
         id: Int,
         entryId: Int,
-        key: String,
-        position: Int,
+        name: String,
         entry: Entry,
         value: String?
     ) {
         self.id = id
         self.entryId = entryId
-        self.key = key
-        self.position = position
+        self.name = name
         self.value = value
         self.entry = entry
-        self.type = entry.library.fieldTypes.first(where: {$0.key == key})
+        self.type = entry.library.fieldTypes.first(where: {$0.id == id})
     }
 }

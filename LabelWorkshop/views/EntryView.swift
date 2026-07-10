@@ -126,9 +126,8 @@ struct EntryView: View {
                             ScrollView {
                                 VStack {
                                     ForEach(entry.library.fieldTypes) { fieldType in
-                                        if fieldType.type != "DATETIME" {
                                             Button(action: {
-                                                if let field = entry.addField(fieldType.key) {
+                                                if let field = entry.addField(fieldType) {
                                                     fields.append(field)
                                                 }
                                                 showFieldTypeSelector = false
@@ -139,7 +138,6 @@ struct EntryView: View {
                                                     fullWidth: true
                                                 )
                                             }
-                                        }
                                     }
                                 }
                                 .padding(16)

@@ -40,9 +40,8 @@ class Entry {
             for rawField in try self.library.db!.prepare(query) {
                 let field = Field(
                     id: rawField[Field.idColumn],
-                    entryId: rawField[Field.entryIdColumn],
-                    key: rawField[Field.typeColumn],
-                    position: rawField[Field.positionColumn],
+                    entryId: self.id,
+                    name: rawField[Field.nameColumn],
                     entry: self,
                     value: rawField[Field.textValueColumn],
                 )
@@ -52,15 +51,11 @@ class Entry {
         return fields
     }
     
-    func addField(_ key: String) -> Field? {
-        let position = (self.getFields()
-            .filter { $0.key == key }
-            .sorted{ $0.position < $1.position }
-            .last?.position ?? -1) + 1
+    func addField(_ type: FieldType) -> Field? {
         let query = Field.textFieldsTable.insert(
-            Field.typeColumn <- key,
+            Field.isMultilineColumn <- false,
             Field.entryIdColumn <- self.id,
-            Field.positionColumn <- position,
+            Field.nameColumn <- type.name,
             Field.textValueColumn <- ""
         )
         do {
@@ -69,8 +64,7 @@ class Entry {
                 return Field(
                     id: Int(id),
                     entryId: self.id,
-                    key: key,
-                    position: position,
+                    name: type.name,
                     entry: self,
                     value: ""
                 )

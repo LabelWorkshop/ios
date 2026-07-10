@@ -59,14 +59,11 @@ class Library: Hashable, Identifiable {
             let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
             self.db = try Connection(dbFile)
             // Get Field Types
-            for rawFieldType in try self.db!.prepare(FieldType.fieldTypesTable) {
+            for rawFieldType in try self.db!.prepare(FieldType.textFieldsTable) {
                 self.fieldTypes.append(
                     FieldType(
-                        key: rawFieldType[FieldType.keyColumn],
-                        name: rawFieldType[FieldType.nameColumn],
-                        type: rawFieldType[FieldType.typeColumn],
-                        isDefault: rawFieldType[FieldType.isDefaultColumn],
-                        position: rawFieldType[FieldType.positionColumn]
+                        id: rawFieldType[FieldType.idColumn],
+                        name: rawFieldType[FieldType.nameColumn]
                     )
                 )
             }
