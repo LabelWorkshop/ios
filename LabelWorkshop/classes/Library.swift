@@ -68,6 +68,7 @@ class Library: Hashable, Identifiable {
                 )
             }
         } catch {}
+        } catch {print(error)}
         self.tagColors = TagColorManager(library: self)
     }
     
@@ -123,7 +124,7 @@ class Library: Hashable, Identifiable {
                     )
                 }
             }
-        } catch {}
+        } catch {print(error)}
         return nil
     }
 }

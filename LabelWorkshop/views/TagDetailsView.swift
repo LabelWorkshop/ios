@@ -224,7 +224,7 @@ struct TagDetailsView: View {
                                     try tag.delete()
                                     tagDeleteConfirmation = false
                                     dismiss()
-                                } catch {}
+                                } catch {print(error)}
                             }) {
                                 Text("tag.delete")
                             }
@@ -267,7 +267,7 @@ struct TagDetailsView: View {
             tag.setAliases(self.aliases)
             try tag.setColor(self.colors)
             tag.setParentTags(self.parentTags)
-        } catch {}
+        } catch {print(error)}
         dismiss()
     }
 }

@@ -127,7 +127,7 @@ class Tag: Identifiable {
                     )
                 )
             }
-        } catch {}
+        } catch {print(error)}
         return tagAliases
     }
     
@@ -138,7 +138,7 @@ class Tag: Identifiable {
         )
         do {
             try library.db?.run(query)
-        } catch {}
+        } catch {print(error)}
     }
     
     func setAliases(_ aliases: [TagAlias]) {
@@ -173,7 +173,7 @@ class Tag: Identifiable {
                     parentTags.append(tag)
                 }
             }
-        } catch {}
+        } catch {print(error)}
         return parentTags
     }
     
@@ -194,7 +194,7 @@ class Tag: Identifiable {
                 )
                 do {
                     try self.library.db?.run(query)
-                } catch {}
+                } catch {print(error)}
                 continue
             }
         }
@@ -206,7 +206,7 @@ class Tag: Identifiable {
                     .delete()
                 do {
                     try self.library.db?.run(query)
-                } catch {}
+                } catch {print(error)}
             }
         }
     }
@@ -292,7 +292,7 @@ class Tag: Identifiable {
                 )
                 if let tag = tag { tags.append(tag) }
             }
-        } catch {}
+        } catch {print(error)}
         return tags
     }
 }

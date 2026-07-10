@@ -28,7 +28,7 @@ class Entry {
                     tags.append(tag)
                 }
             }
-        } catch {}
+        } catch {print(error)}
         return tags
     }
     
@@ -48,7 +48,7 @@ class Entry {
                 )
                 fields.append(field)
             }
-        } catch {}
+        } catch {print(error)}
         return fields
     }
     
@@ -75,7 +75,7 @@ class Entry {
                     value: ""
                 )
             }
-        } catch {}
+        } catch {print(error)}
         return nil
     }
     
@@ -108,14 +108,14 @@ class Entry {
             for query in queries {
                 try self.library.db!.run(query)
             }
-        } catch {}
+        } catch {print(error)}
     }
     
     func addTag(_ tag: Tag) {
         let query = Entry.tagEntriesTable.insert(Entry.idColumn <- tag.id, Entry.entryColumn <- self.id)
         do {
             try self.library.db!.run(query)
-        } catch {}
+        } catch {print(error)}
     }
     
     func removeTag(_ tag: Tag) {
@@ -125,6 +125,6 @@ class Entry {
             .delete()
         do {
             try self.library.db!.run(query)
-        } catch {}
+        } catch {print(error)}
     }
 }

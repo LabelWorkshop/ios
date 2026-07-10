@@ -67,7 +67,7 @@ class Field: Identifiable, Hashable {
             do {
                 try self.entry.library.db!.run(query)
                 self.value = newValue
-            } catch {}
+            } catch {print(error)}
         }
     }
     var name: String {

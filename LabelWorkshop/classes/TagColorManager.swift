@@ -24,7 +24,7 @@ class TagColorManager {
                     )
                 )
             }
-        } catch {}
+        } catch {print(error)}
     }
     
     func find(namespace: String, slug: String) -> TagColor? {

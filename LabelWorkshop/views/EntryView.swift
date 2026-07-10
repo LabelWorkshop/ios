@@ -103,7 +103,7 @@ struct EntryView: View {
                                         if let index = fields.firstIndex(where: { $0.id == $field.id }) {
                                             fields.remove(at: index)
                                         }
-                                    } catch {}
+                                    } catch {print(error)}
                                 }) {
                                     Image(systemName: "minus")
                                         .frame(minHeight: 0, maxHeight: .infinity)
@@ -209,7 +209,7 @@ struct EntryView: View {
                     do {
                         try FileManager.default.removeItem(at: entry.fullPath!)
                         entry.delete()
-                    } catch {}
+                    } catch {print(error)}
                 }) {
                     Image(systemName: "trash")
                 }
