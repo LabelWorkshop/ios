@@ -1,5 +1,6 @@
 import SwiftUI
 import AVKit
+import Foundation
 
 func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
     guard let path = entry.fullPath else { return nil }
@@ -58,6 +59,7 @@ struct EntryPreView: View {
     public var square: Bool = false
     var ext: String?
     var isVideo: Bool
+    var isImage: Bool
     @State var image: UIImage? = nil
     
     init(entry: Entry, square: Bool = false) {
@@ -65,6 +67,7 @@ struct EntryPreView: View {
         self.square = square
         self.ext = entry.path.split(separator: ".").last?.lowercased()
         self.isVideo = ["mov","mp4","m4v","3gp"].contains(self.ext)
+        self.isImage = UTType(filenameExtension: self.entry.fullPath?.pathExtension ?? "")?.conforms(to: .image) ?? false
     }
     
     var body: some View {
@@ -113,13 +116,16 @@ struct EntryPreView: View {
         .clipped()
         .cornerRadius(8)
         .task {
+            if !(isImage || isVideo) {
+                return
+            }
             let cacheName = "\(self.entry.id)-\(square)"
             if let cachedThumbnail = self.entry.library.thumbnailCache.image(for: cacheName) {
                 self.image = cachedThumbnail
                 return
             }
             var image: UIImage?
-            if isVideo  {
+            if isVideo {
                 image = await getVideoThumbnail(url: entry.fullPath!)
             } else {
                 image = await loadImage(for: entry, thumbnail: square)
