@@ -72,7 +72,20 @@ struct EntryPreView: View {
     
     var body: some View {
         Group {
-            if self.isVideo && !square {
+            if !FileManager.default.fileExists(atPath: entry.fullPath!.path) {
+                Image(systemName: "link")
+                    .font(.system(size: 32))
+                    .frame(
+                        minWidth: 0,
+                        maxWidth: .infinity,
+                        minHeight: 0,
+                        maxHeight: .infinity
+                    )
+                    .aspectRatio(1/1, contentMode: .fill)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .tint(.red)
+            }
+            else if self.isVideo && !square {
                 VideoPlayerContainer(entry: entry)
                     .scaledToFill()
             }
