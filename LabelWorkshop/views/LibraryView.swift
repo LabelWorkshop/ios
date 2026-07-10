@@ -11,6 +11,8 @@ struct LibraryView: View {
     @State var tagFilters: [Tag] = []
     @State var shownEntries: [Entry]
     
+    @Environment(\.openURL) private var openURL
+    
     private let tagFilterTip = TagFilterTip()
     
     private static let columnsPhone: [GridItem] = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
@@ -64,7 +66,7 @@ struct LibraryView: View {
                         Label("Tag Manager", systemImage: "tag")
                     }
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Image(systemName: "ellipsis")
                 }
             }
             ToolbarItem(placement: .bottomBar) {
