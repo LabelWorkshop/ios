@@ -60,14 +60,19 @@ struct EntryPreView: View {
     var ext: String?
     var isVideo: Bool
     var isImage: Bool
+    var isAudio: Bool
+    var isZIP: Bool
     @State var image: UIImage? = nil
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
         self.square = square
         self.ext = entry.path.split(separator: ".").last?.lowercased()
-        self.isVideo = ["mov","mp4","m4v","3gp"].contains(self.ext)
-        self.isImage = UTType(filenameExtension: self.entry.fullPath?.pathExtension ?? "")?.conforms(to: .image) ?? false
+        let type = UTType(filenameExtension: self.entry.fullPath?.pathExtension ?? "")
+        self.isVideo = type?.conforms(to: .movie) ?? false
+        self.isImage = type?.conforms(to: .image) ?? false || self.ext == "pxd"
+        self.isAudio = type?.conforms(to: .audio) ?? false
+        self.isZIP = type?.conforms(to: .archive) ?? false
     }
     
     var body: some View {
@@ -110,10 +115,20 @@ struct EntryPreView: View {
             }
             else {
                 LazyVStack {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 32))
-                    Text("No preview available")
-                        .foregroundStyle(Color(UIColor.label))
+                    if isAudio {
+                        Image(systemName: "waveform").font(.system(size: 32))
+                    } else if isImage {
+                        Image(systemName: "photo").font(.system(size: 32))
+                    } else if isVideo {
+                        Image(systemName: "movieclapper").font(.system(size: 32))
+                    } else if isVideo {
+                        Image(systemName: "zipper.page").font(.system(size: 32))
+                    } else {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 32))
+                        Text("No preview available")
+                            .foregroundStyle(Color(UIColor.label))
+                    }
                 }
                 .symbolRenderingMode(.multicolor)
                 .frame(
