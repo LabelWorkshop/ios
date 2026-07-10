@@ -67,7 +67,6 @@ class Library: Hashable, Identifiable {
                     )
                 )
             }
-        } catch {}
         } catch {print(error)}
         self.tagColors = TagColorManager(library: self)
     }
@@ -111,6 +110,7 @@ class Library: Hashable, Identifiable {
                     let query = Tag.tagsTable.insert(
                         Tag.nameColumn <- name,
                         Tag.isCategoryColumn <- false,
+                        Tag.isHiddenColumn <- false
                     )
                     try self.db?.run(query)
                     return Tag (
@@ -120,7 +120,8 @@ class Library: Hashable, Identifiable {
                         colors: TagColor.none,
                         shorthand: nil,
                         isCategory: false,
-                        disambiguationId: nil
+                        disambiguationId: nil,
+                        isHidden: false
                     )
                 }
             }
