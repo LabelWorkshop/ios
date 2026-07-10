@@ -17,6 +17,7 @@ struct TagDetailsView: View {
     @State private var tagDeleteConfirmation: Bool = false
     @Environment(\.dismiss) private var dismiss
     @State private var tagColors: [TagColor]
+    @State var tagDetailsTab = 0
     
     init(tag: Tag) {
         self.tag = tag
@@ -30,26 +31,32 @@ struct TagDetailsView: View {
     }
     
     var body: some View {
-                ScrollView {
-                    VStack(spacing: 8) {
-                        TagPreView(
-                            name: $displayName,
-                            colors: $colors
-                        )
-                        .shadow(color: colors.border, radius: 16)
-                        .padding(50)
-                        .frame(maxWidth: .infinity)
-                        .background(Color(UIColor.tertiarySystemFill))
-                        .background(
-                            Image("dots")
-                                .opacity(0.3)
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.black, lineWidth: 2)
-                                .blur(radius: 14)
-                        )
-                        .cornerRadius(40)
+        ScrollView {
+            VStack(spacing: 8) {
+                TagPreView(
+                    name: $displayName,
+                    colors: $colors
+                )
+                .shadow(color: colors.border, radius: 16)
+                .padding(50)
+                .frame(maxWidth: .infinity)
+                .background(Color(UIColor.tertiarySystemFill))
+                .background(
+                    Image("dots")
+                        .opacity(0.3)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.black, lineWidth: 2)
+                        .blur(radius: 14)
+                )
+                .cornerRadius(40)
+                Picker("", selection: $tagDetailsTab) {
+                    Text("General").tag(0)
+                    Text("Parent Tags").tag(1)
+                }.pickerStyle(SegmentedPickerStyle())
+                if tagDetailsTab == 0 {
+                    VStack {
                         HStack {
                             TextBox(title: "Name", value: $name)
                             TextBox(title: "Shorthand", value: $shorthand)
@@ -124,113 +131,116 @@ struct TagDetailsView: View {
                                 .buttonStyle(.bordered)
                             }
                         }
-                        VStack {
-                            Text("Parent Tags").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                } else {
+                    VStack {
+                        Text("Parent Tags").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 8)
-                            VStack {
-                                ForEach($parentTags){ $tag in
-                                    HStack {
-                                        Button(action: {
-                                            if disambiguationId != tag.id {
-                                                disambiguationId = tag.id
-                                            } else {
-                                                disambiguationId = nil
-                                            }
-                                        }, label: {
-                                            HStack {
-                                                Image(systemName: disambiguationId == tag.id ? "checkmark.circle" : "circle").font(.title)
-                                            }
-                                        })
-                                        TagView(tag: tag, fullWidth: true)
-                                        Button(role: .destructive, action: {
-                                            if let index = parentTags.firstIndex(where: {$0.id == tag.id}) {
-                                                parentTags.remove(at: index)
-                                            }
-                                        }) {
-                                            Image(systemName: "minus")
-                                                .frame(minHeight: 0, maxHeight: .infinity)
+                        VStack {
+                            ForEach($parentTags){ $tag in
+                                HStack {
+                                    Button(action: {
+                                        if disambiguationId != tag.id {
+                                            disambiguationId = tag.id
+                                        } else {
+                                            disambiguationId = nil
                                         }
-                                        .tint(.red)
-                                        .buttonStyle(.bordered)
+                                    }, label: {
+                                        HStack {
+                                            Image(systemName: disambiguationId == tag.id ? "checkmark.circle" : "circle").font(.title)
+                                        }
+                                    })
+                                    TagView(tag: tag, fullWidth: true)
+                                    Button(role: .destructive, action: {
+                                        if let index = parentTags.firstIndex(where: {$0.id == tag.id}) {
+                                            parentTags.remove(at: index)
+                                        }
+                                    }) {
+                                        Image(systemName: "minus")
+                                            .frame(minHeight: 0, maxHeight: .infinity)
                                     }
+                                    .tint(.red)
+                                    .buttonStyle(.bordered)
                                 }
-                                Button(action: {
-                                    showTagParentSelector = true
-                                }) {
-                                    Label("Add Parent Tag", systemImage: "plus")
-                                        .frame(minWidth: 0, maxWidth: .infinity)
-                                }
-                                .tint(.blue)
-                                .buttonStyle(.bordered)
-                                .sheet(isPresented: $showTagParentSelector) {
-                                    NavigationView {
-                                        ScrollView {
-                                            VStack {
-                                                ForEach(Tag.fetchAll(library: tag.library)) { tag in
-                                                    Button(action: {
-                                                        parentTags.filter({$0.id == tag.id}).count == 0 ? parentTags.append(tag) : ()
-                                                        showTagParentSelector = false
-                                                    }) {
-                                                        TagView(tag: tag, fullWidth: true)
-                                                    }
-                                                }
-                                            }
-                                            .padding(16)
-                                        }
-                                        .navigationTitle("Tags")
-                                        .toolbar {
-                                            ToolbarItem(placement: .navigationBarLeading){
+                            }
+                            Button(action: {
+                                showTagParentSelector = true
+                            }) {
+                                Label("Add Parent Tag", systemImage: "plus")
+                                    .frame(minWidth: 0, maxWidth: .infinity)
+                            }
+                            .tint(.blue)
+                            .buttonStyle(.bordered)
+                            .sheet(isPresented: $showTagParentSelector) {
+                                NavigationView {
+                                    ScrollView {
+                                        VStack {
+                                            ForEach(Tag.fetchAll(library: tag.library)) { tag in
                                                 Button(action: {
+                                                    parentTags.filter({$0.id == tag.id}).count == 0 ? parentTags.append(tag) : ()
                                                     showTagParentSelector = false
                                                 }) {
-                                                    Image(systemName: "chevron.backward")
-                                                    Text("Back")
+                                                    TagView(tag: tag, fullWidth: true)
                                                 }
+                                            }
+                                        }
+                                        .padding(16)
+                                    }
+                                    .navigationTitle("Tags")
+                                    .toolbar {
+                                        ToolbarItem(placement: .navigationBarLeading){
+                                            Button(action: {
+                                                showTagParentSelector = false
+                                            }) {
+                                                Image(systemName: "chevron.backward")
+                                                Text("Back")
                                             }
                                         }
                                     }
                                 }
-                            }
-                        }
-                    }
-                    .padding(16)
-                    .padding(.bottom, 80)
-                }.navigationTitle(tag.name)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing){
-                        if #available(iOS 26.0, *) {
-                            Button(role: .confirm, action: confirmEdits) {
-                                Image(systemName: "checkmark")
-                            }
-                        } else {
-                            Button(action: confirmEdits) {
-                                Image(systemName: "checkmark")
-                            }.tint(.blue)
-                        }
-                    }
-                    ToolbarItem(placement: .bottomBar){
-                        Button(role: .destructive, action: {
-                            tagDeleteConfirmation = true
-                        }) {
-                            Image(systemName: "trash")
-                        }.tint(.red)
-                        .confirmationDialog(
-                            Text("This tag and all references of it will be deleted."),
-                            isPresented: $tagDeleteConfirmation,
-                            titleVisibility: .visible
-                        ) {
-                            Button(role: .destructive, action: {
-                                do {
-                                    try tag.delete()
-                                    tagDeleteConfirmation = false
-                                    dismiss()
-                                } catch {print(error)}
-                            }) {
-                                Text("Delete Tag")
                             }
                         }
                     }
                 }
+            }
+            .padding(16)
+            .padding(.bottom, 80)
+        }.navigationTitle(tag.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing){
+                if #available(iOS 26.0, *) {
+                    Button(role: .confirm, action: confirmEdits) {
+                        Image(systemName: "checkmark")
+                    }
+                } else {
+                    Button(action: confirmEdits) {
+                        Image(systemName: "checkmark")
+                    }.tint(.blue)
+                }
+            }
+            ToolbarItem(placement: .bottomBar){
+                Button(role: .destructive, action: {
+                    tagDeleteConfirmation = true
+                }) {
+                    Image(systemName: "trash")
+                }.tint(.red)
+                .confirmationDialog(
+                    Text("This tag and all references of it will be deleted."),
+                    isPresented: $tagDeleteConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button(role: .destructive, action: {
+                        do {
+                            try tag.delete()
+                            tagDeleteConfirmation = false
+                            dismiss()
+                        } catch {print(error)}
+                    }) {
+                        Text("Delete Tag")
+                    }
+                }
+            }
+        }
         .onAppear {
             self.disambiguationId = tag.disambiguationId
             updateName()
