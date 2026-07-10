@@ -56,7 +56,7 @@ struct TagDetailsView: View {
                         }
                         HStack{
                             VStack {
-                                Text("color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                                Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
                                 Button(action: {
                                     showTagColorSelector.toggle()
                                 }) {
@@ -77,14 +77,14 @@ struct TagDetailsView: View {
                                             }
                                             .padding(16)
                                         }
-                                        .navigationTitle("color")
+                                        .navigationTitle("Color")
                                         .toolbar {
                                             ToolbarItem(placement: .navigationBarLeading){
                                                 Button(action: {
                                                     showTagColorSelector = false
                                                 }) {
                                                     Image(systemName: "chevron.backward")
-                                                    Text("back")
+                                                    Text("Back")
                                                 }
                                             }
                                         }
@@ -92,16 +92,16 @@ struct TagDetailsView: View {
                                 }
                             }.frame(maxWidth: .infinity, alignment: .leading)
                             VStack {
-                                Text("tag.isCategory").font(.caption2)
-                                Toggle("tag.isCategory", isOn: $isCategory).labelsHidden()
+                                Text("Is Category?").font(.caption2)
+                                Toggle("Is Category?", isOn: $isCategory).labelsHidden()
                             }.frame(maxHeight: .infinity, alignment: .top)
                         }
                         VStack {
-                            Text("tag.aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
                             VStack {
                                 ForEach($aliases){ $alias in
                                     HStack {
-                                        TextField("tag.alias", text: $alias.name)
+                                        TextField("Alias", text: $alias.name)
                                         Button(role: .destructive, action: {
                                             if let index = aliases.firstIndex(where: {$0.id == alias.id}) {
                                                 aliases.remove(at: index)
@@ -117,7 +117,7 @@ struct TagDetailsView: View {
                                 Button(action: {
                                     aliases.append(TagAlias(id: Int.random(in: (-9999)..<(-1)), name: "", tagId: tag.id))
                                 }) {
-                                    Label("tag.alias.add", systemImage: "plus")
+                                    Label("Add Alias", systemImage: "plus")
                                         .frame(minWidth: 0, maxWidth: .infinity)
                                 }
                                 .tint(.blue)
@@ -125,7 +125,7 @@ struct TagDetailsView: View {
                             }
                         }
                         VStack {
-                            Text("tag.parents").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Parent Tags").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 8)
                             VStack {
                                 ForEach($parentTags){ $tag in
@@ -157,7 +157,7 @@ struct TagDetailsView: View {
                                 Button(action: {
                                     showTagParentSelector = true
                                 }) {
-                                    Label("tag.parents.add", systemImage: "plus")
+                                    Label("Add Parent Tag", systemImage: "plus")
                                         .frame(minWidth: 0, maxWidth: .infinity)
                                 }
                                 .tint(.blue)
@@ -177,14 +177,14 @@ struct TagDetailsView: View {
                                             }
                                             .padding(16)
                                         }
-                                        .navigationTitle("entry.tags")
+                                        .navigationTitle("Tags")
                                         .toolbar {
                                             ToolbarItem(placement: .navigationBarLeading){
                                                 Button(action: {
                                                     showTagParentSelector = false
                                                 }) {
                                                     Image(systemName: "chevron.backward")
-                                                    Text("back")
+                                                    Text("Back")
                                                 }
                                             }
                                         }
@@ -215,7 +215,7 @@ struct TagDetailsView: View {
                             Image(systemName: "trash")
                         }.tint(.red)
                         .confirmationDialog(
-                            Text("tag.delete.confirmation"),
+                            Text("This tag and all references of it will be deleted."),
                             isPresented: $tagDeleteConfirmation,
                             titleVisibility: .visible
                         ) {
@@ -226,7 +226,7 @@ struct TagDetailsView: View {
                                     dismiss()
                                 } catch {print(error)}
                             }) {
-                                Text("tag.delete")
+                                Text("Delete Tag")
                             }
                         }
                     }

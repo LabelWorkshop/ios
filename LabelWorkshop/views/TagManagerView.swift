@@ -21,7 +21,7 @@ struct TagManagerView: View {
                     }
                 }.padding(16)
             }
-            .navigationTitle("tag.manager")
+            .navigationTitle("Tag Manager")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing){
                     Button(action: {

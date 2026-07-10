@@ -30,16 +30,16 @@ struct AboutView: View {
                     }
                     Text("LabelWorkshop").font(.title).bold(true)
                     Text("version \(version)").font(.title3)
-                    Text("© purpletennisball 2025").font(.body)
+                    Text("© purpletennisball 2026").font(.body)
                     HFlow {
-                        Link("about.link.github",
+                        Link("Github Repository",
                              destination: URL(string: "https://github.com/LabelWorkshop/ios")!)
-                        Link("about.link.contributors",
+                        Link("Contributors",
                              destination: URL(string: "https://github.com/LabelWorkshop/ios/graphs/contributors")!)
                     }.padding(.top, 5)
                 }.frame(maxWidth: .infinity, alignment: .center)
             }
-            .navigationTitle("about")
+            .navigationTitle("About")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing){
                     CloseButton(dismiss: dismiss)

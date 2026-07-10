@@ -61,7 +61,7 @@ struct LibraryView: View {
                     Button(action: {
                         showTagManager = true
                     }) {
-                        Label("tag.manager", systemImage: "tag")
+                        Label("Tag Manager", systemImage: "tag")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -113,7 +113,7 @@ struct LibraryView: View {
                                 Button(action: {
                                     tagFilters = []
                                 }) {
-                                    Text("deselect.all")
+                                    Text("Deselect All")
                                 }
                             }
                         }

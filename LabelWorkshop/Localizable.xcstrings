@@ -1,47 +1,32 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "© purpletennisball 2025" : {
-      "shouldTranslate" : false
+    "© purpletennisball 2026" : {
+
     },
-    "about" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About"
-          }
-        }
-      }
+    "About" : {
+
     },
-    "about.link.contributors" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contributors"
-          }
-        }
-      }
+    "Add Alias" : {
+
     },
-    "about.link.github" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Github Repository"
-          }
-        }
-      }
+    "Add Field" : {
+
     },
-    "back" : {
+    "Add Parent Tag" : {
+
+    },
+    "Add Tags" : {
+
+    },
+    "Alias" : {
+
+    },
+    "Aliases" : {
+
+    },
+    "Back" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Back"
-          }
-        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -50,15 +35,8 @@
         }
       }
     },
-    "color" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Color"
-          }
-        }
-      }
+    "Color" : {
+
     },
     "colors.none.none" : {
       "extractionState" : "manual",
@@ -802,190 +780,49 @@
         }
       }
     },
-    "delete" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete"
-          }
-        }
-      }
+    "Contributors" : {
+
     },
-    "deselect.all" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deselect All"
-          }
-        }
-      }
+    "Delete Tag" : {
+
     },
-    "entry.fields" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fields"
-          }
-        }
-      }
+    "Deselect All" : {
+
     },
-    "entry.fields.add" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Field"
-          }
-        }
-      }
-    },
-    "entry.previewUnavailable" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No preview available"
-          }
-        }
-      }
-    },
-    "entry.tags" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tags"
-          }
-        }
-      }
-    },
-    "entry.tags.add" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Tags"
-          }
-        }
-      }
+    "Fields" : {
+
     },
     "Filter by Tag" : {
+
+    },
+    "Github Repository" : {
+
+    },
+    "Is Category?" : {
 
     },
     "LabelWorkshop" : {
       "shouldTranslate" : false
     },
-    "remove" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Remove"
-          }
-        }
-      }
+    "No preview available" : {
+
     },
-    "tag.alias" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alias"
-          }
-        }
-      }
+    "Parent Tags" : {
+
     },
-    "tag.alias.add" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Alias"
-          }
-        }
-      }
+    "Remove" : {
+
     },
-    "tag.aliases" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aliases"
-          }
-        }
-      }
+    "Tag Manager" : {
+
     },
-    "tag.delete" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete Tag"
-          }
-        }
-      }
-    },
-    "tag.delete.confirmation" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This tag and all references of it will be deleted."
-          }
-        }
-      }
-    },
-    "tag.isCategory" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Is Category?"
-          }
-        }
-      }
-    },
-    "tag.manager" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tag Manager"
-          }
-        }
-      }
-    },
-    "tag.parents" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Parent Tags"
-          }
-        }
-      }
-    },
-    "tag.parents.add" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Parent Tag"
-          }
-        }
-      }
+    "Tags" : {
+
     },
     "Tap the tag icon to filter through entries with the selected tags." : {
+
+    },
+    "This tag and all references of it will be deleted." : {
 
     },
     "version %@" : {

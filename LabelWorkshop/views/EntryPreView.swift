@@ -96,7 +96,7 @@ struct EntryPreView: View {
                 LazyVStack {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.system(size: 32))
-                    Text("entry.previewUnavailable")
+                    Text("No preview available")
                         .foregroundStyle(Color(UIColor.label))
                 }
                 .symbolRenderingMode(.multicolor)

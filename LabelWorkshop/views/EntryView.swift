@@ -18,7 +18,7 @@ struct EntryView: View {
                 EntryPreView(entry: entry)
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 8) {
-                    Text("entry.tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    Text("Tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                     HFlow {
                         ForEach(Tag.getNoCategoryTags(self.tags)) { tag in
                             Menu {
@@ -26,7 +26,7 @@ struct EntryView: View {
                                     self.entry.removeTag(tag)
                                     self.tags = entry.getTags()
                                 }) {
-                                    Label("remove", systemImage: "minus")
+                                    Label("Remove", systemImage: "minus")
                                 }
                             } label: {
                                 TagView(tag: tag)
@@ -44,7 +44,7 @@ struct EntryView: View {
                                         self.entry.removeTag(tag)
                                         self.tags = entry.getTags()
                                     }) {
-                                        Label("remove", systemImage: "minus")
+                                        Label("Remove", systemImage: "minus")
                                     }
                                 } label: {
                                     TagView(tag: tag)
@@ -56,7 +56,7 @@ struct EntryView: View {
                     Button(action: {
                         showTagSelector = true
                     }) {
-                        Label("entry.tags.add", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
+                        Label("Add Tags", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
                     }
                     .buttonStyle(.bordered)
                     .tint(.blue)
@@ -83,7 +83,7 @@ struct EntryView: View {
                                         showTagSelector = false
                                     }) {
                                         Image(systemName: "chevron.backward")
-                                        Text("back")
+                                        Text("Back")
                                     }
                                 }
                             }
@@ -91,7 +91,7 @@ struct EntryView: View {
                     }
                 }
                 VStack(spacing: 8) {
-                    Text("entry.fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    Text("Fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                     ForEach($fields) { $field in
                         VStack {
                             Text(field.name).font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
@@ -116,7 +116,7 @@ struct EntryView: View {
                     Button(action: {
                         showFieldTypeSelector = true
                     }) {
-                        Label("entry.fields.add", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
+                        Label("Add Field", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
                     }
                     .buttonStyle(.bordered)
                     .tint(.blue)
@@ -150,7 +150,7 @@ struct EntryView: View {
                                         showFieldTypeSelector = false
                                     }) {
                                         Image(systemName: "chevron.backward")
-                                        Text("back")
+                                        Text("Back")
                                     }
                                 }
                             }
