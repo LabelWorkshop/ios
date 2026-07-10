@@ -40,6 +40,7 @@ class Tag: Identifiable {
     var shorthand: String?
     var isCategory: Bool
     var disambiguationId: Int?
+    var isHidden: Bool?
     
     static var tagsTable: Table = Table("tags")
     static var idColumn = Expression<Int>("id")
@@ -49,6 +50,7 @@ class Tag: Identifiable {
     static var tagColorSlugColumn = Expression<String?>("color_slug")
     static var isCategoryColumn = Expression<Bool>("is_category")
     static var disambiguationIdColumn = Expression<Int?>("disambiguation_id")
+    static var isHiddenColumn = Expression<Bool?>("is_hidden")
     
     static var tagParentsTable: Table = Table("tag_parents")
     static var childIdColumn = Expression<Int>("child_id")
@@ -61,7 +63,8 @@ class Tag: Identifiable {
         colors: TagColor,
         shorthand: String?,
         isCategory: Bool,
-        disambiguationId: Int?
+        disambiguationId: Int?,
+        isHidden: Bool?
     ){
         self.library = library
         self.realName = name
@@ -70,6 +73,7 @@ class Tag: Identifiable {
         self.shorthand = shorthand
         self.isCategory = isCategory
         self.disambiguationId = disambiguationId
+        self.isHidden = isHidden
         self.name = realName
         if let disambiguationId = disambiguationId {
             if let tag = Tag.fetch(library: library, id: disambiguationId) {
@@ -256,7 +260,8 @@ class Tag: Identifiable {
             tagColorNamespaceColumn,
             shorthandColumn,
             isCategoryColumn,
-            disambiguationIdColumn
+            disambiguationIdColumn,
+            isHiddenColumn
         ).filter(Tag.idColumn == id)
         do {
             for rawTag in try library.db!.prepare(query) {
@@ -267,6 +272,7 @@ class Tag: Identifiable {
                 let shorthand = rawTag[Tag.shorthandColumn]
                 let isCategory = rawTag[Tag.isCategoryColumn]
                 let disambiguationId = rawTag[Tag.disambiguationIdColumn]
+                let isHidden = rawTag[Tag.isHiddenColumn]
                 return Tag(
                     library: library,
                     name: name,
@@ -274,7 +280,8 @@ class Tag: Identifiable {
                     colors: colors,
                     shorthand: shorthand,
                     isCategory: isCategory,
-                    disambiguationId: disambiguationId
+                    disambiguationId: disambiguationId,
+                    isHidden: isHidden
                 )
             }
         } catch {print(error)}
