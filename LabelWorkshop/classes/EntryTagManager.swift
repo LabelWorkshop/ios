@@ -20,7 +20,7 @@ class EntryTagManager {
         var tags: [Tag] = []
         do {
             for rawTag in try self.entry.library.db!.prepare(query) {
-                let tag = Tag.fetch(library: self.entry.library, id: rawTag[Entry.idColumn])
+                let tag = self.entry.library.tags.getById(id: rawTag[Entry.idColumn])
                 if let tag = tag {
                     tags.append(tag)
                 }

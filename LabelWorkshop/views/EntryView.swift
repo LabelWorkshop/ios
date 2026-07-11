@@ -171,7 +171,7 @@ struct EntryView: View {
             }
             ToolbarItemGroup(placement: .bottomBar) {
                 Button(action: {
-                    if let tag = Tag.fetch(library: entry.library, id: 1) {
+                    if let tag = entry.library.tags.getById(id: 1) {
                         if tags.filter({ $0.id == tag.id }).isEmpty {
                             self.entry.tags.add(tag)
                             tags.append(tag)
@@ -185,7 +185,7 @@ struct EntryView: View {
                 }
                 .tint(.yellow)
                 Button(action: {
-                    if let tag = Tag.fetch(library: entry.library, id: 0) {
+                    if let tag = entry.library.tags.getById(id: 0) {
                         if tags.filter({ $0.id == tag.id }).isEmpty {
                             self.entry.tags.add(tag)
                             tags.append(tag)

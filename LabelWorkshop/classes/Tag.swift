@@ -32,7 +32,7 @@ extension Color {
 }
 
 class Tag: Identifiable, Equatable {
-    var library: Library
+    var library: Library?
     var realName: String
     var name: String
     var id: Int
@@ -82,6 +82,25 @@ class Tag: Identifiable, Equatable {
         }
     }
     
+    init(
+        name: String,
+        id: Int,
+        colors: TagColor,
+        shorthand: String?,
+        isCategory: Bool,
+        disambiguationId: Int?,
+        isHidden: Bool?
+    ){
+        self.realName = name
+        self.id = id
+        self.colors = colors
+        self.shorthand = shorthand
+        self.isCategory = isCategory
+        self.disambiguationId = disambiguationId
+        self.isHidden = isHidden
+        self.name = realName
+    }
+    
     func delete() throws {
         let query = Tag.tagsTable.filter(Tag.idColumn == self.id).delete()
         let query2 = Entry.tagEntriesTable.filter(Entry.idColumn == self.id).delete()
@@ -89,7 +108,7 @@ class Tag: Identifiable, Equatable {
         let query4 = Tag.tagParentsTable.filter(
             Tag.childIdColumn == self.id || Tag.parentIdColumn == self.id
         ).delete()
-        if let db = self.library.db {
+        if let db = self.library!.db {
             try db.run(query)
             try db.run(query2)
             try db.run(query3)
@@ -99,14 +118,14 @@ class Tag: Identifiable, Equatable {
     
     func setColumn<T: Value>(column: SQLite.Expression<T>, value: T) throws {
         let query = Tag.tagsTable.filter(Tag.idColumn == self.id)
-        if let db = self.library.db {
+        if let db = self.library!.db {
             try db.run(query.update(column <- value))
         }
     }
     
     func setColumn<T: Value>(column: SQLite.Expression<T?>, value: T?) throws {
         let query = Tag.tagsTable.filter(Tag.idColumn == self.id)
-        if let db = self.library.db {
+        if let db = self.library!.db {
             try db.run(query.update(column <- value))
         }
     }
@@ -121,7 +140,7 @@ class Tag: Identifiable, Equatable {
         let query = TagAlias.tagAliasesTable.select(*).filter(TagAlias.tagIdColumn == id)
         var tagAliases: [TagAlias] = []
         do {
-            for rawAlias in try self.library.db!.prepare(query) {
+            for rawAlias in try self.library!.db!.prepare(query) {
                 tagAliases.append(
                     TagAlias(
                         id: rawAlias[TagAlias.idColumn],
@@ -141,7 +160,7 @@ class Tag: Identifiable, Equatable {
             TagAlias.tagIdColumn <- self.id
         )
         do {
-            try library.db?.run(query)
+            try library!.db?.run(query)
         } catch {print(error)}
     }
     
@@ -171,8 +190,8 @@ class Tag: Identifiable, Equatable {
             .select(*)
             .filter(Tag.childIdColumn == self.id)
         do {
-            for raw in try self.library.db!.prepare(query) {
-                let tag = Tag.fetch(library: library, id: raw[Tag.parentIdColumn])
+            for raw in try self.library!.db!.prepare(query) {
+                let tag = Tag.fetch(library: library!, id: raw[Tag.parentIdColumn])
                 if let tag = tag {
                     parentTags.append(tag)
                 }
@@ -197,7 +216,7 @@ class Tag: Identifiable, Equatable {
                     Tag.childIdColumn <- self.id
                 )
                 do {
-                    try self.library.db?.run(query)
+                    try self.library!.db?.run(query)
                 } catch {print(error)}
                 continue
             }
@@ -209,7 +228,7 @@ class Tag: Identifiable, Equatable {
                     .filter(Tag.parentIdColumn == currentParentTag.id && Tag.childIdColumn == self.id)
                     .delete()
                 do {
-                    try self.library.db?.run(query)
+                    try self.library!.db?.run(query)
                 } catch {print(error)}
             }
         }
@@ -252,6 +271,7 @@ class Tag: Identifiable, Equatable {
         return categories
     }
     
+    @available(*, deprecated)
     static func fetch(library: Library, id: Int) -> Tag? {
         let query = Tag.tagsTable.select(
             idColumn,
@@ -288,6 +308,7 @@ class Tag: Identifiable, Equatable {
         return nil
     }
     
+    @available(*, deprecated)
     static func fetchAll(library: Library) -> [Tag] {
         var tags: [Tag] = []
         let query = Tag.tagsTable.select(idColumn)
@@ -306,5 +327,10 @@ class Tag: Identifiable, Equatable {
     static func == (lhs: Tag, rhs: Tag) -> Bool {
         return lhs.id == rhs.id
     }
+    
+    /*static func defaults() -> [Tag] {
+        let metaTag = Tag(name: "Meta Tags", id: 2, colors: TagColor.none, shorthand: nil, isCategory: true, disambiguationId: nil, isHidden: nil)
+        metaTag.setAliases(TagAlias(id: 2, name: "Meta"))
+    }*/
 }
 

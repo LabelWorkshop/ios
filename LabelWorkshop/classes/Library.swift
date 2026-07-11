@@ -41,6 +41,8 @@ class Library: Hashable, Identifiable {
     var ignoreList: String = ""
     var matcher: TSIgnoreMatcher?
     
+    var tags: LibraryTagManager!
+    
     var thumbnailCache: EntryThumbnailCache = EntryThumbnailCache()
     
     static var entriesTable: Table = Table("entries")
@@ -83,6 +85,7 @@ class Library: Hashable, Identifiable {
         
         self.tagColors = TagColorManager(library: self)
         self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark!)
+        self.tags = LibraryTagManager(library: self)
     }
     
     func findNewFiles() throws -> [Path] {

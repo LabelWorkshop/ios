@@ -25,7 +25,7 @@ struct TagDetailsView: View {
         self.shorthand = tag.shorthand ?? ""
         self.colors = tag.colors
         self.isCategory = tag.isCategory
-        self.tagColors = tag.library.tagColors?.colors ?? []
+        self.tagColors = tag.library?.tagColors?.colors ?? []
         self.aliases = tag.getAliases()
         self.parentTags = tag.getParentTags()
     }
@@ -175,7 +175,7 @@ struct TagDetailsView: View {
                                 NavigationView {
                                     ScrollView {
                                         VStack {
-                                            ForEach(Tag.fetchAll(library: tag.library)) { tag in
+                                            ForEach(Tag.fetchAll(library: tag.library!)) { tag in
                                                 Button(action: {
                                                     parentTags.filter({$0.id == tag.id}).count == 0 ? parentTags.append(tag) : ()
                                                     showTagParentSelector = false
@@ -248,7 +248,7 @@ struct TagDetailsView: View {
         .onChange(of: disambiguationId) { _ in
             self.disambiguationName = nil
             if let disambiguationId = disambiguationId {
-                let tag: Tag? = Tag.fetch(library: tag.library, id: disambiguationId)
+                let tag: Tag? = Tag.fetch(library: tag.library!, id: disambiguationId)
                 if let tag = tag {
                     self.disambiguationName = tag.name
                 }
