@@ -101,6 +101,7 @@ class LibraryTagManager {
             }
         } catch {print(error)}
         return nil
+        self.refresh()
     }
     
     func setParentTags(tag: Tag, parentTags: [Tag]) {
@@ -146,6 +147,22 @@ class LibraryTagManager {
             }
         }
         return tags
+    }
+    
+    func delete(_ tag: Tag) throws {
+        let query = Tag.tagsTable.filter(Tag.idColumn == tag.id).delete()
+        let query2 = Entry.tagEntriesTable.filter(Entry.idColumn == tag.id).delete()
+        let query3 = TagAlias.tagAliasesTable.filter(TagAlias.tagIdColumn == tag.id).delete()
+        let query4 = Tag.tagParentsTable.filter(
+            Tag.childIdColumn == tag.id || Tag.parentIdColumn == tag.id
+        ).delete()
+        if let db = self.library.db {
+            try db.run(query)
+            try db.run(query2)
+            try db.run(query3)
+            try db.run(query4)
+        }
+        self.refresh()
     }
 }
 

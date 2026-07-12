@@ -101,6 +101,7 @@ class Tag: Identifiable, Equatable {
         self.name = realName
     }
     
+    @available(*, deprecated)
     func delete() throws {
         let query = Tag.tagsTable.filter(Tag.idColumn == self.id).delete()
         let query2 = Entry.tagEntriesTable.filter(Entry.idColumn == self.id).delete()

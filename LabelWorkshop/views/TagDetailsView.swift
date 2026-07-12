@@ -233,7 +233,7 @@ struct TagDetailsView: View {
                 ) {
                     Button(role: .destructive, action: {
                         do {
-                            try tag.delete()
+                            try self.library.tags.delete(tag)
                             tagDeleteConfirmation = false
                             dismiss()
                         } catch {print(error)}
