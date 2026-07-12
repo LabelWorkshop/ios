@@ -15,7 +15,7 @@ struct TagManagerView: View {
             ScrollView {
                 VStack {
                     ForEach($tags, id: \.id){ $tag in
-                        NavigationLink(destination: TagDetailsView(tag: tag)){
+                        NavigationLink(destination: TagDetailsView(library: library, tag: tag)){
                             TagView(tag: tag, fullWidth: true)
                         }
                     }
@@ -30,10 +30,10 @@ struct TagManagerView: View {
                         Image(systemName: "plus")
                     }
                     .sheet(isPresented: $showNewTag) {
-                        let newTag = library.newTag("New Tag")
+                        let newTag = library.tags.new("New Tag")
                         if let newTag = newTag {
                             NavigationView {
-                                TagDetailsView(tag: newTag)
+                                TagDetailsView(library: library, tag: newTag)
                                 .toolbar {
                                     ToolbarItem(placement: .navigationBarTrailing){
                                         CloseButton(dismiss: dismiss)
@@ -49,7 +49,7 @@ struct TagManagerView: View {
                     CloseButton(dismiss: dismiss)
                 }
             }.onAppear {
-                self.tags = Tag.fetchAll(library: library)
+                self.tags = library.tags.all
             }
         }
     }

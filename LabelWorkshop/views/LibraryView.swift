@@ -81,7 +81,7 @@ struct LibraryView: View {
                 .sheet(isPresented: $showTagfilter) {
                     TagFilterView(tags: $tags, tagFilters: $tagFilters)
                     .task {
-                        self.tags = Tag.fetchAll(library: self.library)
+                        self.tags = self.library.tags.all
                     }
                 }
             }

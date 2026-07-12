@@ -184,6 +184,7 @@ class Tag: Identifiable, Equatable {
         }
     }
     
+    @available(*, deprecated)
     func getParentTags() -> [Tag] {
         var parentTags: [Tag] = []
         let query = Tag.tagParentsTable
@@ -200,6 +201,7 @@ class Tag: Identifiable, Equatable {
         return parentTags
     }
     
+    @available(*, deprecated)
     func setParentTags(_ parentTags: [Tag]) {
         let currentParentTags = self.getParentTags()
         for parentTag in parentTags {
@@ -234,6 +236,7 @@ class Tag: Identifiable, Equatable {
         }
     }
     
+    @available(*, deprecated)
     func getCategories() -> [Tag] {
         var tags: [Tag] = []
         let parentTags: [Tag] = self.getParentTags()
@@ -245,6 +248,7 @@ class Tag: Identifiable, Equatable {
         return tags
     }
     
+    @available(*, deprecated)
     static func getNoCategoryTags(_ tags: [Tag]) -> [Tag] {
         var noCategoryTags: [Tag] = []
         for tag in tags {
@@ -255,10 +259,37 @@ class Tag: Identifiable, Equatable {
         return noCategoryTags
     }
     
+    static func getNoCategoryTags(library: Library, tags: [Tag]) -> [Tag] {
+        var noCategoryTags: [Tag] = []
+        for tag in tags {
+            if library.tags.getCategories(of: tag).isEmpty {
+                noCategoryTags.append(tag)
+            }
+        }
+        return noCategoryTags
+    }
+    
+    @available(*, deprecated)
     static func getAllCategories(_ tags: [Tag]) -> [TagCategorySet] {
         var categories: [TagCategorySet] = []
         for tag in tags {
             let tagCategories = tag.getCategories()
+            for category in tagCategories {
+                let existingCategory = categories.filter{ $0.parent.id == category.id }
+                if (existingCategory.isEmpty) {
+                    categories.append(TagCategorySet(parent: category, children: [tag]))
+                } else {
+                    existingCategory.first!.children.append(tag)
+                }
+            }
+        }
+        return categories
+    }
+    
+    static func getAllCategories(library: Library, tags: [Tag]) -> [TagCategorySet] {
+        var categories: [TagCategorySet] = []
+        for tag in tags {
+            let tagCategories = library.tags.getCategories(of: tag)
             for category in tagCategories {
                 let existingCategory = categories.filter{ $0.parent.id == category.id }
                 if (existingCategory.isEmpty) {

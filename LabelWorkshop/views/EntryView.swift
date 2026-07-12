@@ -20,7 +20,7 @@ struct EntryView: View {
                 VStack(spacing: 8) {
                     Text("Tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                     HFlow {
-                        ForEach(Tag.getNoCategoryTags(self.tags)) { tag in
+                        ForEach(Tag.getNoCategoryTags(library: self.entry.library, tags: self.tags)) { tag in
                             Menu {
                                 Button(role: .destructive, action: {
                                     self.entry.tags.remove(tag)
@@ -35,7 +35,7 @@ struct EntryView: View {
                         }
                     }
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    ForEach(Tag.getAllCategories(self.tags), id: \.parent.id) { category in
+                    ForEach(Tag.getAllCategories(library: self.entry.library, tags: self.tags), id: \.parent.id) { category in
                         Text(category.parent.name).font(.title2).frame(maxWidth: .infinity, alignment: .leading)
                         HFlow {
                             ForEach(category.children) { tag in
@@ -65,7 +65,7 @@ struct EntryView: View {
                         NavigationView {
                             ScrollView {
                                 VStack {
-                                    ForEach(Tag.fetchAll(library: self.entry.library)) { tag in
+                                    ForEach(self.entry.library.tags.all) { tag in
                                         Button(action: {
                                             tags.filter { $0.id == tag.id }.count == 0 ? self.entry.tags.add(tag) : ()
                                             tags.append(tag)

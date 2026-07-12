@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TagDetailsView: View {
     let tag: Tag
+    let library: Library
     
     @State private var name: String
     @State private var shorthand: String
@@ -19,15 +20,16 @@ struct TagDetailsView: View {
     @State private var tagColors: [TagColor]
     @State var tagDetailsTab = 0
     
-    init(tag: Tag) {
+    init(library: Library, tag: Tag) {
         self.tag = tag
+        self.library = library
         self.name = tag.realName
         self.shorthand = tag.shorthand ?? ""
         self.colors = tag.colors
         self.isCategory = tag.isCategory
         self.tagColors = tag.library?.tagColors?.colors ?? []
         self.aliases = tag.getAliases()
-        self.parentTags = tag.getParentTags()
+        self.parentTags = self.library.tags.getParentTags(of: tag)
     }
     
     var body: some View {
@@ -175,7 +177,7 @@ struct TagDetailsView: View {
                                 NavigationView {
                                     ScrollView {
                                         VStack {
-                                            ForEach(Tag.fetchAll(library: tag.library!)) { tag in
+                                            ForEach(self.library.tags.all) { tag in
                                                 Button(action: {
                                                     parentTags.filter({$0.id == tag.id}).count == 0 ? parentTags.append(tag) : ()
                                                     showTagParentSelector = false
@@ -242,13 +244,14 @@ struct TagDetailsView: View {
             }
         }
         .onAppear {
+            self.parentTags = self.library.tags.getParentTags(of: tag)
             self.disambiguationId = tag.disambiguationId
             updateName()
         }
         .onChange(of: disambiguationId) { _ in
             self.disambiguationName = nil
             if let disambiguationId = disambiguationId {
-                let tag: Tag? = Tag.fetch(library: tag.library!, id: disambiguationId)
+                let tag: Tag? = self.library.tags.getById(id: disambiguationId)
                 if let tag = tag {
                     self.disambiguationName = tag.name
                 }
@@ -276,7 +279,7 @@ struct TagDetailsView: View {
             try tag.setColumn(column: Tag.disambiguationIdColumn, value: self.disambiguationId)
             tag.setAliases(self.aliases)
             try tag.setColor(self.colors)
-            tag.setParentTags(self.parentTags)
+            self.library.tags.setParentTags(tag: self.tag, parentTags: self.parentTags)
         } catch {print(error)}
         dismiss()
     }

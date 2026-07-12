@@ -146,6 +146,7 @@ class Library: Hashable, Identifiable {
         }
     }
     
+    @available(*, deprecated)
     func newTag(_ name: String) -> Tag? {
         let sequenceQuery = Library.sequenceTable.filter(Library.nameColumn == "tags")
         do {
