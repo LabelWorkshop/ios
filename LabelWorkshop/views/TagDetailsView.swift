@@ -56,6 +56,7 @@ struct TagDetailsView: View {
                 Picker("", selection: $tagDetailsTab) {
                     Text("General").tag(0)
                     Text("Parent Tags").tag(1)
+                    Text("Alias").tag(2)
                 }.pickerStyle(SegmentedPickerStyle())
                 if tagDetailsTab == 0 {
                     VStack {
@@ -105,36 +106,8 @@ struct TagDetailsView: View {
                                 Toggle("Is Category?", isOn: $isCategory).labelsHidden()
                             }.frame(maxHeight: .infinity, alignment: .top)
                         }
-                        VStack {
-                            Text("Aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                            VStack {
-                                ForEach($aliases){ $alias in
-                                    HStack {
-                                        TextField("Alias", text: $alias.name)
-                                        Button(role: .destructive, action: {
-                                            if let index = aliases.firstIndex(where: {$0.id == alias.id}) {
-                                                aliases.remove(at: index)
-                                            }
-                                        }) {
-                                            Image(systemName: "minus")
-                                                .frame(minHeight: 0, maxHeight: .infinity)
-                                        }
-                                        .tint(.red)
-                                        .buttonStyle(.bordered)
-                                    }
-                                }
-                                Button(action: {
-                                    aliases.append(TagAlias(id: Int.random(in: (-9999)..<(-1)), name: "", tagId: tag.id))
-                                }) {
-                                    Label("Add Alias", systemImage: "plus")
-                                        .frame(minWidth: 0, maxWidth: .infinity)
-                                }
-                                .tint(.blue)
-                                .buttonStyle(.bordered)
-                            }
-                        }
                     }
-                } else {
+                } else if tagDetailsTab == 1 {
                     VStack {
                         Text("Parent Tags").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 8)
@@ -201,6 +174,35 @@ struct TagDetailsView: View {
                                     }
                                 }
                             }
+                        }
+                    }
+                } else if tagDetailsTab == 2 {
+                    VStack {
+                        Text("Aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                        VStack {
+                            ForEach($aliases){ $alias in
+                                HStack {
+                                    TextField("Alias", text: $alias.name)
+                                    Button(role: .destructive, action: {
+                                        if let index = aliases.firstIndex(where: {$0.id == alias.id}) {
+                                            aliases.remove(at: index)
+                                        }
+                                    }) {
+                                        Image(systemName: "minus")
+                                            .frame(minHeight: 0, maxHeight: .infinity)
+                                    }
+                                    .tint(.red)
+                                    .buttonStyle(.bordered)
+                                }
+                            }
+                            Button(action: {
+                                aliases.append(TagAlias(id: Int.random(in: (-9999)..<(-1)), name: "", tagId: tag.id))
+                            }) {
+                                Label("Add Alias", systemImage: "plus")
+                                    .frame(minWidth: 0, maxWidth: .infinity)
+                            }
+                            .tint(.blue)
+                            .buttonStyle(.bordered)
                         }
                     }
                 }
