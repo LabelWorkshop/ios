@@ -2,12 +2,6 @@ import SQLite
 import struct Foundation.Date
 
 class FieldType: Identifiable {
-    static let textFieldsTable: Table = Table("text_field_templates")
-    
-    static let idColumn: Expression = Expression<Int>("id")
-    static let nameColumn: Expression = Expression<String>("name")
-    static let isMultilineColumn: Expression = Expression<Bool>("is_multiline")
-    
     let id: Int
     let name: String
     
@@ -29,15 +23,6 @@ class Field: Identifiable, Hashable {
         hasher.combine(id)
     }
     
-    static let textFieldsTable: Table = Table("text_fields")
-    static let dateFieldsTable: Table = Table("datetime_fields")
-    
-    static let isMultilineColumn: Expression = Expression<Bool>("is_multiline")
-    static let idColumn: Expression = Expression<Int>("id")
-    static let nameColumn: Expression = Expression<String>("name")
-    static let entryIdColumn: Expression = Expression<Int>("entry_id")
-    static let textValueColumn: Expression = Expression<String?>("value")
-    
     var id: Int
     var entryId: Int
     var name: String
@@ -49,9 +34,9 @@ class Field: Identifiable, Hashable {
             value ?? ""
         }
         set {
-            let query = Field.textFieldsTable
-                .filter(Field.idColumn == self.id)
-                .update(Field.textValueColumn <- newValue)
+            let query = TextFieldsTable.table
+                .filter(TextFieldsTable.id == self.id)
+                .update(TextFieldsTable.value <- newValue)
             do {
                 try self.entry.library.db!.run(query)
                 self.value = newValue

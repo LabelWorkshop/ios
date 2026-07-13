@@ -8,10 +8,6 @@ class Entry {
     var tags: EntryTagManager!
     let library: Library
     
-    static var tagEntriesTable: Table = Table("tag_entries")
-    static var idColumn = Expression<Int>("tag_id")
-    static var entryColumn = Expression<Int>("entry_id")
-    
     init (library: Library, path: String, id: Int) {
         self.path = path
         self.library = library
@@ -22,11 +18,11 @@ class Entry {
     
     @available(*, deprecated)
     func getTags() -> [Tag] {
-        let query = Entry.tagEntriesTable.select(*).filter(Entry.entryColumn == self.id)
+        let query = TagEntriesTable.table.select(*).filter(TagEntriesTable.entryId == self.id)
         var tags: [Tag] = []
         do {
             for rawTag in try self.library.db!.prepare(query) {
-                let tag = Tag.fetch(library: self.library, id: rawTag[Entry.idColumn])
+                let tag = Tag.fetch(library: self.library, id: rawTag[EntriesTable.id])
                 if let tag = tag {
                     tags.append(tag)
                 }
@@ -37,16 +33,16 @@ class Entry {
     
     func getFields() -> [Field] {
         var fields: [Field] = []
-        let query = Field.textFieldsTable
-            .select(*).filter(Field.entryIdColumn == self.id)
+        let query = TextFieldsTable.table
+            .select(*).filter(TextFieldsTable.entryId == self.id)
         do {
             for rawField in try self.library.db!.prepare(query) {
                 let field = Field(
-                    id: rawField[Field.idColumn],
+                    id: rawField[TextFieldsTable.id],
                     entryId: self.id,
-                    name: rawField[Field.nameColumn],
+                    name: rawField[TextFieldsTable.name],
                     entry: self,
-                    value: rawField[Field.textValueColumn],
+                    value: rawField[TextFieldsTable.value],
                 )
                 fields.append(field)
             }
@@ -55,11 +51,11 @@ class Entry {
     }
     
     func addField(_ type: FieldType) -> Field? {
-        let query = Field.textFieldsTable.insert(
-            Field.isMultilineColumn <- false,
-            Field.entryIdColumn <- self.id,
-            Field.nameColumn <- type.name,
-            Field.textValueColumn <- ""
+        let query = TextFieldsTable.table.insert(
+            TextFieldsTable.isMultiline <- false,
+            TextFieldsTable.entryId <- self.id,
+            TextFieldsTable.name <- type.name,
+            TextFieldsTable.value <- ""
         )
         do {
             let id: Int64? = try self.library.db!.run(query)
@@ -77,28 +73,25 @@ class Entry {
     }
     
     func deleteField(_ id: Int) throws {
-        let query = Field.textFieldsTable
-            .filter(Field.idColumn == id)
+        let query = TextFieldsTable.table
+            .filter(TextFieldsTable.id == id)
             .delete()
         try self.library.db!.run(query)
     }
     
     func delete() {
         let queries = [
-            Table("boolean_fields")
-                .filter(Expression<Int>("entry_id") == self.id)
+            DateFieldsTable.table
+                .filter(EntriesTable.id == self.id)
                 .delete(),
-            Table("datetime_fields")
-                .filter(Expression<Int>("entry_id") == self.id)
+            TextFieldsTable.table
+                .filter(EntriesTable.id == self.id)
                 .delete(),
-            Table("text_fields")
-                .filter(Expression<Int>("entry_id") == self.id)
+            TagEntriesTable.table
+                .filter(EntriesTable.id == self.id)
                 .delete(),
-            Table("tag_entries")
-                .filter(Expression<Int>("entry_id") == self.id)
-                .delete(),
-            Library.entriesTable
-                .filter(Library.entryIdColumn == self.id)
+            EntriesTable.table
+                .filter(EntriesTable.id == self.id)
                 .delete()
         ]
         do {
@@ -110,7 +103,7 @@ class Entry {
     
     @available(*, deprecated)
     func addTag(_ tag: Tag) {
-        let query = Entry.tagEntriesTable.insert(Entry.idColumn <- tag.id, Entry.entryColumn <- self.id)
+        let query = TagEntriesTable.table.insert(EntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.id)
         do {
             try self.library.db!.run(query)
         } catch {print(error)}
@@ -118,9 +111,9 @@ class Entry {
     
     @available(*, deprecated)
     func removeTag(_ tag: Tag) {
-        let query = Entry.tagEntriesTable
-            .filter(Entry.idColumn == tag.id)
-            .filter(Entry.entryColumn == self.id)
+        let query = TagEntriesTable.table
+            .filter(EntriesTable.id == tag.id)
+            .filter(TagEntriesTable.entryId == self.id)
             .delete()
         do {
             try self.library.db!.run(query)
