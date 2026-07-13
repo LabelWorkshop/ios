@@ -40,11 +40,20 @@ struct AboutView: View {
                 }.frame(maxWidth: .infinity, alignment: .center)
             }
             .navigationTitle("About")
+            .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing){
                     CloseButton(dismiss: dismiss)
                 }
+            }.preferredColorScheme(.dark)
+        }
+        .background {
+            VStack {
+                Image("LabelSky")
+                    .opacity(0.5)
+                Spacer()
             }
+            .background(.black)
         }
     }
 }
