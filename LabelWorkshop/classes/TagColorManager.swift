@@ -4,23 +4,23 @@ class TagColorManager {
     
     init(library: Library) {
         self.library = library
-        let query = TagColor.tagColorsTable.select(
-            TagColor.primaryColumn,
-            TagColor.secondaryColumn,
-            TagColor.slugColumn,
-            TagColor.namespaceColumn,
-            TagColor.nameColumn
+        let query = TagColorsTable.table.select(
+            TagColorsTable.primary,
+            TagColorsTable.secondary,
+            TagColorsTable.slug,
+            TagColorsTable.namespace,
+            TagColorsTable.name
         )
         do {
             for rawColor in try library.db!.prepare(query) {
-                let namespace = rawColor[TagColor.namespaceColumn]
-                let slug = rawColor[TagColor.slugColumn]
+                let namespace = rawColor[TagColorsTable.namespace]
+                let slug = rawColor[TagColorsTable.slug]
                 self.colors.append(
                     TagColor(
                         namespace: namespace,
                         slug: slug,
-                        primaryColor: rawColor[TagColor.primaryColumn],
-                        secondaryColor: rawColor[TagColor.secondaryColumn]
+                        primaryColor: rawColor[TagColorsTable.primary],
+                        secondaryColor: rawColor[TagColorsTable.secondary]
                     )
                 )
             }

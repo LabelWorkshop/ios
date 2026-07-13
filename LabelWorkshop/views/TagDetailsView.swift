@@ -280,10 +280,10 @@ struct TagDetailsView: View {
     
     func confirmEdits() {
         do {
-            try tag.setColumn(column: Tag.nameColumn, value: self.name)
-            try tag.setColumn(column: Tag.shorthandColumn, value: self.shorthand)
-            try tag.setColumn(column: Tag.isCategoryColumn, value: self.isCategory)
-            try tag.setColumn(column: Tag.disambiguationIdColumn, value: self.disambiguationId)
+            try tag.setColumn(column: TagsTable.name, value: self.name)
+            try tag.setColumn(column: TagsTable.shorthand, value: self.shorthand)
+            try tag.setColumn(column: TagsTable.isCategory, value: self.isCategory)
+            try tag.setColumn(column: TagsTable.disambiguationId, value: self.disambiguationId)
             tag.setAliases(self.aliases)
             try tag.setColor(self.colors)
             self.library.tags.setParentTags(tag: self.tag, parentTags: self.parentTags)

@@ -33,13 +33,7 @@ class TagColor: Hashable, Identifiable {
         secondaryColor: nil
     )
     
-    static var tagColorsTable: Table = Table("tag_colors")
-    static var slugColumn = Expression<String>("slug")
-    static var namespaceColumn = Expression<String>("namespace")
-    static var primaryColumn = Expression<String>("primary")
-    static var secondaryColumn = Expression<String?>("secondary")
-    static var colorBorderColumn = Expression<Bool>("color_border")
-    static var nameColumn = Expression<String>("name")
+    
     
     static var defaults = [
         [

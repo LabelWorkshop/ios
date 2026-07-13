@@ -16,11 +16,11 @@ class EntryTagManager {
     
     /// Refresh the list of tags
     func refresh() {
-        let query = Entry.tagEntriesTable.select(*).filter(Entry.entryColumn == self.entry.id)
+        let query = TagEntriesTable.table.select(*).filter(TagEntriesTable.entryId == self.entry.id)
         var tags: [Tag] = []
         do {
             for rawTag in try self.entry.library.db!.prepare(query) {
-                let tag = self.entry.library.tags.getById(id: rawTag[Entry.idColumn])
+                let tag = self.entry.library.tags.getById(id: rawTag[EntriesTable.id])
                 if let tag = tag {
                     tags.append(tag)
                 }
@@ -48,7 +48,7 @@ class EntryTagManager {
             return
         }
         
-        let query = Entry.tagEntriesTable.insert(Entry.idColumn <- tag.id, Entry.entryColumn <- self.entry.id)
+        let query = TagEntriesTable.table.insert(EntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.entry.id)
         do {
             try self.entry.library.db!.run(query)
         } catch {print(error)}
@@ -56,9 +56,9 @@ class EntryTagManager {
     }
     
     func remove(_ tag: Tag) {
-        let query = Entry.tagEntriesTable
-            .filter(Entry.idColumn == tag.id)
-            .filter(Entry.entryColumn == self.entry.id)
+        let query = TagEntriesTable.table
+            .filter(EntriesTable.id == tag.id)
+            .filter(TagEntriesTable.entryId == self.entry.id)
             .delete()
         do {
             try self.entry.library.db!.run(query)

@@ -33,13 +33,13 @@ extension Connection {
     
     public var databaseVersion: Int {
         get {
-            if let row = try? self.pluck(Library.versionTable.filter(Library.versionKeyColumn == "CURRENT")) {
-                return row[Library.versionValueColumn]
+            if let row = try? self.pluck(VersionTable.table.filter(VersionTable.key == "CURRENT")) {
+                return row[VersionTable.value]
             }
             return 0
         }
-        set { _ = Library.versionTable.filter(Library.versionKeyColumn == "CURRENT")
-            .update(Library.versionValueColumn <- Int(newValue))
+        set { _ = VersionTable.table.filter(VersionTable.key == "CURRENT")
+            .update(VersionTable.value <- Int(newValue))
         }
     }
 }
@@ -65,23 +65,6 @@ class Library: Hashable, Identifiable {
     
     var thumbnailCache: EntryThumbnailCache = EntryThumbnailCache()
     
-    static var versionTable: Table = Table("versions")
-    static var versionKeyColumn = Expression<String>("key")
-    static var versionValueColumn = Expression<Int>("value")
-    
-    static var preferencesTable: Table = Table("preferences")
-    static var preferenceKeyColumn = Expression<String>("key")
-    static var preferenceValueColumn = Expression<String>("value")
-    
-    static var entriesTable: Table = Table("entries")
-    static var pathColumn = Expression<String>("path")
-    static var filenameColumn = Expression<String>("filename")
-    static var entryIdColumn = Expression<Int>("id")
-    
-    static var sequenceTable = Table("sqlite_sequence")
-    static var nameColumn = Expression<String?>("name")
-    static var sequenceColumn = Expression<Int?>("seq")
-    
     init(bookmarkKey: String) {
         self.bookmarkKey = bookmarkKey
         self.bookmark = loadBookmark(key: self.bookmarkKey)
@@ -102,11 +85,11 @@ class Library: Hashable, Identifiable {
             self.db = try Connection(dbFile)
             try migrate(isNew: isNew)
             // Get Field Types
-            for rawFieldType in try self.db!.prepare(FieldType.textFieldsTable) {
+            for rawFieldType in try self.db!.prepare(TextFieldsTable.table) {
                 self.fieldTypes.append(
                     FieldType(
-                        id: rawFieldType[FieldType.idColumn],
-                        name: rawFieldType[FieldType.nameColumn]
+                        id: rawFieldType[TextFieldsTable.id],
+                        name: rawFieldType[TextFieldsTable.name]
                     )
                 )
             }
@@ -168,9 +151,9 @@ class Library: Hashable, Identifiable {
         if self.db == nil { throw LibraryError.databaseInvalid }
         var entries: [Entry] = []
         do {
-            for rawEntry in try self.db!.prepare(Library.entriesTable.limit(limit)) {
-                let path: String = rawEntry[Library.pathColumn]
-                let id: Int = rawEntry[Library.entryIdColumn]
+            for rawEntry in try self.db!.prepare(EntriesTable.table.limit(limit)) {
+                let path: String = rawEntry[EntriesTable.path]
+                let id: Int = rawEntry[EntriesTable.id]
                 entries.append(Entry(library: self, path: path, id: id))
             }
         } catch {
@@ -189,15 +172,15 @@ class Library: Hashable, Identifiable {
     
     @available(*, deprecated)
     func newTag(_ name: String) -> Tag? {
-        let sequenceQuery = Library.sequenceTable.filter(Library.nameColumn == "tags")
+        let sequenceQuery = SequenceTable.table.filter(SequenceTable.name == "tags")
         do {
             if let raw = try self.db?.pluck(sequenceQuery) {
-                let sequence = raw[Library.sequenceColumn]
+                let sequence = raw[SequenceTable.sequence]
                 if let sequence = sequence {
-                    let query = Tag.tagsTable.insert(
-                        Tag.nameColumn <- name,
-                        Tag.isCategoryColumn <- false,
-                        Tag.isHiddenColumn <- false
+                    let query = TagsTable.table.insert(
+                        TagsTable.name <- name,
+                        TagsTable.isCategory <- false,
+                        TagsTable.isHidden <- false
                     )
                     try self.db?.run(query)
                     return Tag (
@@ -381,9 +364,9 @@ class Library: Hashable, Identifiable {
         );
         """)
         
-        let insertTagSequence = Library.sequenceTable.insert(
-            Library.nameColumn <- "tags",
-            Library.sequenceColumn <- 999
+        let insertTagSequence = SequenceTable.table.insert(
+            SequenceTable.name <- "tags",
+            SequenceTable.sequence <- 999
         )
         
         let insertNamespace1 = ColorNamespacesTable.table.insert(
@@ -417,77 +400,77 @@ class Library: Hashable, Identifiable {
         )
         
         for color in TagColor.defaults {
-            let insertColor = TagColor.tagColorsTable.insert(
-                TagColor.colorBorderColumn <- color["color_border"] as! Bool,
-                TagColor.nameColumn <- color["name"] as! String,
-                TagColor.namespaceColumn <- color["namespace"] as! String,
-                TagColor.primaryColumn <- color["primary"] as! String,
-                TagColor.secondaryColumn <- color["secondary"] as? String,
-                TagColor.slugColumn <- color["slug"] as! String
+            let insertColor = TagColorsTable.table.insert(
+                TagColorsTable.colorBorder <- color["color_border"] as! Bool,
+                TagColorsTable.name <- color["name"] as! String,
+                TagColorsTable.namespace <- color["namespace"] as! String,
+                TagColorsTable.primary <- color["primary"] as! String,
+                TagColorsTable.secondary <- color["secondary"] as? String,
+                TagColorsTable.slug <- color["slug"] as! String
             )
             executions.append(insertColor)
         }
         
-        let insertArchiveTag = Tag.tagsTable.insert(
-            Tag.idColumn <- 0,
-            Tag.nameColumn <- "Archived",
-            Tag.tagColorNamespaceColumn <- "tagstudio-standard",
-            Tag.tagColorSlugColumn <- "red",
-            Tag.isCategoryColumn <- false
+        let insertArchiveTag = TagsTable.table.insert(
+            TagsTable.id <- 0,
+            TagsTable.name <- "Archived",
+            TagsTable.colorNamespace <- "tagstudio-standard",
+            TagsTable.colorSlug <- "red",
+            TagsTable.isCategory <- false
         )
         
-        let insertFavoriteTag = Tag.tagsTable.insert(
-            Tag.idColumn <- 1,
-            Tag.nameColumn <- "Favorite",
-            Tag.tagColorNamespaceColumn <- "tagstudio-standard",
-            Tag.tagColorSlugColumn <- "yellow",
-            Tag.isCategoryColumn <- false
+        let insertFavoriteTag = TagsTable.table.insert(
+            TagsTable.id <- 1,
+            TagsTable.name <- "Favorite",
+            TagsTable.colorNamespace <- "tagstudio-standard",
+            TagsTable.colorSlug <- "yellow",
+            TagsTable.isCategory <- false
         )
         
-        let insertMetaTagsTag = Tag.tagsTable.insert(
-            Tag.idColumn <- 2,
-            Tag.nameColumn <- "Meta Tags",
-            Tag.isCategoryColumn <- true
+        let insertMetaTagsTag = TagsTable.table.insert(
+            TagsTable.id <- 2,
+            TagsTable.name <- "Meta Tags",
+            TagsTable.isCategory <- true
         )
         
-        let insertArchiveAlias1 = TagAlias.tagAliasesTable.insert(
-            TagAlias.idColumn <- 1,
-            TagAlias.nameColumn <- "Archive",
-            TagAlias.tagIdColumn <- 0
+        let insertArchiveAlias1 = TagAliasesTable.table.insert(
+            TagAliasesTable.id <- 1,
+            TagAliasesTable.name <- "Archive",
+            TagAliasesTable.tagId <- 0
         )
         
-        let insertMetaTagsAlias1 = TagAlias.tagAliasesTable.insert(
-            TagAlias.idColumn <- 2,
-            TagAlias.nameColumn <- "Meta",
-            TagAlias.tagIdColumn <- 2
+        let insertMetaTagsAlias1 = TagAliasesTable.table.insert(
+            TagAliasesTable.id <- 2,
+            TagAliasesTable.name <- "Meta",
+            TagAliasesTable.tagId <- 2
         )
         
-        let insertMetaTagsAlias2 = TagAlias.tagAliasesTable.insert(
-            TagAlias.idColumn <- 3,
-            TagAlias.nameColumn <- "Meta Tag",
-            TagAlias.tagIdColumn <- 2
+        let insertMetaTagsAlias2 = TagAliasesTable.table.insert(
+            TagAliasesTable.id <- 3,
+            TagAliasesTable.name <- "Meta Tag",
+            TagAliasesTable.tagId <- 2
         )
            
-        let insertFavoritesAlias1 = TagAlias.tagAliasesTable.insert(
-            TagAlias.idColumn <- 4,
-            TagAlias.nameColumn <- "Favorited",
-            TagAlias.tagIdColumn <- 1
+        let insertFavoritesAlias1 = TagAliasesTable.table.insert(
+            TagAliasesTable.id <- 4,
+            TagAliasesTable.name <- "Favorited",
+            TagAliasesTable.tagId <- 1
         )
         
-        let insertFavoritesAlias2 = TagAlias.tagAliasesTable.insert(
-            TagAlias.idColumn <- 5,
-            TagAlias.nameColumn <- "Favorites",
-            TagAlias.tagIdColumn <- 1
+        let insertFavoritesAlias2 = TagAliasesTable.table.insert(
+            TagAliasesTable.id <- 5,
+            TagAliasesTable.name <- "Favorites",
+            TagAliasesTable.tagId <- 1
         )
         
-        let insertFavoritesParent = Tag.tagParentsTable.insert(
-            Tag.parentIdColumn <- 1,
-            Tag.childIdColumn <- 2
+        let insertFavoritesParent = TagParentsTable.table.insert(
+            TagParentsTable.parentId <- 1,
+            TagParentsTable.childId <- 2
         )
         
-        let insertArchiveParent = Tag.tagParentsTable.insert(
-            Tag.parentIdColumn <- 0,
-            Tag.childIdColumn <- 2
+        let insertArchiveParent = TagParentsTable.table.insert(
+            TagParentsTable.parentId <- 0,
+            TagParentsTable.childId <- 2
         )
         
         // NOTE: value_type table skipped as it gets removed in a later db version
@@ -524,32 +507,32 @@ class Library: Hashable, Identifiable {
         
         // Populate filename column
         try self.safeGetEntries().forEach { entry in
-            let sqlEntry = Library.entriesTable.filter(Library.entryIdColumn == entry.id)
-            try self.db?.run(sqlEntry.update(Library.filenameColumn <- entry.fullPath?.lastPathComponent ?? ""))
+            let sqlEntry = EntriesTable.table.filter(EntriesTable.id == entry.id)
+            try self.db?.run(sqlEntry.update(EntriesTable.filename <- entry.fullPath?.lastPathComponent ?? ""))
         }
     }
     
     /// Migrate to database version 100
     private func migrateDB100() throws {
-        if let tagParents = try self.db?.prepare(Tag.tagParentsTable.select(*)) {
+        if let tagParents = try self.db?.prepare(TagParentsTable.table.select(*)) {
             for tagParent in tagParents {
-                try self.db?.run(Tag.tagParentsTable
+                try self.db?.run(TagParentsTable.table
                     .select(*)
-                    .filter(Tag.childIdColumn == tagParent[Tag.childIdColumn])
-                    .filter(Tag.parentIdColumn == tagParent[Tag.parentIdColumn])
-                    .update(Tag.childIdColumn <- tagParent[Tag.parentIdColumn],
-                            Tag.parentIdColumn <- tagParent[Tag.childIdColumn]))
+                    .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
+                    .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
+                    .update(TagParentsTable.childId <- tagParent[TagParentsTable.parentId],
+                            TagParentsTable.parentId <- tagParent[TagParentsTable.childId]))
             }
         }
     }
     
     /// Migrate to database version 101
     private func migrateDB101() throws {
-        let createVersions = Library.versionTable.create { table in
-            table.column(Library.versionKeyColumn, primaryKey: true)
-            table.column(Library.versionValueColumn, defaultValue: 0)
+        let createVersions = VersionTable.table.create { table in
+            table.column(VersionTable.key, primaryKey: true)
+            table.column(VersionTable.value, defaultValue: 0)
         }
-        let insertVersion = Library.versionTable.insert(Library.versionKeyColumn <- "CURRENT", Library.versionValueColumn <- 101)
+        let insertVersion = VersionTable.table.insert(VersionTable.key <- "CURRENT", VersionTable.value <- 101)
         try self.db?.run(createVersions)
         try self.db?.run(insertVersion)
     }
@@ -558,11 +541,11 @@ class Library: Hashable, Identifiable {
     private func migrateDB102() throws {
         // Delete TagParents with no existing parent
         do {
-            let tagParents = try self.db?.prepare(Tag.tagParentsTable.select(Tag.parentIdColumn, Tag.childIdColumn))
+            let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
             
             let validTagIds = try db?.prepare(
-                Tag.tagsTable.select(Tag.idColumn)
-            ).map { $0[Tag.idColumn] }
+                TagsTable.table.select(TagsTable.id)
+            ).map { $0[TagsTable.id] }
             
             guard let validTagIds, let tagParents else { throw LibraryError.databaseUnmigrateable }
             
@@ -571,14 +554,14 @@ class Library: Hashable, Identifiable {
             
             for tagParent in tagParentRows {
                 let isInvalid = validTagIds.filter { tagId in
-                    tagId == tagParent[Tag.parentIdColumn]
+                    tagId == tagParent[TagParentsTable.parentId]
                 }.isEmpty
                 
                 if isInvalid {
                     try self.db?.run(
-                        Tag.tagParentsTable
-                        .filter(Tag.childIdColumn == tagParent[Tag.childIdColumn])
-                        .filter(Tag.parentIdColumn == tagParent[Tag.parentIdColumn])
+                        TagParentsTable.table
+                        .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
+                        .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
                         .delete()
                     )
                 }
@@ -590,7 +573,7 @@ class Library: Hashable, Identifiable {
     /// Migrate to database version 103
     private func migrateDB103() throws {
         try self.db?.execute("ALTER TABLE tags ADD COLUMN is_hidden BOOLEAN NOT NULL DEFAULT 0")
-        try self.db?.run(Tag.tagsTable.filter(Tag.idColumn == 0).update(Tag.isHiddenColumn <- true))
+        try self.db?.run(TagsTable.table.filter(TagsTable.id == 0).update(TagsTable.isHidden <- true))
     }
     
     /// Migrate to database version 104
@@ -626,9 +609,9 @@ class Library: Hashable, Identifiable {
             
             // Change name values to title case
             // The only exception being URL field
-            let textFields = try self.db?.prepare(Field.textFieldsTable)
+            let textFields = try self.db?.prepare(TextFieldsTable.table)
             for textField in textFields! {
-                try self.db?.run(Field.textFieldsTable.update(Field.nameColumn <- textField[Field.nameColumn].capitalized.replacingOccurrences(of: "Url", with: "URL")))
+                try self.db?.run(TextFieldsTable.table.update(TextFieldsTable.name <- textField[TextFieldsTable.name].capitalized.replacingOccurrences(of: "Url", with: "URL")))
             }
             
             // Add correct is_multiline value to text_fields
@@ -639,14 +622,14 @@ class Library: Hashable, Identifiable {
                 }
             }
             for inproperFieldName in inproperFieldNames {
-                try self.db?.run(Field.textFieldsTable.select(Field.nameColumn == inproperFieldName).update(Field.isMultilineColumn <- true))
+                try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == inproperFieldName).update(TextFieldsTable.isMultiline <- true))
             }
             
             // Repair legacy Description fields to use multiline
-            try self.db?.run(Field.textFieldsTable.select(Field.nameColumn == "Description").select(Field.isMultilineColumn == false).update(Field.isMultilineColumn <- true))
+            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Description").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
             
             // Repair legacy Comments fields to use multiline
-            try self.db?.run(Field.textFieldsTable.select(Field.nameColumn == "Comments").select(Field.isMultilineColumn == false).update(Field.isMultilineColumn <- true))
+            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Comments").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
             
             // Add default field templates
             
