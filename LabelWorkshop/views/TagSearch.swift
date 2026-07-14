@@ -100,6 +100,16 @@ struct TagSearch: View {
                         Image(systemName: "chevron.backward")
                     }
                 }
+                ToolbarItem(placement: .bottomBar){
+                    Button(action: {
+                        for selection in self.selected {
+                            self.selectAction(selection)
+                            self.selected.removeAll()
+                        }
+                    }) {
+                        Text("Deselect All")
+                    }
+                }
             }
         }
         .searchable(text: $searchQuery)
