@@ -3,7 +3,6 @@ import SwiftUI
 struct LibraryView: View {
     let library: Library
     @State var entries: [Entry]
-    @State var tags: [Tag] = []
     
     @State private var showTagManager: Bool = false
     @State var showTagfilter: Bool = false
@@ -45,6 +44,18 @@ struct LibraryView: View {
         self.shownEntries = updatedEntriesList
     }
     
+    func addTagToFilter(_ tag: Tag) {
+        if tagFilters.contains(where: { filterTag in
+            return filterTag.id == tag.id
+        }) {
+            tagFilters.removeAll(where: { filterTag in
+                return filterTag.id == tag.id
+            })
+        } else {
+            tagFilters.append(tag)
+        }
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
@@ -79,10 +90,7 @@ struct LibraryView: View {
                 .tint(tagFilters.isEmpty ? .primary : .blue)
                 .popoverTip(tagFilterTip, arrowEdge: .bottom)
                 .sheet(isPresented: $showTagfilter) {
-                    TagFilterView(tags: $tags, tagFilters: $tagFilters)
-                    .task {
-                        self.tags = self.library.tags.all
-                    }
+                    TagSearch(library: self.library, tags: self.library.tags.all, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters)
                 }
             }
         }
