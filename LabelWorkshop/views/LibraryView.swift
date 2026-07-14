@@ -90,7 +90,7 @@ struct LibraryView: View {
                 .tint(tagFilters.isEmpty ? .primary : .blue)
                 .popoverTip(tagFilterTip, arrowEdge: .bottom)
                 .sheet(isPresented: $showTagfilter) {
-                    TagSearch(library: self.library, tags: self.library.tags.all, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters)
+                    TagSearch(library: self.library, tags: self.library.tags.all, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
                 }
             }
         }

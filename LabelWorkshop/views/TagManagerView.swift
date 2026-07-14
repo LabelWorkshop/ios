@@ -5,22 +5,21 @@ struct TagManagerView: View {
     let library: Library
     @State var tags: [Tag] = []
     @State var showNewTag: Bool = false
+    @State var showTagEditor: Bool = false
+    @State var editTag: Tag?
     
     init(library: Library) {
         self.library = library
     }
     
+    func openEditor(_ tag: Tag) {
+        editTag = tag
+        showTagEditor = true
+    }
+    
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack {
-                    ForEach($tags, id: \.id){ $tag in
-                        NavigationLink(destination: TagDetailsView(library: library, tag: tag)){
-                            TagView(tag: tag, fullWidth: true)
-                        }
-                    }
-                }.padding(16)
-            }
+            TagSearch(library: self.library, tags: self.library.tags.all, selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
             .navigationTitle("Tag Manager")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing){
@@ -34,11 +33,6 @@ struct TagManagerView: View {
                         if let newTag = newTag {
                             NavigationView {
                                 TagDetailsView(library: library, tag: newTag)
-                                .toolbar {
-                                    ToolbarItem(placement: .navigationBarTrailing){
-                                        CloseButton(dismiss: dismiss)
-                                    }
-                                }
                             }
                         }
                     }
@@ -51,6 +45,9 @@ struct TagManagerView: View {
             }.onAppear {
                 self.tags = library.tags.all
             }
+        }
+        .sheet(item: $editTag) { editTag in
+            TagDetailsView(library: library, tag: editTag)
         }
     }
 }
