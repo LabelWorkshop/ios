@@ -280,9 +280,9 @@ class Library: Hashable, Identifiable, ObservableObject {
                 self.migrationState = .MigrationFailed
                 skip = true
             }
-            if migration.legacyVersioning {
+            if migration.legacyVersioning && !skip {
                 self.db?.legacyDatabaseVersion = migration.version
-            } else {
+            } else if !skip {
                 self.db?.databaseVersion = migration.version
             }
             await MainActor.run { [i, requiedMigrations] in
