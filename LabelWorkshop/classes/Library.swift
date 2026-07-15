@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import SQLite
 import PathKit
 
@@ -227,7 +228,8 @@ class Library: Hashable, Identifiable, ObservableObject {
             Migration(version: 100, legacyVersioning: true, run: migrateDB100),
             Migration(version: 101, legacyVersioning: false, run: migrateDB101),
             Migration(version: 102, legacyVersioning: false, run: migrateDB102),
-            Migration(version: 103, legacyVersioning: false, run: migrateDB103)
+            Migration(version: 103, legacyVersioning: false, run: migrateDB103),
+            Migration(version: 104, legacyVersioning: false, run: migrateDB104)
         ]
         var requiedMigrations: [Migration] = []
         
@@ -522,6 +524,16 @@ class Library: Hashable, Identifiable, ObservableObject {
             TagParentsTable.childId <- 2
         )
         
+        let insertPreference1 = PreferenceTable.table.insert(
+            PreferenceTable.key <- "EXTENSION_LIST",
+            PreferenceTable.value <- "[\".json\", \".xmp\", \".aae\"]"
+        )
+        
+        let insertPreference2 = PreferenceTable.table.insert(
+            PreferenceTable.key <- "IS_EXCLUDE_LIST",
+            PreferenceTable.value <- "true"
+        )
+        
         // NOTE: value_type table skipped as it gets removed in a later db version
         
         executions.append(contentsOf: [
@@ -541,7 +553,9 @@ class Library: Hashable, Identifiable, ObservableObject {
             insertFavoritesAlias1,
             insertFavoritesAlias2,
             insertFavoritesParent,
-            insertArchiveParent
+            insertArchiveParent,
+            insertPreference1,
+            insertPreference2
         ])
         
         for execution in executions {
@@ -627,11 +641,38 @@ class Library: Hashable, Identifiable, ObservableObject {
     
     /// Migrate to database version 104
     private func migrateDB104() throws {
-        throw LibraryError.databaseInvalid // NOT COMPLETE SEE BELOW
-        // TODO: ADD TSIGNORE MIGRATION
-        do {
-            try self.db?.execute("DROP TABLE preferences")
-        } catch {print(error)}
+        let isExcludeRow = try self.db?.prepare("SELECT value FROM preferences WHERE key = 'IS_EXCLUDE_LIST'").makeIterator().next()
+        let isExcludeValue = isExcludeRow?[0] as? String
+        
+        var extensionsValue = "[]"
+        if let extensionsRow = try self.db?.prepare("SELECT value FROM preferences WHERE key = 'EXTENSION_LIST'") {
+            for row in extensionsRow {
+                extensionsValue = row[0] as! String
+            }
+        }
+        let extensions = try JSONDecoder().decode([String].self, from: Data(extensionsValue.utf8))
+        
+        var output = ""
+        
+        if let tsIgnoreTemplateAsset = NSDataAsset(name: "ts_ignore_template") {
+            output.append(String(data: tsIgnoreTemplateAsset.data, encoding: .utf8) ?? "")
+        }
+        
+        var prefix = ""
+        if isExcludeValue == "false" {
+            prefix = "!"
+            output.append("*\n")
+        }
+        output.append("\n")
+        for fileExtension in extensions {
+            output.append("\(prefix)*.\(fileExtension.replacingOccurrences(of: ".", with: ""))\n")
+        }
+        
+        if let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore") {
+            try output.write(to: ignoreFile, atomically: true, encoding: .utf8)
+        }
+
+        try self.db?.execute("DROP TABLE preferences")
     }
     
     /// Migrate to database version 200 UNCOMPLETE
