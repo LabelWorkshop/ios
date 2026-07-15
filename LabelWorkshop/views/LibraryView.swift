@@ -1,5 +1,10 @@
 import SwiftUI
 
+enum LibraryZoom: CGFloat {
+    case LargeEntries = 120
+    case MediumEntries = 70
+}
+
 struct LibraryView: View {
     let library: Library
     @State var entries: [Entry]
@@ -10,13 +15,11 @@ struct LibraryView: View {
     @State var searchQuery: String = ""
     @State var tagFilters: [Tag] = []
     @State var shownEntries: [Entry]
+    @State var zoom: LibraryZoom = .LargeEntries
     
     @Environment(\.openURL) private var openURL
     
     private let tagFilterTip = TagFilterTip()
-    
-    private static let columnsPhone: [GridItem] = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    private static let columnsPad: [GridItem] = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
     init(library: Library) {
         self.library = library
@@ -45,10 +48,15 @@ struct LibraryView: View {
         self.shownEntries = updatedEntriesList
     }
     
+    func getViewGrid(_ geometry: GeometryProxy) -> [GridItem] {
+        let entriesInRow = (geometry.size.width / CGFloat(self.zoom.rawValue)).rounded(.down)
+        return Array(repeating: GridItem(.flexible()), count: Int(entriesInRow))
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                LazyVGrid(columns: geometry.size.width < 600 ? LibraryView.columnsPhone : LibraryView.columnsPad) {
+                LazyVGrid(columns: getViewGrid(geometry)) {
                     ForEach(shownEntries, id: \.path) { entry in
                         GridRow {
                             EntryMiniView(entry: entry)
@@ -64,6 +72,15 @@ struct LibraryView: View {
                         showTagManager = true
                     }) {
                         Label("Tag Manager", systemImage: "tag")
+                    }
+                    Button(action: {
+                        if self.zoom == .LargeEntries {
+                            self.zoom = .MediumEntries
+                        } else {
+                            self.zoom = .LargeEntries
+                        }
+                    }) {
+                        Label(self.zoom == .LargeEntries ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .LargeEntries ? "minus.magnifyingglass" : "plus.magnifyingglass")
                     }
                 } label: {
                     Image(systemName: "ellipsis")
