@@ -72,7 +72,7 @@ struct ContentView: View {
             .navigationTitle("LabelWorkshop")
         } content: {
             if let selectedLibrary {
-                LibraryView(library: selectedLibrary).navigationSplitViewColumnWidth(700)
+                LibraryView(library: selectedLibrary)
             }
         } detail: {}
         .fileImporter(
