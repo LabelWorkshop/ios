@@ -38,13 +38,27 @@ extension Connection {
             }
             return 0
         }
-        set { _ = VersionTable.table.filter(VersionTable.key == "CURRENT")
-            .update(VersionTable.value <- Int(newValue))
+        set { try? self.run(VersionTable.table.filter(VersionTable.key == "CURRENT")
+            .update(VersionTable.value <- Int(newValue)))
         }
     }
 }
 
-class Library: Hashable, Identifiable {
+enum MigrationState {
+    case Unknown
+    case MigrationNotRequired
+    case MigrationInProgress
+    case MigrationComplete
+    case MigrationFailed
+}
+
+enum MigrationDebug {
+    case Default
+    case Delay
+    case Crash
+}
+
+class Library: Hashable, Identifiable, ObservableObject {
     static func == (lhs: Library, rhs: Library) -> Bool {
         return lhs.bookmarkKey == rhs.bookmarkKey
     }
@@ -60,6 +74,10 @@ class Library: Hashable, Identifiable {
     var fieldTypes: [FieldType] = []
     var ignoreList: String = ""
     var matcher: TSIgnoreMatcher?
+    var migrationState: MigrationState = .Unknown
+    var migrationDebug: MigrationDebug = .Default
+    var isNew: Bool
+    @Published var migrationPercentage = 0.0
     
     var tags: LibraryTagManager!
     
@@ -68,7 +86,7 @@ class Library: Hashable, Identifiable {
     init(bookmarkKey: String) {
         self.bookmarkKey = bookmarkKey
         self.bookmark = loadBookmark(key: self.bookmarkKey)
-        var isNew: Bool = false
+        self.isNew = false
         do {
             // Create TagStudio folder if not already created
             if let bookmark = bookmark {
@@ -78,12 +96,11 @@ class Library: Hashable, Identifiable {
                     withIntermediateDirectories: true,
                     attributes: nil
                 )
-                isNew = !FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").path)
+                self.isNew = !FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").path)
             }
             // Inititalize Database
             let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
             self.db = try Connection(dbFile)
-            try migrate(isNew: isNew)
             // Get Field Types
             for rawFieldType in try self.db!.prepare(TextFieldsTable.table) {
                 self.fieldTypes.append(
@@ -108,7 +125,9 @@ class Library: Hashable, Identifiable {
         ignoreList.append("\n.TagStudio\n.DS_Store")
         
         self.tagColors = TagColorManager(library: self)
-        self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark!)
+        if let bookmark = self.bookmark {
+            self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark)
+        }
         self.tags = LibraryTagManager(library: self)
     }
     
@@ -199,7 +218,7 @@ class Library: Hashable, Identifiable {
         return nil
     }
     
-    private func migrate(isNew: Bool = false) throws {
+    func migrate() async throws {
         print("Starting migration for \"\(self.getName())\"")
         
         let migrations = [
@@ -210,10 +229,11 @@ class Library: Hashable, Identifiable {
             Migration(version: 102, legacyVersioning: false, run: migrateDB102),
             Migration(version: 103, legacyVersioning: false, run: migrateDB103)
         ]
+        var requiedMigrations: [Migration] = []
         
         var databaseVersion: Int = 0
         
-        if !isNew && self.db?.legacyDatabaseVersion ?? 0 < 8 {
+        if !self.isNew && self.db?.legacyDatabaseVersion ?? 0 < 8 {
             throw LibraryError.databaseUnmigrateable
         }
         
@@ -225,26 +245,55 @@ class Library: Hashable, Identifiable {
         
         print("DB Version: \(databaseVersion)")
         
-        if !isNew && databaseVersion == 0 {throw LibraryError.databaseUnmigrateable}
+        if !self.isNew && databaseVersion == 0 {throw LibraryError.databaseUnmigrateable}
         
         var skip = false
         
         for migration in migrations {
-            if !(databaseVersion > migration.version) && !skip {
-                do {
+            if !(databaseVersion >= migration.version) {
+                requiedMigrations.append(migration)
+            }
+        }
+        if requiedMigrations.isEmpty {
+            self.migrationState = .MigrationNotRequired
+            return
+        } else {
+            self.migrationState = .MigrationInProgress
+        }
+            
+        var i = 1
+        for migration in requiedMigrations {
+            if self.migrationDebug == .Delay {
+                try await Task.sleep(for: .seconds(2))
+            }
+            do {
+                if self.migrationDebug == .Crash {
+                    throw LibraryError.databaseUnmigrateable
+                }
+                if !skip {
                     try migration.run()
                     print("Migrated to version \(migration.version)")
-                } catch {
-                    print("Migration to version \(migration.version) failed")
-                    print(error)
-                    skip = true
                 }
-                if migration.legacyVersioning {
-                    self.db?.legacyDatabaseVersion = migration.version
-                } else {
-                    self.db?.databaseVersion = migration.version
-                }
+            } catch {
+                print("Migration to version \(migration.version) failed")
+                print(error)
+                self.migrationState = .MigrationFailed
+                skip = true
             }
+            if migration.legacyVersioning {
+                self.db?.legacyDatabaseVersion = migration.version
+            } else {
+                self.db?.databaseVersion = migration.version
+            }
+            await MainActor.run { [i, requiedMigrations] in
+                self.migrationPercentage = Double(i) / Double(requiedMigrations.count) * 100
+            }
+            i+=1
+        }
+        if migrationState == .MigrationFailed {return}
+        await MainActor.run {
+            self.migrationState = .MigrationComplete
+            self.migrationPercentage = 100
         }
     }
     
