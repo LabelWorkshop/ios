@@ -10,6 +10,7 @@ struct LibraryView: View {
     @State var searchQuery: String = ""
     @State var tagFilters: [Tag] = []
     @State var shownEntries: [Entry]
+    @State var migrationClosed: Bool = false
     
     @Environment(\.openURL) private var openURL
     
@@ -48,6 +49,9 @@ struct LibraryView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
+                if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
+                    MigrationProgress(library: library, closed: $migrationClosed)
+                }
                 LazyVGrid(columns: geometry.size.width < 600 ? LibraryView.columnsPhone : LibraryView.columnsPad) {
                     ForEach(shownEntries, id: \.path) { entry in
                         GridRow {
@@ -90,7 +94,10 @@ struct LibraryView: View {
             TagManagerView(library: library)
         }
         .navigationTitle(library.getName())
-        .onAppear {
+        .task {
+            do {
+                try await library.migrate()
+            } catch {print(error)}
             self.entries = library.safeGetEntries()
         }
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
