@@ -606,34 +606,31 @@ class Library: Hashable, Identifiable, ObservableObject {
     /// Migrate to database version 102
     private func migrateDB102() throws {
         // Delete TagParents with no existing parent
-        do {
-            let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
+        let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
+        
+        let validTagIds = try db?.prepare(
+            TagsTable.table.select(TagsTable.id)
+        ).map { $0[TagsTable.id] }
+        
+        guard let validTagIds, let tagParents else { throw LibraryError.databaseUnmigrateable }
+        
+        
+        let tagParentRows = Array(tagParents)
+        
+        for tagParent in tagParentRows {
+            let isInvalid = validTagIds.filter { tagId in
+                tagId == tagParent[TagParentsTable.parentId]
+            }.isEmpty
             
-            let validTagIds = try db?.prepare(
-                TagsTable.table.select(TagsTable.id)
-            ).map { $0[TagsTable.id] }
-            
-            guard let validTagIds, let tagParents else { throw LibraryError.databaseUnmigrateable }
-            
-            
-            let tagParentRows = Array(tagParents)
-            
-            for tagParent in tagParentRows {
-                let isInvalid = validTagIds.filter { tagId in
-                    tagId == tagParent[TagParentsTable.parentId]
-                }.isEmpty
-                
-                if isInvalid {
-                    try self.db?.run(
-                        TagParentsTable.table
-                        .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
-                        .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
-                        .delete()
-                    )
-                }
+            if isInvalid {
+                try self.db?.run(
+                    TagParentsTable.table
+                    .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
+                    .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
+                    .delete()
+                )
             }
-            
-        } catch {print(error)}
+        }
     }
     
     /// Migrate to database version 103
