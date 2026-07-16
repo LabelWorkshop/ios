@@ -103,11 +103,11 @@ class Library: Hashable, Identifiable, ObservableObject {
             let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
             self.db = try Connection(dbFile)
             // Get Field Types
-            for rawFieldType in try self.db!.prepare(TextFieldsTable.table) {
+            for rawFieldType in try self.db!.prepare(TextFieldTemplatesTable.table) {
                 self.fieldTypes.append(
                     FieldType(
-                        id: rawFieldType[TextFieldsTable.id],
-                        name: rawFieldType[TextFieldsTable.name]
+                        id: rawFieldType[TextFieldTemplatesTable.id],
+                        name: rawFieldType[TextFieldTemplatesTable.name]
                     )
                 )
             }
@@ -229,7 +229,9 @@ class Library: Hashable, Identifiable, ObservableObject {
             Migration(version: 101, legacyVersioning: false, run: migrateDB101),
             Migration(version: 102, legacyVersioning: false, run: migrateDB102),
             Migration(version: 103, legacyVersioning: false, run: migrateDB103),
-            Migration(version: 104, legacyVersioning: false, run: migrateDB104)
+            Migration(version: 104, legacyVersioning: false, run: migrateDB104),
+            Migration(version: 200, legacyVersioning: false, run: migrateDB200),
+            Migration(version: 201, legacyVersioning: false, run: migrateDB201)
         ]
         var requiedMigrations: [Migration] = []
         
@@ -677,61 +679,120 @@ class Library: Hashable, Identifiable, ObservableObject {
     
     /// Migrate to database version 200 UNCOMPLETE
     private func migrateDB200() throws {
-        do {
-            // Drop unused tables
-            try self.db?.execute("DROP TABLE boolean_fields")
-            try self.db?.execute("DROP TABLE value_type")
-            
-            // Add name to text_fields and datetime_fields
-            try self.db?.execute("ALTER TABLE text_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
-            try self.db?.execute("ALTER TABLE datetime_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
-            
-            // Drop unused position column
-            try self.db?.execute("ALTER TABLE datetime_fields DROP COLUMN position")
-            try self.db?.execute("ALTER TABLE text_fields DROP COLUMN position")
-            
-            // Add is_multiline column to text_fields
-            try self.db?.execute("ALTER TABLE text_fields ADD COLUMN is_multiline BOOLEAN NOT NULL DEFAULT 0")
-            
-            // Move values from "type_key" to "name"
-            try self.db?.execute("UPDATE text_fields SET name = type_key")
-            try self.db?.execute("UPDATE datetime_fields SET name = type_key")
-            
-            // Change name values to title case
-            // The only exception being URL field
-            let textFields = try self.db?.prepare(TextFieldsTable.table)
-            for textField in textFields! {
-                try self.db?.run(TextFieldsTable.table.update(TextFieldsTable.name <- textField[TextFieldsTable.name].capitalized.replacingOccurrences(of: "Url", with: "URL")))
-            }
-            
-            // Add correct is_multiline value to text_fields
-            var inproperFieldNames: [String] = []
-            for field in LEGACY_FIELD_MAP.values {
+        try self.db?.execute("""
+            CREATE TABLE text_field_templates (
+                is_multiline BOOLEAN NOT NULL,
+                id INTEGER NOT NULL,
+                name VARCHAR NOT NULL,
+                PRIMARY KEY (id)
+            );
+            CREATE TABLE datetime_field_templates (
+                id INTEGER NOT NULL,
+                name VARCHAR NOT NULL,
+                PRIMARY KEY (id)
+            );
+        """)
+        
+        // Drop unused tables
+        try self.db?.execute("DROP TABLE IF EXISTS boolean_fields")
+        try self.db?.execute("DROP TABLE IF EXISTS value_type")
+        
+        // Add name to text_fields and datetime_fields
+        try self.db?.execute("ALTER TABLE text_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
+        try self.db?.execute("ALTER TABLE datetime_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
+        
+        // Drop unused position column
+        try self.db?.execute("ALTER TABLE datetime_fields DROP COLUMN position")
+        try self.db?.execute("ALTER TABLE text_fields DROP COLUMN position")
+        
+        // Add is_multiline column to text_fields
+        try self.db?.execute("ALTER TABLE text_fields ADD COLUMN is_multiline BOOLEAN NOT NULL DEFAULT 0")
+        
+        // Move values from "type_key" to "name"
+        try self.db?.execute("UPDATE text_fields SET name = type_key")
+        try self.db?.execute("UPDATE datetime_fields SET name = type_key")
+        
+        // Change name values to title case
+        // The only exception being URL field
+        let textFields = try self.db?.prepare(TextFieldsTable.table)
+        for textField in textFields! {
+            try self.db?.run(TextFieldsTable.table.update(TextFieldsTable.name <- textField[TextFieldsTable.name].capitalized.replacingOccurrences(of: "Url", with: "URL")))
+        }
+        
+        // Add correct is_multiline value to text_fields
+        var inproperFieldNames: [String] = []
+        for field in LEGACY_FIELD_MAP.values {
+            if field["type"] as! String == "text" {
                 if field["is_multiline"] as! Bool {
                     inproperFieldNames.append(field["name"] as! String)
                 }
             }
-            for inproperFieldName in inproperFieldNames {
-                try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == inproperFieldName).update(TextFieldsTable.isMultiline <- true))
-            }
-            
-            // Repair legacy Description fields to use multiline
-            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Description").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
-            
-            // Repair legacy Comments fields to use multiline
-            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Comments").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
-            
-            // Add default field templates
-            
-            
-            // Add indices for preformance
-            try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tags_name_shorthand ON tags (name, shorthand)")
-            try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_parents_child_id ON tag_parents (child_id)")
-            try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_entries_entry_id ON tag_entries (entry_id)")
-            
-            print("Migration 200 Complete")
-            
-        } catch {print(error)}
+        }
+        for inproperFieldName in inproperFieldNames {
+            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == inproperFieldName).update(TextFieldsTable.isMultiline <- true))
+        }
+        
+        // Repair legacy Description fields to use multiline
+        try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Description").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
+        
+        // Repair legacy Comments fields to use multiline
+        try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Comments").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
+        
+        // Add default field templates
+        let textFieldTemp = "INSERT INTO text_field_templates (is_multiline, id, name)"
+        
+        try self.db?.run("\(textFieldTemp) VALUES(0, 1, 'Title');")
+        try self.db?.run("\(textFieldTemp) VALUES(0, 2, 'Author');")
+        try self.db?.run("\(textFieldTemp) VALUES(0, 3, 'Artist');")
+        try self.db?.run("\(textFieldTemp) VALUES(0, 4, 'URL');")
+        try self.db?.run("\(textFieldTemp) VALUES(1, 5, 'Description');")
+        try self.db?.run("\(textFieldTemp) VALUES(1, 6, 'Notes');")
+        try self.db?.run("\(textFieldTemp) VALUES(1, 7, 'Comments');")
+        
+        try self.db?.run("INSERT INTO datetime_field_templates (id, name) VALUES(1, 'Date');")
+        
+        // Add indices for preformance
+        try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tags_name_shorthand ON tags (name, shorthand)")
+        try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_parents_child_id ON tag_parents (child_id)")
+        try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_entries_entry_id ON tag_entries (entry_id)")
+    }
+    
+    private func migrateDB201() throws {
+        try self.db?.execute("""
+        CREATE TABLE text_fields_new (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR NOT NULL,
+            entry_id INTEGER NOT NULL,
+            value VARCHAR,
+            is_multiline BOOLEAN NOT NULL,
+            FOREIGN KEY(entry_id) REFERENCES entries (id)
+        );
+        CREATE TABLE datetime_fields_new (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR NOT NULL,
+            entry_id INTEGER NOT NULL,
+            value VARCHAR,
+            FOREIGN KEY(entry_id) REFERENCES entries (id)
+        );
+        """)
+        
+        try self.db?.execute("""
+        INSERT INTO text_fields_new (id, name, entry_id, value, is_multiline)
+        SELECT id, name, entry_id, value, is_multiline
+        FROM text_fields
+        """)
+        
+        try self.db?.execute("DROP TABLE text_fields")
+        try self.db?.execute("ALTER TABLE text_fields_new RENAME TO text_fields")
+        
+        try self.db?.execute("""
+        INSERT INTO datetime_fields_new (id, name, entry_id, value)
+        SELECT id, name, entry_id, value
+        FROM datetime_fields
+        """)
+        
+        try self.db?.execute("DROP TABLE datetime_fields")
+        try self.db?.execute("ALTER TABLE datetime_fields_new RENAME TO datetime_fields")
     }
 }
 
