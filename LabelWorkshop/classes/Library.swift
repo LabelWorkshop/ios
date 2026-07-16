@@ -231,7 +231,8 @@ class Library: Hashable, Identifiable, ObservableObject {
             Migration(version: 103, legacyVersioning: false, run: migrateDB103),
             Migration(version: 104, legacyVersioning: false, run: migrateDB104),
             Migration(version: 200, legacyVersioning: false, run: migrateDB200),
-            Migration(version: 201, legacyVersioning: false, run: migrateDB201)
+            Migration(version: 201, legacyVersioning: false, run: migrateDB201),
+            Migration(version: 202, legacyVersioning: false, run: migrateDB202)
         ]
         var requiedMigrations: [Migration] = []
         
@@ -793,6 +794,34 @@ class Library: Hashable, Identifiable, ObservableObject {
         
         try self.db?.execute("DROP TABLE datetime_fields")
         try self.db?.execute("ALTER TABLE datetime_fields_new RENAME TO datetime_fields")
+    }
+    
+    private func migrateDB202() throws {
+        // Delete TagParents with no existing child
+        let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
+        
+        let validTagIds = try db?.prepare(
+            TagsTable.table.select(TagsTable.id)
+        ).map { $0[TagsTable.id] }
+        
+        guard let validTagIds, let tagParents else { throw LibraryError.databaseUnmigrateable }
+        
+        let tagParentRows = Array(tagParents)
+        
+        for tagParent in tagParentRows {
+            let isInvalid = validTagIds.filter { tagId in
+                tagId == tagParent[TagParentsTable.childId]
+            }.isEmpty
+            
+            if isInvalid {
+                try self.db?.run(
+                    TagParentsTable.table
+                    .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
+                    .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
+                    .delete()
+                )
+            }
+        }
     }
 }
 
