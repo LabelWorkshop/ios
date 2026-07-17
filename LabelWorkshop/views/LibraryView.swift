@@ -8,7 +8,6 @@ enum LibraryZoom: CGFloat {
 struct LibraryView: View {
     let library: Library
     @State var entries: [Entry]
-    @State var tags: [Tag] = []
     
     @State private var showTagManager: Bool = false
     @State var showTagfilter: Bool = false
@@ -16,6 +15,7 @@ struct LibraryView: View {
     @State var tagFilters: [Tag] = []
     @State var shownEntries: [Entry]
     @State var zoom: LibraryZoom = .LargeEntries
+    @State var tags: [Tag] = []
     
     @Environment(\.openURL) private var openURL
     
@@ -24,6 +24,7 @@ struct LibraryView: View {
     init(library: Library) {
         self.library = library
         self.entries = library.safeGetEntries(limit: 30)
+        self.tags = self.library.tags.all
         self.shownEntries = library.safeGetEntries()
         self.updateEntries()
     }
@@ -51,6 +52,18 @@ struct LibraryView: View {
     func getViewGrid(_ geometry: GeometryProxy) -> [GridItem] {
         let entriesInRow = (geometry.size.width / CGFloat(self.zoom.rawValue)).rounded(.down)
         return Array(repeating: GridItem(.flexible()), count: Int(entriesInRow))
+    }
+    
+    func addTagToFilter(_ tag: Tag) {
+        if tagFilters.contains(where: { filterTag in
+            return filterTag.id == tag.id
+        }) {
+            tagFilters.removeAll(where: { filterTag in
+                return filterTag.id == tag.id
+            })
+        } else {
+            tagFilters.append(tag)
+        }
     }
     
     var body: some View {
@@ -96,10 +109,11 @@ struct LibraryView: View {
                 .tint(tagFilters.isEmpty ? .primary : .blue)
                 .popoverTip(tagFilterTip, arrowEdge: .bottom)
                 .sheet(isPresented: $showTagfilter) {
-                    TagFilterView(tags: $tags, tagFilters: $tagFilters)
-                    .task {
-                        self.tags = self.library.tags.all
-                    }
+                    TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
+                        .onAppear {
+                            self.library.tags.refresh()
+                            self.tags = self.library.tags.all
+                        }
                 }
             }
         }

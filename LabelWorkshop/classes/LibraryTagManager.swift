@@ -76,32 +76,28 @@ class LibraryTagManager {
     }
     
     func new(_ name: String) -> Tag? {
-        let sequenceQuery = Library.sequenceTable.filter(Library.nameColumn == "tags")
         do {
-            if let raw = try self.library.db?.pluck(sequenceQuery) {
-                let sequence = raw[Library.sequenceColumn]
-                if let sequence = sequence {
-                    let query = Tag.tagsTable.insert(
-                        Tag.nameColumn <- name,
-                        Tag.isCategoryColumn <- false,
-                        Tag.isHiddenColumn <- false
-                    )
-                    try self.library.db?.run(query)
-                    return Tag (
-                        library: self.library,
-                        name: name,
-                        id: sequence,
-                        colors: TagColor.none,
-                        shorthand: nil,
-                        isCategory: false,
-                        disambiguationId: nil,
-                        isHidden: false
-                    )
-                }
-            }
-        } catch {print(error)}
-        return nil
-        self.refresh()
+            let query = Tag.tagsTable.insert(
+                Tag.nameColumn <- name,
+                Tag.isCategoryColumn <- false,
+                Tag.isHiddenColumn <- false
+            )
+            guard let rowId = try self.library.db?.run(query) else {return nil}
+            self.refresh()
+            return Tag (
+                library: self.library,
+                name: name,
+                id: Int(rowId),
+                colors: TagColor.none,
+                shorthand: nil,
+                isCategory: false,
+                disambiguationId: nil,
+                isHidden: false
+            )
+        } catch {
+            print(error)
+            return nil
+        }
     }
     
     func setParentTags(tag: Tag, parentTags: [Tag]) {

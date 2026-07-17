@@ -12,6 +12,12 @@ struct EntryView: View {
         self.entry = entry
     }
     
+    func addTag (_ tag: Tag) {
+        tags.filter { $0.id == tag.id }.count == 0 ? self.entry.tags.add(tag) : ()
+        tags.append(tag)
+        showTagSelector = false
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
@@ -62,32 +68,7 @@ struct EntryView: View {
                     .tint(.blue)
                     .containerShape(Capsule())
                     .sheet(isPresented: $showTagSelector) {
-                        NavigationView {
-                            ScrollView {
-                                VStack {
-                                    ForEach(self.entry.library.tags.all) { tag in
-                                        Button(action: {
-                                            tags.filter { $0.id == tag.id }.count == 0 ? self.entry.tags.add(tag) : ()
-                                            tags.append(tag)
-                                            showTagSelector = false
-                                        }) {
-                                            TagView(tag: tag, fullWidth: true)
-                                        }
-                                    }
-                                }
-                                .padding(16)
-                            }
-                            .toolbar {
-                                ToolbarItem(placement: .navigationBarLeading) {
-                                    Button(action: {
-                                        showTagSelector = false
-                                    }) {
-                                        Image(systemName: "chevron.backward")
-                                        Text("Back")
-                                    }
-                                }
-                            }
-                        }
+                        TagSearch(library: self.entry.library, tags: .constant(entry.library.tags.all), selectAction: addTag, multiSelect: false, selected: [], closeButton: true)
                     }
                 }
                 VStack(spacing: 8) {
