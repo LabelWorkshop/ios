@@ -16,44 +16,13 @@ struct TagSearch: View {
     let multiSelect: Bool
     let library: Library?
     let closeButton: Bool
-    var tags: [Tag]
-    @State var visableTags: [Tag]
-    @State var searchQuery: String = ""
-    @State var selected: [Tag]
-    
-    @Environment(\.dismiss) private var dismiss
-    
-    init(tags: [Tag], selectAction: @escaping (_: Tag) -> Void, multiSelect: Bool, selected: [Tag], closeButton: Bool) {
-        self.tags = tags
-        self.visableTags = tags
-        self.multiSelect = multiSelect
-        self.selectAction = selectAction
-        self.selected = selected
-        self.library = nil
-        self.closeButton = closeButton
-        self.updateTags()
-    }
-    
-    init(library: Library, tags: [Tag], selectAction: @escaping (_: Tag) -> Void, multiSelect: Bool, selected: [Tag], closeButton: Bool) {
-        self.tags = tags
-        self.visableTags = tags
-        self.multiSelect = multiSelect
-        self.selectAction = selectAction
-        self.selected = selected
-        self.library = library
-        self.closeButton = closeButton
-        self.updateTags()
-    }
-    
-    func updateTags() {
-        if searchQuery.isEmpty {
-            self.visableTags = self.tags
-            return
-        }
-        self.visableTags = self.tags.filter { tag in
+    @Binding var tags: [Tag]
+    var visableTags: [Tag] {
+        if searchQuery.isEmpty { return tags }
+        return tags.filter { tag in
             var fullName = tag.name
             if let library = self.library {
-                var parentNames: String = " "
+                var parentNames = " "
                 for parent in library.tags.getParentTags(of: tag) {
                     parentNames.append("\(parent.name) ")
                 }
@@ -61,6 +30,28 @@ struct TagSearch: View {
             }
             return fullName.lowercased().contains(searchQuery.lowercased())
         }
+    }
+    @State var searchQuery: String = ""
+    @State var selected: [Tag]
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    init(tags: Binding<[Tag]>, selectAction: @escaping (_: Tag) -> Void, multiSelect: Bool, selected: [Tag], closeButton: Bool) {
+        self._tags = tags
+        self.multiSelect = multiSelect
+        self.selectAction = selectAction
+        self.selected = selected
+        self.library = nil
+        self.closeButton = closeButton
+    }
+    
+    init(library: Library, tags: Binding<[Tag]>, selectAction: @escaping (_: Tag) -> Void, multiSelect: Bool, selected: [Tag], closeButton: Bool) {
+        self._tags = tags
+        self.multiSelect = multiSelect
+        self.selectAction = selectAction
+        self.selected = selected
+        self.library = library
+        self.closeButton = closeButton
     }
     
     func isTagSelected(_ tag: Tag) -> Bool {
@@ -107,7 +98,6 @@ struct TagSearch: View {
         .searchable(text: $searchQuery)
         .onChange(of: searchQuery) {
             print("[Search] Query changed")
-            self.updateTags()
         }
         .if(multiSelect || closeButton) { view in
             view.toolbar {

@@ -9,6 +9,7 @@ struct LibraryView: View {
     @State var searchQuery: String = ""
     @State var tagFilters: [Tag] = []
     @State var shownEntries: [Entry]
+    @State var tags: [Tag] = []
     
     @Environment(\.openURL) private var openURL
     
@@ -20,6 +21,7 @@ struct LibraryView: View {
     init(library: Library) {
         self.library = library
         self.entries = library.safeGetEntries(limit: 30)
+        self.tags = self.library.tags.all
         self.shownEntries = library.safeGetEntries()
         self.updateEntries()
     }
@@ -90,7 +92,11 @@ struct LibraryView: View {
                 .tint(tagFilters.isEmpty ? .primary : .blue)
                 .popoverTip(tagFilterTip, arrowEdge: .bottom)
                 .sheet(isPresented: $showTagfilter) {
-                    TagSearch(library: self.library, tags: self.library.tags.all, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
+                    TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
+                        .onAppear {
+                            self.library.tags.refresh()
+                            self.tags = self.library.tags.all
+                        }
                 }
             }
         }
