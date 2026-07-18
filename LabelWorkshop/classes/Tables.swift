@@ -26,6 +26,7 @@ struct EntriesTable {
     static let id = Expression<Int>("id")
     static let suffix = Expression<String>("suffix")
     static let dateCreated = Expression<Date>("date_created")
+    static let folderId = Expression<Int>("folder_id")
 }
 
 struct SequenceTable {

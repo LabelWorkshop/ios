@@ -151,7 +151,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         }
         
         for child in allChildren {
-            if !(self.matcher?.isIgnored(relativePath: child.url.relativePath, isDirectory: child.isDirectory) ?? true) && !child.isDirectory {
+            if !(self.matcher?.isIgnored(url: child.url) ?? true) && !child.isDirectory {
                 newFiles.append(child)
             }
         }
@@ -186,6 +186,32 @@ class Library: Hashable, Identifiable, ObservableObject {
             return try self.getEntries()
         } catch {
             return []
+        }
+    }
+    
+    func addEntry(path: URL) throws {
+        // Path
+        guard let filepath = path.absoluteString.replacingOccurrences(of: self.bookmark!.absoluteString, with: "").removingPercentEncoding else {
+            throw LibraryError.databaseInvalid
+        }
+        // Filename
+        let filename = path.lastPathComponent
+        
+        let insertEntry = EntriesTable.table.insert(
+            EntriesTable.path <- filepath,
+            EntriesTable.filename <- filename,
+            EntriesTable.dateCreated <- Date(),
+            EntriesTable.suffix <- path.pathExtension,
+            EntriesTable.folderId <- 0
+        )
+        
+        try self.db?.run(insertEntry)
+    }
+    
+    func addNewEntries() throws {
+        let newFiles = try findNewFiles()
+        for file in newFiles {
+            try self.addEntry(path: file.url)
         }
     }
     

@@ -128,8 +128,10 @@ struct LibraryView: View {
         .task {
             do {
                 try await library.migrate()
+                try library.addNewEntries()
             } catch {print(error)}
             self.entries = library.safeGetEntries()
+            updateEntries()
         }
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
         .searchPresentationToolbarBehavior(.avoidHidingContent)
