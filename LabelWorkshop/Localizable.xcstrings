@@ -5,35 +5,60 @@
 
     },
     "© purpletennisball 2026" : {
-
+      "shouldTranslate" : false
     },
     "About" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À propos"
+          }
+        }
+      }
     },
     "Add Alias" : {
 
     },
     "Add Field" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un Champ"
+          }
+        }
+      }
     },
     "Add Parent Tag" : {
 
     },
     "Add Tags" : {
-
-    },
-    "Alias" : {
-
-    },
-    "Aliases" : {
-
-    },
-    "Back" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Detour"
+            "value" : "Ajouter un Tag"
+          }
+        }
+      }
+    },
+    "Alias" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alias"
+          }
+        }
+      }
+    },
+    "Aliases" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alias"
           }
         }
       }
@@ -42,7 +67,14 @@
       "extractionState" : "manual"
     },
     "Color" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couleur"
+          }
+        }
+      }
     },
     "colors.none.none" : {
       "extractionState" : "manual",
@@ -51,6 +83,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Color"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune couleur"
           }
         }
       }
@@ -790,25 +828,60 @@
 
     },
     "Delete Tag" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer le Tag"
+          }
+        }
+      }
     },
     "Deselect All" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout désélect"
+          }
+        }
+      }
     },
     "Fields" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Champs"
+          }
+        }
+      }
     },
     "Filter by Tag" : {
 
     },
     "General" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Général"
+          }
+        }
+      }
     },
     "Github Repository" : {
 
     },
     "Is Category?" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Est une Catégorie?"
+          }
+        }
+      }
     },
     "LabelWorkshop" : {
       "shouldTranslate" : false
@@ -826,10 +899,24 @@
 
     },
     "Parent Tags" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tags Parents"
+          }
+        }
+      }
     },
     "Remove" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        }
+      }
     },
     "Selected" : {
 
@@ -838,7 +925,14 @@
 
     },
     "Tags" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tags"
+          }
+        }
+      }
     },
     "Tap the tag icon to filter through entries with the selected tags." : {
 
@@ -853,14 +947,34 @@
             "state" : "translated",
             "value" : "Version %@"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@"
+          }
         }
       }
     },
     "Zoom In" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom avant"
+          }
+        }
+      }
     },
     "Zoom Out" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom arrière"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
