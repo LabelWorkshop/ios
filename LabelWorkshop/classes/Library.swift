@@ -463,15 +463,24 @@ class Library: Hashable, Identifiable, ObservableObject {
         )
         
         for color in TagColor.defaults {
-            let insertColor = TagColorsTable.table.insert(
-                TagColorsTable.colorBorder <- color["color_border"] as! Bool,
-                TagColorsTable.name <- color["name"] as! String,
-                TagColorsTable.namespace <- color["namespace"] as! String,
-                TagColorsTable.primary <- color["primary"] as! String,
-                TagColorsTable.secondary <- color["secondary"] as? String,
-                TagColorsTable.slug <- color["slug"] as! String
-            )
-            executions.append(insertColor)
+            if let colorBorder = color["color_border"] as? Bool,
+               let name = color["name"] as? String,
+               let namespace = color["namespace"] as? String,
+               let primary = color["primary"] as? String,
+               let slug = color["slug"] as? String
+            {
+                let insertColor = TagColorsTable.table.insert(
+                    TagColorsTable.colorBorder <- colorBorder,
+                    TagColorsTable.name <- name,
+                    TagColorsTable.namespace <- namespace,
+                    TagColorsTable.primary <- primary,
+                    TagColorsTable.secondary <- color["secondary"] as? String,
+                    TagColorsTable.slug <- slug
+                )
+                executions.append(insertColor)
+            } else {
+                throw LibraryError.databaseUnmigrateable
+            }
         }
         
         let insertArchiveTag = TagsTable.table.insert(
@@ -674,7 +683,7 @@ class Library: Hashable, Identifiable, ObservableObject {
             var extensionsValue = "[]"
             if let extensionsRow = try self.db?.prepare("SELECT value FROM preferences WHERE key = 'EXTENSION_LIST'") {
                 for row in extensionsRow {
-                    extensionsValue = row[0] as! String
+                    extensionsValue = row[0] as? String ?? "[]"
                 }
             }
             let extensions = try JSONDecoder().decode([String].self, from: Data(extensionsValue.utf8))
@@ -749,9 +758,13 @@ class Library: Hashable, Identifiable, ObservableObject {
             // Add correct is_multiline value to text_fields
             var inproperFieldNames: [String] = []
             for field in LEGACY_FIELD_MAP.values {
-                if field["type"] as! String == "text" {
-                    if field["is_multiline"] as! Bool {
-                        inproperFieldNames.append(field["name"] as! String)
+                if field["type"] as? String == "text" {
+                    if let isMultiline = field["is_multiline"] as? Bool, let fieldName = field["name"] as? String {
+                        if isMultiline {
+                            inproperFieldNames.append(fieldName)
+                        }
+                    } else {
+                        throw LibraryError.databaseUnmigrateable
                     }
                 }
             }
