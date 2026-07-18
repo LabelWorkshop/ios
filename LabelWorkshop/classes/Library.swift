@@ -261,8 +261,6 @@ class Library: Hashable, Identifiable, ObservableObject {
         
         if !self.isNew && databaseVersion == 0 {throw LibraryError.databaseUnmigrateable}
         
-        var skip = false
-        
         for migration in migrations {
             if !(databaseVersion >= migration.version) {
                 requiedMigrations.append(migration)
@@ -284,19 +282,16 @@ class Library: Hashable, Identifiable, ObservableObject {
                 if self.migrationDebug == .Crash {
                     throw LibraryError.databaseUnmigrateable
                 }
-                if !skip {
-                    try migration.run()
-                    print("Migrated to version \(migration.version)")
-                }
+                try migration.run()
+                print("Migrated to version \(migration.version)")
             } catch {
                 print("Migration to version \(migration.version) failed")
-                print(error)
                 self.migrationState = .MigrationFailed
-                skip = true
+                throw error
             }
-            if migration.legacyVersioning && !skip {
+            if migration.legacyVersioning {
                 self.db?.legacyDatabaseVersion = migration.version
-            } else if !skip {
+            } else {
                 self.db?.databaseVersion = migration.version
             }
             await MainActor.run { [i, requiedMigrations] in
