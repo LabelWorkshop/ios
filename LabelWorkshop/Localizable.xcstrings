@@ -18,7 +18,14 @@
       }
     },
     "Add Alias" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un Alias"
+          }
+        }
+      }
     },
     "Add Field" : {
       "localizations" : {
@@ -31,7 +38,14 @@
       }
     },
     "Add Parent Tag" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un Tag Parent"
+          }
+        }
+      }
     },
     "Add Tags" : {
       "localizations" : {
@@ -64,7 +78,15 @@
       }
     },
     "Checking for Migration" : {
-      "extractionState" : "manual"
+      "extractionState" : "manual",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification de la migration"
+          }
+        }
+      }
     },
     "Color" : {
       "localizations" : {
@@ -101,6 +123,12 @@
             "state" : "translated",
             "value" : "Blonde"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blond"
+          }
         }
       }
     },
@@ -111,6 +139,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Brown"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marron"
           }
         }
       }
@@ -123,6 +157,12 @@
             "state" : "translated",
             "value" : "Cool Gray"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gris Froid"
+          }
         }
       }
     },
@@ -133,6 +173,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dark Brown"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marron Foncé"
           }
         }
       }
@@ -145,6 +191,12 @@
             "state" : "translated",
             "value" : "Light Brown"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marron Clair"
+          }
         }
       }
     },
@@ -156,6 +208,12 @@
             "state" : "translated",
             "value" : "Peach"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pêche"
+          }
         }
       }
     },
@@ -166,6 +224,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Warm Gray"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gris Chaud"
           }
         }
       }
@@ -195,6 +259,12 @@
             "state" : "translated",
             "value" : "Dark Gray"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gris Foncé"
+          }
         }
       }
     },
@@ -222,6 +292,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Light Gray"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gris Clair"
           }
         }
       }
@@ -251,6 +327,12 @@
             "state" : "translated",
             "value" : "Neon Amber"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ambre Néon"
+          }
         }
       }
     },
@@ -261,6 +343,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neon Blue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bleu Néon"
           }
         }
       }
@@ -273,6 +361,12 @@
             "state" : "translated",
             "value" : "Neon Cyan"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cyan Néon"
+          }
         }
       }
     },
@@ -283,6 +377,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neon Green"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vert Néon"
           }
         }
       }
@@ -295,6 +395,12 @@
             "state" : "translated",
             "value" : "Neon Indigo"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indigo Néon"
+          }
         }
       }
     },
@@ -305,6 +411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neon Lime"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Citron Néon"
           }
         }
       }
@@ -317,6 +429,12 @@
             "state" : "translated",
             "value" : "Neon Magenta"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magenta Néon"
+          }
         }
       }
     },
@@ -327,6 +445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neon Orange"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange Néon"
           }
         }
       }
@@ -339,6 +463,12 @@
             "state" : "translated",
             "value" : "Neon Pink"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rose Néon"
+          }
         }
       }
     },
@@ -349,6 +479,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neon Purple"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Violet Néon"
           }
         }
       }
@@ -361,6 +497,12 @@
             "state" : "translated",
             "value" : "Neon Red"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rouge Néon"
+          }
         }
       }
     },
@@ -371,6 +513,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neon Red Orange"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange Rouge Néon"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-neon.neon-rose" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neon Rose"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rose Vif Néon"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-neon.neon-sky" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neon Sky"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciel Néon"
           }
         }
       }
@@ -383,16 +565,11 @@
             "state" : "translated",
             "value" : "Neon Teal"
           }
-        }
-      }
-    },
-    "colors.tagstudio-neon.neon-white" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Neon White"
+            "value" : "Sarcelle Néon"
           }
         }
       }
@@ -405,104 +582,96 @@
             "state" : "translated",
             "value" : "Neon Yellow"
           }
-        }
-      }
-    },
-    "colors.tagstudio-pastels.coral" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coral"
+            "value" : "Jaune Néon"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.lavender" : {
+    "colors.tagstudio-pastels.apricot" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lavender"
+            "value" : "Apricot"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abricot"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.light-amber" : {
+    "colors.tagstudio-pastels.blue" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Light Amber"
+            "value" : "Blue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bleu"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.light-blue" : {
+    "colors.tagstudio-pastels.cyan" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Light Blue"
+            "value" : "Cyan"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cyan"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.light-green" : {
+    "colors.tagstudio-pastels.green" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Light Green"
+            "value" : "Green"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vert"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.light-lime" : {
+    "colors.tagstudio-pastels.indigo" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Light Lime"
+            "value" : "Indigo"
           }
-        }
-      }
-    },
-    "colors.tagstudio-pastels.light-orange" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Light Orange"
-          }
-        }
-      }
-    },
-    "colors.tagstudio-pastels.light-pink" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Light Pink"
-          }
-        }
-      }
-    },
-    "colors.tagstudio-pastels.light-yellow" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Light Yellow"
+            "value" : "Indigo"
           }
         }
       }
@@ -515,6 +684,29 @@
             "state" : "translated",
             "value" : "Lilac"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lilas"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-pastels.magenta" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magenta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magenta"
+          }
         }
       }
     },
@@ -526,82 +718,113 @@
             "state" : "translated",
             "value" : "Mint"
           }
-        }
-      }
-    },
-    "colors.tagstudio-pastels.salmon" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Salmon"
+            "value" : "Menthe"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.sky-blue" : {
+    "colors.tagstudio-pastels.peach" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sky Blue"
+            "value" : "Peach"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pêche"
           }
         }
       }
     },
-    "colors.tagstudio-shades.auburn" : {
+    "colors.tagstudio-pastels.pink" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auburn"
+            "value" : "Pink"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rose"
           }
         }
       }
     },
-    "colors.tagstudio-shades.berry" : {
+    "colors.tagstudio-pastels.rose" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Berry"
+            "value" : "Rose"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rose Vif"
           }
         }
       }
     },
-    "colors.tagstudio-shades.burgundy" : {
+    "colors.tagstudio-pastels.yellow" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Burgundy"
+            "value" : "Yellow"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaune"
           }
         }
       }
     },
-    "colors.tagstudio-shades.dark_lavender" : {
+    "colors.tagstudio-shades.aqua" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dark Lavender"
+            "value" : "Aqua"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aqua"
           }
         }
       }
     },
-    "colors.tagstudio-shades.dark-teal" : {
+    "colors.tagstudio-shades.maroon" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dark Teal"
+            "value" : "Maroon"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bordeaux"
           }
         }
       }
@@ -614,6 +837,12 @@
             "state" : "translated",
             "value" : "Navy"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bleu Marine"
+          }
         }
       }
     },
@@ -621,6 +850,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olive"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Olive"
@@ -635,6 +870,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Amber"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ambre"
           }
         }
       }
@@ -664,6 +905,12 @@
             "state" : "translated",
             "value" : "Cyan"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cyan"
+          }
         }
       }
     },
@@ -679,7 +926,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verte"
+            "value" : "Vert"
           }
         }
       }
@@ -688,6 +935,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indigo"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Indigo"
@@ -703,6 +956,12 @@
             "state" : "translated",
             "value" : "Lime"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Citron"
+          }
         }
       }
     },
@@ -710,6 +969,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magenta"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Magenta"
@@ -759,6 +1024,12 @@
             "state" : "translated",
             "value" : "Purple"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Violet"
+          }
         }
       }
     },
@@ -804,6 +1075,12 @@
             "state" : "translated",
             "value" : "Teal"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sarcelle"
+          }
         }
       }
     },
@@ -825,7 +1102,14 @@
       }
     },
     "Contributors" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contributeurs"
+          }
+        }
+      }
     },
     "Delete Tag" : {
       "localizations" : {
@@ -842,7 +1126,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tout désélect"
+            "value" : "Tout désélectionner"
           }
         }
       }
@@ -858,7 +1142,14 @@
       }
     },
     "Filter by Tag" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrer par Tag"
+          }
+        }
+      }
     },
     "General" : {
       "localizations" : {
@@ -871,7 +1162,14 @@
       }
     },
     "Github Repository" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dépôt Github"
+          }
+        }
+      }
     },
     "Is Category?" : {
       "localizations" : {
@@ -887,16 +1185,47 @@
       "shouldTranslate" : false
     },
     "Migration Complete" : {
-      "extractionState" : "manual"
+      "extractionState" : "manual",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Migration Terminée"
+          }
+        }
+      }
     },
     "Migration Failed" : {
-      "extractionState" : "manual"
+      "extractionState" : "manual",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la Migration"
+          }
+        }
+      }
     },
     "Migration in Progress" : {
-      "extractionState" : "manual"
+      "extractionState" : "manual",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Migration en cours"
+          }
+        }
+      }
     },
     "No preview available" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun aperçu disponible"
+          }
+        }
+      }
     },
     "Parent Tags" : {
       "localizations" : {
@@ -919,10 +1248,24 @@
       }
     },
     "Selected" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionné"
+          }
+        }
+      }
     },
     "Tag Manager" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestionnaire de Tags"
+          }
+        }
+      }
     },
     "Tags" : {
       "localizations" : {
@@ -935,10 +1278,24 @@
       }
     },
     "Tap the tag icon to filter through entries with the selected tags." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuyez sur l'icône de tag pour filtrer les entrées avec les tags sélectionnés."
+          }
+        }
+      }
     },
     "This tag and all references of it will be deleted." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce tag et toutes ses références seront supprimés."
+          }
+        }
+      }
     },
     "version %@" : {
       "localizations" : {
