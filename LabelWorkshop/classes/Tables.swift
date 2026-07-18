@@ -1,3 +1,4 @@
+import Foundation
 import SQLite
 
 struct ColorNamespacesTable {
@@ -23,6 +24,8 @@ struct EntriesTable {
     static let path = Expression<String>("path")
     static let filename = Expression<String>("filename")
     static let id = Expression<Int>("id")
+    static let suffix = Expression<String>("suffix")
+    static let dateCreated = Expression<Date>("date_created")
 }
 
 struct SequenceTable {
@@ -38,21 +41,21 @@ struct TagEntriesTable {
 }
 
 struct TagsTable {
-    static var table: Table = Table("tags")
-    static var id = Expression<Int>("id")
-    static var name = Expression<String>("name")
-    static var shorthand = Expression<String?>("shorthand")
-    static var colorNamespace = Expression<String?>("color_namespace")
-    static var colorSlug = Expression<String?>("color_slug")
-    static var isCategory = Expression<Bool>("is_category")
-    static var disambiguationId = Expression<Int?>("disambiguation_id")
-    static var isHidden = Expression<Bool?>("is_hidden")
+    static let table: Table = Table("tags")
+    static let id = Expression<Int>("id")
+    static let name = Expression<String>("name")
+    static let shorthand = Expression<String?>("shorthand")
+    static let colorNamespace = Expression<String?>("color_namespace")
+    static let colorSlug = Expression<String?>("color_slug")
+    static let isCategory = Expression<Bool>("is_category")
+    static let disambiguationId = Expression<Int?>("disambiguation_id")
+    static let isHidden = Expression<Bool?>("is_hidden")
 }
 
 struct TagParentsTable {
-    static var table = Table("tag_parents")
-    static var childId = Expression<Int>("child_id")
-    static var parentId = Expression<Int>("parent_id")
+    static let table = Table("tag_parents")
+    static let childId = Expression<Int>("child_id")
+    static let parentId = Expression<Int>("parent_id")
 }
 
 struct TagAliasesTable {
@@ -63,22 +66,22 @@ struct TagAliasesTable {
 }
 
 struct TagColorsTable {
-    static var table = Table("tag_colors")
-    static var slug = Expression<String>("slug")
-    static var namespace = Expression<String>("namespace")
-    static var primary = Expression<String>("primary")
-    static var secondary = Expression<String?>("secondary")
-    static var colorBorder = Expression<Bool>("color_border")
-    static var name = Expression<String>("name")
+    static let table = Table("tag_colors")
+    static let slug = Expression<String>("slug")
+    static let namespace = Expression<String>("namespace")
+    static let primary = Expression<String>("primary")
+    static let secondary = Expression<String?>("secondary")
+    static let colorBorder = Expression<Bool>("color_border")
+    static let name = Expression<String>("name")
 }
 
 struct TextFieldsTable {
     static let table = Table("text_fields")
-    static let isMultiline: Expression = Expression<Bool>("is_multiline")
-    static let id: Expression = Expression<Int>("id")
-    static let name: Expression = Expression<String>("name")
-    static let entryId: Expression = Expression<Int>("entry_id")
-    static let value: Expression = Expression<String?>("value")
+    static let isMultiline = Expression<Bool>("is_multiline")
+    static let id = Expression<Int>("id")
+    static let name = Expression<String>("name")
+    static let entryId = Expression<Int>("entry_id")
+    static let value = Expression<String?>("value")
 }
 
 struct DateFieldsTable {
@@ -91,7 +94,7 @@ struct DateFieldsTable {
 
 struct TextFieldTemplatesTable {
     static let table: Table = Table("text_field_templates")
-    static let id: Expression = Expression<Int>("id")
-    static let name: Expression = Expression<String>("name")
-    static let isMultiline: Expression = Expression<Bool>("is_multiline")
+    static let id = Expression<Int>("id")
+    static let name = Expression<String>("name")
+    static let isMultiline = Expression<Bool>("is_multiline")
 }
