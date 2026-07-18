@@ -20,7 +20,7 @@ class EntryTagManager {
         var tags: [Tag] = []
         do {
             for rawTag in try self.entry.library.db!.prepare(query) {
-                let tag = self.entry.library.tags.getById(id: rawTag[EntriesTable.id])
+                let tag = self.entry.library.tags.getById(id: rawTag[TagEntriesTable.id])
                 if let tag = tag {
                     tags.append(tag)
                 }
@@ -48,7 +48,7 @@ class EntryTagManager {
             return
         }
         
-        let query = TagEntriesTable.table.insert(EntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.entry.id)
+        let query = TagEntriesTable.table.insert(TagEntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.entry.id)
         do {
             try self.entry.library.db!.run(query)
         } catch {print(error)}
@@ -57,7 +57,7 @@ class EntryTagManager {
     
     func remove(_ tag: Tag) {
         let query = TagEntriesTable.table
-            .filter(EntriesTable.id == tag.id)
+            .filter(TagEntriesTable.id == tag.id)
             .filter(TagEntriesTable.entryId == self.entry.id)
             .delete()
         do {

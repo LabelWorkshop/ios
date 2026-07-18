@@ -103,7 +103,7 @@ class Entry {
     
     @available(*, deprecated)
     func addTag(_ tag: Tag) {
-        let query = TagEntriesTable.table.insert(EntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.id)
+        let query = TagEntriesTable.table.insert(TagEntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.id)
         do {
             try self.library.db!.run(query)
         } catch {print(error)}
@@ -112,7 +112,7 @@ class Entry {
     @available(*, deprecated)
     func removeTag(_ tag: Tag) {
         let query = TagEntriesTable.table
-            .filter(EntriesTable.id == tag.id)
+            .filter(TagEntriesTable.id == tag.id)
             .filter(TagEntriesTable.entryId == self.id)
             .delete()
         do {

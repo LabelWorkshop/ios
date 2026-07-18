@@ -90,7 +90,7 @@ class Tag: Identifiable, Equatable {
     @available(*, deprecated)
     func delete() throws {
         let query = TagsTable.table.filter(TagsTable.id == self.id).delete()
-        let query2 = TagEntriesTable.table.filter(EntriesTable.id == self.id).delete()
+        let query2 = TagEntriesTable.table.filter(TagEntriesTable.id == self.id).delete()
         let query3 = TagAliasesTable.table.filter(TagAliasesTable.tagId == self.id).delete()
         let query4 = TagParentsTable.table.filter(
             TagParentsTable.childId == self.id || TagParentsTable.parentId == self.id
