@@ -604,15 +604,18 @@ class Library: Hashable, Identifiable, ObservableObject {
     /// Migrate to database version 100
     private func migrateDB100() throws {
         try self.db?.transaction {
-            if let tagParents = try self.db?.prepare(TagParentsTable.table.select(*)) {
-                for tagParent in tagParents {
-                    try self.db?.run(TagParentsTable.table
-                        .select(*)
-                        .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
-                        .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
-                        .update(TagParentsTable.childId <- tagParent[TagParentsTable.parentId],
-                                TagParentsTable.parentId <- tagParent[TagParentsTable.childId]))
-                }
+            guard let tagParentsStmt = try self.db?.prepare(TagParentsTable.table.select(*)) else {
+                throw LibraryError.databaseUnmigrateable
+            }
+            let tagParents = Array(tagParentsStmt)
+            
+            for tagParent in tagParents {
+                try self.db?.run(TagParentsTable.table
+                    .select(*)
+                    .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
+                    .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
+                    .update(TagParentsTable.childId <- tagParent[TagParentsTable.parentId],
+                            TagParentsTable.parentId <- tagParent[TagParentsTable.childId]))
             }
         }
     }
