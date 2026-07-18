@@ -13,7 +13,7 @@ struct MigrationProgress: View {
                 Image(systemName: self.migrationIcon)
                     .symbolRenderingMode(.monochrome)
                     .foregroundStyle(migrationTint)
-                Text(self.migrationText)
+                Text(NSLocalizedString(self.migrationText, comment: ""))
                 Button (action: {
                     closed = true
                 }) {

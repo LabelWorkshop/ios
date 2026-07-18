@@ -38,6 +38,9 @@
         }
       }
     },
+    "Checking for Migration" : {
+      "extractionState" : "manual"
+    },
     "Color" : {
 
     },
@@ -809,6 +812,15 @@
     },
     "LabelWorkshop" : {
       "shouldTranslate" : false
+    },
+    "Migration Complete" : {
+      "extractionState" : "manual"
+    },
+    "Migration Failed" : {
+      "extractionState" : "manual"
+    },
+    "Migration in Progress" : {
+      "extractionState" : "manual"
     },
     "No preview available" : {
 
