@@ -219,8 +219,17 @@ class Library: Hashable, Identifiable, ObservableObject {
         return nil
     }
     
+    func backupDB() async throws {
+        let backupPath = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite.bak")
+        let backupDB = try Connection(backupPath?.path ?? "")
+        let backup = try self.db?.backup(usingConnection: backupDB)
+        try backup?.step()
+    }
+    
     func migrate() async throws {
         print("Starting migration for \"\(self.getName())\"")
+        
+        try await self.backupDB()
         
         let migrations = [
             Migration(version: 8, legacyVersioning: true, run: migrateDB8),
