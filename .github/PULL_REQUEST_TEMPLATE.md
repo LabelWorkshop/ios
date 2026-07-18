@@ -1,6 +1,6 @@
 # Details
 <!-- 
-Summerize your changes, why they were made, and what issue(s) will be closed.
+Summarize your changes, why they were made, and what issue(s) will be closed.
 
 Before submitting read [Contributation Guidelines](https://github.com/LabelWorkshop/ios/blob/main/CONTRIBUTING.md)
 -->
