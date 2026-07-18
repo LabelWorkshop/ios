@@ -229,8 +229,6 @@ class Library: Hashable, Identifiable, ObservableObject {
     func migrate() async throws {
         print("Starting migration for \"\(self.getName())\"")
         
-        try await self.backupDB()
-        
         let migrations = [
             Migration(version: 8, legacyVersioning: true, run: migrateDB8),
             Migration(version: 9, legacyVersioning: true, run: migrateDB9),
@@ -270,6 +268,7 @@ class Library: Hashable, Identifiable, ObservableObject {
             self.migrationState = .MigrationNotRequired
             return
         } else {
+            try await self.backupDB()
             self.migrationState = .MigrationInProgress
         }
             
