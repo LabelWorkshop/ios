@@ -561,46 +561,55 @@ class Library: Hashable, Identifiable, ObservableObject {
             insertPreference2
         ])
         
-        for execution in executions {
-            try self.db?.run(execution)
+        
+        try self.db?.transaction {
+            for execution in executions {
+                try self.db?.run(execution)
+            }
         }
     }
     
     /// Migrate to database version 9
     private func migrateDB9() throws {
-        // Add filename column to entries table
-        try self.db?.execute("ALTER TABLE entries ADD COLUMN filename TEXT NOT NULL DEFAULT ''")
-        
-        // Populate filename column
-        try self.safeGetEntries().forEach { entry in
-            let sqlEntry = EntriesTable.table.filter(EntriesTable.id == entry.id)
-            try self.db?.run(sqlEntry.update(EntriesTable.filename <- entry.fullPath?.lastPathComponent ?? ""))
+        try self.db?.transaction {
+            // Add filename column to entries table
+            try self.db?.execute("ALTER TABLE entries ADD COLUMN filename TEXT NOT NULL DEFAULT ''")
+            
+            // Populate filename column
+            try self.safeGetEntries().forEach { entry in
+                let sqlEntry = EntriesTable.table.filter(EntriesTable.id == entry.id)
+                try self.db?.run(sqlEntry.update(EntriesTable.filename <- entry.fullPath?.lastPathComponent ?? ""))
+            }
         }
     }
     
     /// Migrate to database version 100
     private func migrateDB100() throws {
-        if let tagParents = try self.db?.prepare(TagParentsTable.table.select(*)) {
-            for tagParent in tagParents {
-                try self.db?.run(TagParentsTable.table
-                    .select(*)
-                    .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
-                    .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
-                    .update(TagParentsTable.childId <- tagParent[TagParentsTable.parentId],
-                            TagParentsTable.parentId <- tagParent[TagParentsTable.childId]))
+        try self.db?.transaction {
+            if let tagParents = try self.db?.prepare(TagParentsTable.table.select(*)) {
+                for tagParent in tagParents {
+                    try self.db?.run(TagParentsTable.table
+                        .select(*)
+                        .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
+                        .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
+                        .update(TagParentsTable.childId <- tagParent[TagParentsTable.parentId],
+                                TagParentsTable.parentId <- tagParent[TagParentsTable.childId]))
+                }
             }
         }
     }
     
     /// Migrate to database version 101
     private func migrateDB101() throws {
-        let createVersions = VersionTable.table.create { table in
-            table.column(VersionTable.key, primaryKey: true)
-            table.column(VersionTable.value, defaultValue: 0)
+        try self.db?.transaction {
+            let createVersions = VersionTable.table.create { table in
+                table.column(VersionTable.key, primaryKey: true)
+                table.column(VersionTable.value, defaultValue: 0)
+            }
+            let insertVersion = VersionTable.table.insert(VersionTable.key <- "CURRENT", VersionTable.value <- 101)
+            try self.db?.run(createVersions)
+            try self.db?.run(insertVersion)
         }
-        let insertVersion = VersionTable.table.insert(VersionTable.key <- "CURRENT", VersionTable.value <- 101)
-        try self.db?.run(createVersions)
-        try self.db?.run(insertVersion)
     }
     
     /// Migrate to database version 102
@@ -610,78 +619,85 @@ class Library: Hashable, Identifiable, ObservableObject {
     }
     
     private func removeTagParentsOrphans(_ expression: SQLite.Expression<Int>) throws {
-        let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
-        
-        let validTagIds = try db?.prepare(
-            TagsTable.table.select(TagsTable.id)
-        ).map { $0[TagsTable.id] }
-        
-        guard let validTagIds, let tagParents else { throw LibraryError.databaseUnmigrateable }
-        
-        
-        let tagParentRows = Array(tagParents)
-        
-        for tagParent in tagParentRows {
-            let isInvalid = validTagIds.filter { tagId in
-                tagId == tagParent[expression]
-            }.isEmpty
+        try self.db?.transaction {
+            let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
             
-            if isInvalid {
-                try self.db?.run(
-                    TagParentsTable.table
-                    .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
-                    .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
-                    .delete()
-                )
+            let validTagIds = try db?.prepare(
+                TagsTable.table.select(TagsTable.id)
+            ).map { $0[TagsTable.id] }
+            
+            guard let validTagIds, let tagParents else { throw LibraryError.databaseUnmigrateable }
+            
+            
+            let tagParentRows = Array(tagParents)
+            
+            for tagParent in tagParentRows {
+                let isInvalid = validTagIds.filter { tagId in
+                    tagId == tagParent[expression]
+                }.isEmpty
+                
+                if isInvalid {
+                    try self.db?.run(
+                        TagParentsTable.table
+                            .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
+                            .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
+                            .delete()
+                    )
+                }
             }
         }
     }
     
     /// Migrate to database version 103
     private func migrateDB103() throws {
-        try self.db?.execute("ALTER TABLE tags ADD COLUMN is_hidden BOOLEAN NOT NULL DEFAULT 0")
-        try self.db?.run(TagsTable.table.filter(TagsTable.id == 0).update(TagsTable.isHidden <- true))
+        try self.db?.transaction {
+            try self.db?.execute("ALTER TABLE tags ADD COLUMN is_hidden BOOLEAN NOT NULL DEFAULT 0")
+            try self.db?.run(TagsTable.table.filter(TagsTable.id == 0).update(TagsTable.isHidden <- true))
+        }
     }
     
     /// Migrate to database version 104
     private func migrateDB104() throws {
-        let isExcludeRow = try self.db?.prepare("SELECT value FROM preferences WHERE key = 'IS_EXCLUDE_LIST'").makeIterator().next()
-        let isExcludeValue = isExcludeRow?[0] as? String
-        
-        var extensionsValue = "[]"
-        if let extensionsRow = try self.db?.prepare("SELECT value FROM preferences WHERE key = 'EXTENSION_LIST'") {
-            for row in extensionsRow {
-                extensionsValue = row[0] as! String
+        try self.db?.transaction {
+            let isExcludeRow = try self.db?.prepare("SELECT value FROM preferences WHERE key = 'IS_EXCLUDE_LIST'").makeIterator().next()
+            let isExcludeValue = isExcludeRow?[0] as? String
+            
+            var extensionsValue = "[]"
+            if let extensionsRow = try self.db?.prepare("SELECT value FROM preferences WHERE key = 'EXTENSION_LIST'") {
+                for row in extensionsRow {
+                    extensionsValue = row[0] as! String
+                }
             }
+            let extensions = try JSONDecoder().decode([String].self, from: Data(extensionsValue.utf8))
+            
+            var output = ""
+            
+            if let tsIgnoreTemplateAsset = NSDataAsset(name: "ts_ignore_template") {
+                output.append(String(data: tsIgnoreTemplateAsset.data, encoding: .utf8) ?? "")
+            }
+            
+            var prefix = ""
+            if isExcludeValue == "false" {
+                prefix = "!"
+                output.append("*\n")
+            }
+            output.append("\n")
+            for fileExtension in extensions {
+                output.append("\(prefix)*.\(fileExtension.replacingOccurrences(of: ".", with: ""))\n")
+            }
+            
+            if let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore") {
+                try output.write(to: ignoreFile, atomically: true, encoding: .utf8)
+            }
+            
+            try self.db?.execute("DROP TABLE preferences")
         }
-        let extensions = try JSONDecoder().decode([String].self, from: Data(extensionsValue.utf8))
-        
-        var output = ""
-        
-        if let tsIgnoreTemplateAsset = NSDataAsset(name: "ts_ignore_template") {
-            output.append(String(data: tsIgnoreTemplateAsset.data, encoding: .utf8) ?? "")
-        }
-        
-        var prefix = ""
-        if isExcludeValue == "false" {
-            prefix = "!"
-            output.append("*\n")
-        }
-        output.append("\n")
-        for fileExtension in extensions {
-            output.append("\(prefix)*.\(fileExtension.replacingOccurrences(of: ".", with: ""))\n")
-        }
-        
-        if let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore") {
-            try output.write(to: ignoreFile, atomically: true, encoding: .utf8)
-        }
-
-        try self.db?.execute("DROP TABLE preferences")
     }
     
     /// Migrate to database version 200 UNCOMPLETE
     private func migrateDB200() throws {
-        try self.db?.execute("""
+        try self.db?.transaction {
+            try self.db?.execute("""
             CREATE TABLE text_field_templates (
                 is_multiline BOOLEAN NOT NULL,
                 id INTEGER NOT NULL,
@@ -694,73 +710,75 @@ class Library: Hashable, Identifiable, ObservableObject {
                 PRIMARY KEY (id)
             );
         """)
-        
-        // Drop unused tables
-        try self.db?.execute("DROP TABLE IF EXISTS boolean_fields")
-        try self.db?.execute("DROP TABLE IF EXISTS value_type")
-        
-        // Add name to text_fields and datetime_fields
-        try self.db?.execute("ALTER TABLE text_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
-        try self.db?.execute("ALTER TABLE datetime_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
-        
-        // Drop unused position column
-        try self.db?.execute("ALTER TABLE datetime_fields DROP COLUMN position")
-        try self.db?.execute("ALTER TABLE text_fields DROP COLUMN position")
-        
-        // Add is_multiline column to text_fields
-        try self.db?.execute("ALTER TABLE text_fields ADD COLUMN is_multiline BOOLEAN NOT NULL DEFAULT 0")
-        
-        // Move values from "type_key" to "name"
-        try self.db?.execute("UPDATE text_fields SET name = type_key")
-        try self.db?.execute("UPDATE datetime_fields SET name = type_key")
-        
-        // Change name values to title case
-        // The only exception being URL field
-        let textFields = try self.db?.prepare(TextFieldsTable.table)
-        for textField in textFields! {
-            try self.db?.run(TextFieldsTable.table.update(TextFieldsTable.name <- textField[TextFieldsTable.name].capitalized.replacingOccurrences(of: "Url", with: "URL")))
-        }
-        
-        // Add correct is_multiline value to text_fields
-        var inproperFieldNames: [String] = []
-        for field in LEGACY_FIELD_MAP.values {
-            if field["type"] as! String == "text" {
-                if field["is_multiline"] as! Bool {
-                    inproperFieldNames.append(field["name"] as! String)
+            
+            // Drop unused tables
+            try self.db?.execute("DROP TABLE IF EXISTS boolean_fields")
+            try self.db?.execute("DROP TABLE IF EXISTS value_type")
+            
+            // Add name to text_fields and datetime_fields
+            try self.db?.execute("ALTER TABLE text_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
+            try self.db?.execute("ALTER TABLE datetime_fields ADD COLUMN name VARCHAR DEFAULT \"\"")
+            
+            // Drop unused position column
+            try self.db?.execute("ALTER TABLE datetime_fields DROP COLUMN position")
+            try self.db?.execute("ALTER TABLE text_fields DROP COLUMN position")
+            
+            // Add is_multiline column to text_fields
+            try self.db?.execute("ALTER TABLE text_fields ADD COLUMN is_multiline BOOLEAN NOT NULL DEFAULT 0")
+            
+            // Move values from "type_key" to "name"
+            try self.db?.execute("UPDATE text_fields SET name = type_key")
+            try self.db?.execute("UPDATE datetime_fields SET name = type_key")
+            
+            // Change name values to title case
+            // The only exception being URL field
+            let textFields = try self.db?.prepare(TextFieldsTable.table)
+            for textField in textFields! {
+                try self.db?.run(TextFieldsTable.table.update(TextFieldsTable.name <- textField[TextFieldsTable.name].capitalized.replacingOccurrences(of: "Url", with: "URL")))
+            }
+            
+            // Add correct is_multiline value to text_fields
+            var inproperFieldNames: [String] = []
+            for field in LEGACY_FIELD_MAP.values {
+                if field["type"] as! String == "text" {
+                    if field["is_multiline"] as! Bool {
+                        inproperFieldNames.append(field["name"] as! String)
+                    }
                 }
             }
+            for inproperFieldName in inproperFieldNames {
+                try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == inproperFieldName).update(TextFieldsTable.isMultiline <- true))
+            }
+            
+            // Repair legacy Description fields to use multiline
+            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Description").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
+            
+            // Repair legacy Comments fields to use multiline
+            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Comments").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
+            
+            // Add default field templates
+            let textFieldTemp = "INSERT INTO text_field_templates (is_multiline, id, name)"
+            
+            try self.db?.run("\(textFieldTemp) VALUES(0, 1, 'Title');")
+            try self.db?.run("\(textFieldTemp) VALUES(0, 2, 'Author');")
+            try self.db?.run("\(textFieldTemp) VALUES(0, 3, 'Artist');")
+            try self.db?.run("\(textFieldTemp) VALUES(0, 4, 'URL');")
+            try self.db?.run("\(textFieldTemp) VALUES(1, 5, 'Description');")
+            try self.db?.run("\(textFieldTemp) VALUES(1, 6, 'Notes');")
+            try self.db?.run("\(textFieldTemp) VALUES(1, 7, 'Comments');")
+            
+            try self.db?.run("INSERT INTO datetime_field_templates (id, name) VALUES(1, 'Date');")
+            
+            // Add indices for preformance
+            try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tags_name_shorthand ON tags (name, shorthand)")
+            try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_parents_child_id ON tag_parents (child_id)")
+            try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_entries_entry_id ON tag_entries (entry_id)")
         }
-        for inproperFieldName in inproperFieldNames {
-            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == inproperFieldName).update(TextFieldsTable.isMultiline <- true))
-        }
-        
-        // Repair legacy Description fields to use multiline
-        try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Description").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
-        
-        // Repair legacy Comments fields to use multiline
-        try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Comments").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
-        
-        // Add default field templates
-        let textFieldTemp = "INSERT INTO text_field_templates (is_multiline, id, name)"
-        
-        try self.db?.run("\(textFieldTemp) VALUES(0, 1, 'Title');")
-        try self.db?.run("\(textFieldTemp) VALUES(0, 2, 'Author');")
-        try self.db?.run("\(textFieldTemp) VALUES(0, 3, 'Artist');")
-        try self.db?.run("\(textFieldTemp) VALUES(0, 4, 'URL');")
-        try self.db?.run("\(textFieldTemp) VALUES(1, 5, 'Description');")
-        try self.db?.run("\(textFieldTemp) VALUES(1, 6, 'Notes');")
-        try self.db?.run("\(textFieldTemp) VALUES(1, 7, 'Comments');")
-        
-        try self.db?.run("INSERT INTO datetime_field_templates (id, name) VALUES(1, 'Date');")
-        
-        // Add indices for preformance
-        try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tags_name_shorthand ON tags (name, shorthand)")
-        try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_parents_child_id ON tag_parents (child_id)")
-        try self.db?.execute("CREATE INDEX IF NOT EXISTS idx_tag_entries_entry_id ON tag_entries (entry_id)")
     }
     
     private func migrateDB201() throws {
-        try self.db?.execute("""
+        try self.db?.transaction {
+            try self.db?.execute("""
         CREATE TABLE text_fields_new (
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             name VARCHAR NOT NULL,
@@ -777,24 +795,25 @@ class Library: Hashable, Identifiable, ObservableObject {
             FOREIGN KEY(entry_id) REFERENCES entries (id)
         );
         """)
-        
-        try self.db?.execute("""
+            
+            try self.db?.execute("""
         INSERT INTO text_fields_new (id, name, entry_id, value, is_multiline)
         SELECT id, name, entry_id, value, is_multiline
         FROM text_fields
         """)
-        
-        try self.db?.execute("DROP TABLE text_fields")
-        try self.db?.execute("ALTER TABLE text_fields_new RENAME TO text_fields")
-        
-        try self.db?.execute("""
+            
+            try self.db?.execute("DROP TABLE text_fields")
+            try self.db?.execute("ALTER TABLE text_fields_new RENAME TO text_fields")
+            
+            try self.db?.execute("""
         INSERT INTO datetime_fields_new (id, name, entry_id, value)
         SELECT id, name, entry_id, value
         FROM datetime_fields
         """)
-        
-        try self.db?.execute("DROP TABLE datetime_fields")
-        try self.db?.execute("ALTER TABLE datetime_fields_new RENAME TO datetime_fields")
+            
+            try self.db?.execute("DROP TABLE datetime_fields")
+            try self.db?.execute("ALTER TABLE datetime_fields_new RENAME TO datetime_fields")
+        }
     }
     
     private func migrateDB202() throws {
