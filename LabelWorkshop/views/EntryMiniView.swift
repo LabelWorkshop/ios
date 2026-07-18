@@ -17,7 +17,7 @@ struct EntryMiniView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color(UIColor.secondarySystemBackground), lineWidth: 1)
                 )
-                Text(entry.path)
+                Text(entry.fullPath?.lastPathComponent ?? entry.path)
                     .font(.caption)
                     .lineLimit(1)
                     .padding(EdgeInsets(top: 8, leading: 2, bottom: 4, trailing: 2))
