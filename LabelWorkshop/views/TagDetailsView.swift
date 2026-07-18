@@ -95,7 +95,6 @@ struct TagDetailsView: View {
                                                         showTagColorSelector = false
                                                     }) {
                                                         Image(systemName: "chevron.backward")
-                                                        Text("Back")
                                                     }
                                                 }
                                             }
@@ -169,7 +168,6 @@ struct TagDetailsView: View {
                                                     showTagParentSelector = false
                                                 }) {
                                                     Image(systemName: "chevron.backward")
-                                                    Text("Back")
                                                 }
                                             }
                                         }

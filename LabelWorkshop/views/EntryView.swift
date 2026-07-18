@@ -129,7 +129,6 @@ struct EntryView: View {
                                         showFieldTypeSelector = false
                                     }) {
                                         Image(systemName: "chevron.backward")
-                                        Text("Back")
                                     }
                                 }
                             }
