@@ -2,10 +2,7 @@ import SQLite
 import SwiftUI
 
 struct TagAlias: Identifiable {
-    static let tagAliasesTable = Table("tag_aliases")
-    static let nameColumn = Expression<String>("name")
-    static let tagIdColumn = Expression<Int>("tag_id")
-    static let idColumn = Expression<Int>("id")
+    
     
     var id: Int
     var name: String
@@ -21,10 +18,10 @@ struct TagAlias: Identifiable {
     
     mutating func setName(_ name: String) {
         do {
-            let query = TagAlias.tagAliasesTable
+            let query = TagAliasesTable.table
                 .select(*)
-                .filter(TagAlias.idColumn == self.id)
-                .update(TagAlias.nameColumn <- name)
+                .filter(TagAliasesTable.id == self.id)
+                .update(TagAliasesTable.name <- name)
             try tag?.library?.db?.run(query)
             self.name = name
         } catch {print(error)}
@@ -32,9 +29,9 @@ struct TagAlias: Identifiable {
     
     func delete() {
         do {
-            let query = TagAlias.tagAliasesTable
+            let query = TagAliasesTable.table
                 .select(*)
-                .filter(TagAlias.idColumn == id)
+                .filter(TagAliasesTable.id == id)
                 .delete()
             try tag?.library?.db?.run(query)
         } catch {print(error)}

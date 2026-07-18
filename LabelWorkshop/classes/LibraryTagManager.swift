@@ -16,27 +16,27 @@ class LibraryTagManager {
     
     func refresh() {
         var newTags: [Tag] = []
-        let query = Tag.tagsTable.select(
-            Tag.idColumn,
-            Tag.nameColumn,
-            Tag.shorthandColumn,
-            Tag.tagColorNamespaceColumn,
-            Tag.tagColorSlugColumn,
-            Tag.isCategoryColumn,
-            Tag.disambiguationIdColumn,
-            Tag.isHiddenColumn
+        let query = TagsTable.table.select(
+            TagsTable.id,
+            TagsTable.name,
+            TagsTable.shorthand,
+            TagsTable.colorNamespace,
+            TagsTable.colorSlug,
+            TagsTable.isCategory,
+            TagsTable.disambiguationId,
+            TagsTable.isHidden
         )
         do {
             for rawTag in try library.db!.prepare(query) {
-                let name = rawTag[Tag.nameColumn]
-                let namespace = rawTag[Tag.tagColorNamespaceColumn] ?? ""
-                let slug = rawTag[Tag.tagColorSlugColumn] ?? ""
+                let name = rawTag[TagsTable.name]
+                let namespace = rawTag[TagsTable.colorNamespace] ?? ""
+                let slug = rawTag[TagsTable.colorSlug] ?? ""
                 let colors = library.tagColors?.find(namespace: namespace, slug: slug) ?? TagColor.none
-                let shorthand = rawTag[Tag.shorthandColumn]
-                let isCategory = rawTag[Tag.isCategoryColumn]
-                let disambiguationId = rawTag[Tag.disambiguationIdColumn]
-                let isHidden = rawTag[Tag.isHiddenColumn]
-                let id = rawTag[Tag.idColumn]
+                let shorthand = rawTag[TagsTable.shorthand]
+                let isCategory = rawTag[TagsTable.isCategory]
+                let disambiguationId = rawTag[TagsTable.disambiguationId]
+                let isHidden = rawTag[TagsTable.isHidden]
+                let id = rawTag[TagsTable.id]
                 let tag = Tag(
                     library: self.library,
                     name: name,
@@ -61,12 +61,12 @@ class LibraryTagManager {
     
     func getParentTags(of: Tag) -> [Tag] {
         var parentTags: [Tag] = []
-        let query = Tag.tagParentsTable
-            .select(Tag.childIdColumn, Tag.parentIdColumn)
-            .filter(Tag.childIdColumn == of.id)
+        let query = TagParentsTable.table
+            .select(TagParentsTable.childId, TagParentsTable.parentId)
+            .filter(TagParentsTable.childId == of.id)
         do {
             for raw in try self.library.db!.prepare(query) {
-                let tag = self.getById(id: raw[Tag.parentIdColumn])
+                let tag = self.getById(id: raw[TagParentsTable.parentId])
                 if let tag = tag {
                     parentTags.append(tag)
                 }
@@ -77,10 +77,10 @@ class LibraryTagManager {
     
     func new(_ name: String) -> Tag? {
         do {
-            let query = Tag.tagsTable.insert(
-                Tag.nameColumn <- name,
-                Tag.isCategoryColumn <- false,
-                Tag.isHiddenColumn <- false
+            let query = TagsTable.table.insert(
+                TagsTable.name <- name,
+                TagsTable.isCategory <- false,
+                TagsTable.isHidden <- false
             )
             guard let rowId = try self.library.db?.run(query) else {return nil}
             self.refresh()
@@ -111,9 +111,9 @@ class LibraryTagManager {
                 }
             }
             if isNew {
-                let query = Tag.tagParentsTable.insert(
-                    Tag.parentIdColumn <- parentTag.id,
-                    Tag.childIdColumn <- tag.id
+                let query = TagParentsTable.table.insert(
+                    TagParentsTable.parentId <- parentTag.id,
+                    TagParentsTable.childId <- tag.id
                 )
                 do {
                     try self.library.db?.run(query)
@@ -124,8 +124,8 @@ class LibraryTagManager {
         for currentParentTag in currentParentTags {
             // Deleted Parent Tags
             if parentTags.filter({$0.id == currentParentTag.id}).count == 0 {
-                let query = Tag.tagParentsTable
-                    .filter(Tag.parentIdColumn == currentParentTag.id && Tag.childIdColumn == tag.id)
+                let query = TagParentsTable.table
+                    .filter(TagParentsTable.parentId == currentParentTag.id && TagParentsTable.childId == tag.id)
                     .delete()
                 do {
                     try self.library.db?.run(query)
@@ -146,11 +146,11 @@ class LibraryTagManager {
     }
     
     func delete(_ tag: Tag) throws {
-        let query = Tag.tagsTable.filter(Tag.idColumn == tag.id).delete()
-        let query2 = Entry.tagEntriesTable.filter(Entry.idColumn == tag.id).delete()
-        let query3 = TagAlias.tagAliasesTable.filter(TagAlias.tagIdColumn == tag.id).delete()
-        let query4 = Tag.tagParentsTable.filter(
-            Tag.childIdColumn == tag.id || Tag.parentIdColumn == tag.id
+        let query = TagsTable.table.filter(TagsTable.id == tag.id).delete()
+        let query2 = TagEntriesTable.table.filter(TagEntriesTable.entryId == tag.id).delete()
+        let query3 = TagAliasesTable.table.filter(TagAliasesTable.tagId == tag.id).delete()
+        let query4 = TagParentsTable.table.filter(
+            TagParentsTable.childId == tag.id || TagParentsTable.parentId == tag.id
         ).delete()
         if let db = self.library.db {
             try db.run(query)
