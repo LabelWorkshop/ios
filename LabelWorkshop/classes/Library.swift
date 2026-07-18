@@ -606,6 +606,10 @@ class Library: Hashable, Identifiable, ObservableObject {
     /// Migrate to database version 102
     private func migrateDB102() throws {
         // Delete TagParents with no existing parent
+        try removeTagParentsOrphans(TagParentsTable.parentId)
+    }
+    
+    private func removeTagParentsOrphans(_ expression: SQLite.Expression<Int>) throws {
         let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
         
         let validTagIds = try db?.prepare(
@@ -619,7 +623,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         
         for tagParent in tagParentRows {
             let isInvalid = validTagIds.filter { tagId in
-                tagId == tagParent[TagParentsTable.parentId]
+                tagId == tagParent[expression]
             }.isEmpty
             
             if isInvalid {
@@ -795,30 +799,7 @@ class Library: Hashable, Identifiable, ObservableObject {
     
     private func migrateDB202() throws {
         // Delete TagParents with no existing child
-        let tagParents = try self.db?.prepare(TagParentsTable.table.select(TagParentsTable.parentId, TagParentsTable.childId))
-        
-        let validTagIds = try db?.prepare(
-            TagsTable.table.select(TagsTable.id)
-        ).map { $0[TagsTable.id] }
-        
-        guard let validTagIds, let tagParents else { throw LibraryError.databaseUnmigrateable }
-        
-        let tagParentRows = Array(tagParents)
-        
-        for tagParent in tagParentRows {
-            let isInvalid = validTagIds.filter { tagId in
-                tagId == tagParent[TagParentsTable.childId]
-            }.isEmpty
-            
-            if isInvalid {
-                try self.db?.run(
-                    TagParentsTable.table
-                    .filter(TagParentsTable.childId == tagParent[TagParentsTable.childId])
-                    .filter(TagParentsTable.parentId == tagParent[TagParentsTable.parentId])
-                    .delete()
-                )
-            }
-        }
+        try removeTagParentsOrphans(TagParentsTable.childId)
     }
 }
 
