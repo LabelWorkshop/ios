@@ -91,7 +91,6 @@ class Library: Hashable, Identifiable, ObservableObject {
         do {
             // Create TagStudio folder if not already created
             if let bookmark = bookmark {
-                print(bookmark.appendingPathComponent(".TagStudio"))
                 try FileManager.default.createDirectory(
                     at: bookmark.appendingPathComponent(".TagStudio"),
                     withIntermediateDirectories: true,
