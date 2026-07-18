@@ -752,14 +752,14 @@ class Library: Hashable, Identifiable, ObservableObject {
             }
         }
         for inproperFieldName in inproperFieldNames {
-            try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == inproperFieldName).update(TextFieldsTable.isMultiline <- true))
+            try self.db?.run(TextFieldsTable.table.filter(TextFieldsTable.name == inproperFieldName).update(TextFieldsTable.isMultiline <- true))
         }
         
         // Repair legacy Description fields to use multiline
-        try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Description").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
+        try self.db?.run(TextFieldsTable.table.filter(TextFieldsTable.name == "Description").filter(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
         
         // Repair legacy Comments fields to use multiline
-        try self.db?.run(TextFieldsTable.table.select(TextFieldsTable.name == "Comments").select(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
+        try self.db?.run(TextFieldsTable.table.filter(TextFieldsTable.name == "Comments").filter(TextFieldsTable.isMultiline == false).update(TextFieldsTable.isMultiline <- true))
         
         // Add default field templates
         let textFieldTemp = "INSERT INTO text_field_templates (is_multiline, id, name)"
