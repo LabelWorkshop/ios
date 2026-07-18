@@ -252,6 +252,7 @@ class Library: Hashable, Identifiable, ObservableObject {
     }
     
     func migrate() async throws {
+        guard self.migrationState == .Unknown else {return}
         print("Starting migration for \"\(self.getName())\"")
         
         let migrations = [
