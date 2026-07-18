@@ -142,7 +142,7 @@ struct EntryPreView: View {
             }
         }
         .clipped()
-        .cornerRadius(8)
+        .cornerRadius(square ? 0 : 8)
         .task {
             if !(isImage || isVideo) {
                 return

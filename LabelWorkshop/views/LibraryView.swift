@@ -15,6 +15,7 @@ struct LibraryView: View {
     @State var tagFilters: [Tag] = []
     @State var shownEntries: [Entry]
     @State var zoom: LibraryZoom = .LargeEntries
+    @State var namesShown: Bool = true
     @State var tags: [Tag] = []
     @State var migrationClosed: Bool = false
     
@@ -52,7 +53,7 @@ struct LibraryView: View {
     
     func getViewGrid(_ geometry: GeometryProxy) -> [GridItem] {
         let entriesInRow = (geometry.size.width / CGFloat(self.zoom.rawValue)).rounded(.down)
-        return Array(repeating: GridItem(.flexible()), count: Int(entriesInRow))
+        return Array(repeating: GridItem(.flexible(), spacing: namesShown ? 8 : 1), count: Int(entriesInRow))
     }
     
     func addTagToFilter(_ tag: Tag) {
@@ -73,13 +74,13 @@ struct LibraryView: View {
                 if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
                     MigrationProgress(library: library, closed: $migrationClosed)
                 }
-                LazyVGrid(columns: getViewGrid(geometry)) {
+                LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
                     ForEach(shownEntries, id: \.path) { entry in
                         GridRow {
-                            EntryMiniView(entry: entry)
+                            EntryMiniView(entry: entry, namesShown: $namesShown)
                         }
                     }
-                }.padding(16)
+                }.padding(namesShown ? 16 : 0)
             }
         }
         .toolbar {
@@ -98,6 +99,11 @@ struct LibraryView: View {
                         }
                     }) {
                         Label(self.zoom == .LargeEntries ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .LargeEntries ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                    }
+                    Button(action: {
+                        self.namesShown.toggle()
+                    }) {
+                        Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
                     }
                 } label: {
                     Image(systemName: "ellipsis")

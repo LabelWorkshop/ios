@@ -1171,6 +1171,9 @@
         }
       }
     },
+    "Hide Names" : {
+
+    },
     "Is Category?" : {
       "localizations" : {
         "fr" : {
@@ -1256,6 +1259,9 @@
           }
         }
       }
+    },
+    "Show Names" : {
+
     },
     "Tag Manager" : {
       "localizations" : {
