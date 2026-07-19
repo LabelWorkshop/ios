@@ -12,8 +12,18 @@ struct TagEditorGeneral: View {
     
     var body: some View {
         List {
-            TextField("Name", text: $name)
-            TextField("Shorthand", text: $shorthand)
+            HStack {
+                Text("Name")
+                TextField("Name", text: $name)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.trailing)
+            }
+            HStack {
+                Text("Shorthand")
+                TextField("Shorthand", text: $shorthand)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.trailing)
+            }
             NavigationLink {
                 ScrollView {
                     VStack {
