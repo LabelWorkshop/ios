@@ -50,10 +50,8 @@ struct TagDetailsView: View {
                     }.pickerStyle(SegmentedPickerStyle())
                     if tagDetailsTab == 0 {
                         VStack {
-                            HStack {
-                                TextBox(title: "Name", value: $name)
-                                TextBox(title: "Shorthand", value: $shorthand)
-                            }
+                            TextBox(title: "Name", value: $name)
+                            TextBox(title: "Shorthand", value: $shorthand)
                             HStack{
                                 VStack {
                                     Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
