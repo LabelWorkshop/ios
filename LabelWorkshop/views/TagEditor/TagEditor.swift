@@ -34,86 +34,86 @@ struct TagDetailsView: View {
     
     var body: some View {
         NavigationView {
-                VStack(spacing: 8) {
-                    if #available(iOS 26.0, *) {
-                        VisualTagEdit(displayName: $displayName, colors: $colors)
-                            .clipShape(.rect(cornerRadius: 16))
-                    } else {
-                        VisualTagEdit(displayName: $displayName, colors: $colors)
-                            .clipShape(.rect(cornerRadius: 8))
-                    }
-                    Picker("", selection: $tagDetailsTab) {
-                        Text("General").tag(0)
-                        Text("Parent Tags").tag(1)
-                        Text("Alias").tag(2)
-                    }.pickerStyle(SegmentedPickerStyle())
-                    if tagDetailsTab == 0 {
-                        TagEditorGeneral(name: $name, shorthand: $shorthand, colors: $colors, tagColors: $tagColors, isCategory: $isCategory)
-                    } else if tagDetailsTab == 1 {
-                        TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.all)
-                    } else if tagDetailsTab == 2 {
-                        TagEditorAlias(aliases: $aliases, tagId: tag.id)
-                    }
+            VStack(spacing: 8) {
+                if #available(iOS 26.0, *) {
+                    VisualTagEdit(displayName: $displayName, colors: $colors)
+                        .clipShape(.rect(cornerRadius: 16))
+                } else {
+                    VisualTagEdit(displayName: $displayName, colors: $colors)
+                        .clipShape(.rect(cornerRadius: 8))
                 }
-                .padding(16)
-                .padding(.bottom, 80)
+                Picker("", selection: $tagDetailsTab) {
+                    Text("General").tag(0)
+                    Text("Parent Tags").tag(1)
+                    Text("Alias").tag(2)
+                }.pickerStyle(SegmentedPickerStyle())
+                if tagDetailsTab == 0 {
+                    TagEditorGeneral(name: $name, shorthand: $shorthand, colors: $colors, tagColors: $tagColors, isCategory: $isCategory)
+                } else if tagDetailsTab == 1 {
+                    TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.all)
+                } else if tagDetailsTab == 2 {
+                    TagEditorAlias(aliases: $aliases, tagId: tag.id)
+                }
+            }
+            .padding(16)
+            .padding(.bottom, 80)
             .navigationTitle(tag.name)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading){
-                        CloseButton(dismiss: dismiss)
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing){
-                        if #available(iOS 26.0, *) {
-                            Button(role: .confirm, action: confirmEdits) {
-                                Image(systemName: "checkmark")
-                            }
-                        } else {
-                            Button(action: confirmEdits) {
-                                Image(systemName: "checkmark")
-                            }.tint(.blue)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading){
+                    CloseButton(dismiss: dismiss)
+                }
+                ToolbarItem(placement: .navigationBarTrailing){
+                    if #available(iOS 26.0, *) {
+                        Button(role: .confirm, action: confirmEdits) {
+                            Image(systemName: "checkmark")
                         }
+                    } else {
+                        Button(action: confirmEdits) {
+                            Image(systemName: "checkmark")
+                        }.tint(.blue)
                     }
-                    ToolbarItem(placement: .bottomBar){
+                }
+                ToolbarItem(placement: .bottomBar){
+                    Button(role: .destructive, action: {
+                        tagDeleteConfirmation = true
+                    }) {
+                        Image(systemName: "trash")
+                    }.tint(.red)
+                    .confirmationDialog(
+                        Text("This tag and all references of it will be deleted."),
+                        isPresented: $tagDeleteConfirmation,
+                        titleVisibility: .visible
+                    ) {
                         Button(role: .destructive, action: {
-                            tagDeleteConfirmation = true
+                            do {
+                                try self.library.tags.delete(tag)
+                                tagDeleteConfirmation = false
+                                dismiss()
+                            } catch {print(error)}
                         }) {
-                            Image(systemName: "trash")
-                        }.tint(.red)
-                            .confirmationDialog(
-                                Text("This tag and all references of it will be deleted."),
-                                isPresented: $tagDeleteConfirmation,
-                                titleVisibility: .visible
-                            ) {
-                                Button(role: .destructive, action: {
-                                    do {
-                                        try self.library.tags.delete(tag)
-                                        tagDeleteConfirmation = false
-                                        dismiss()
-                                    } catch {print(error)}
-                                }) {
-                                    Text("Delete Tag")
-                                }
-                            }
-                    }
-                }
-                .onAppear {
-                    self.parentTags = self.library.tags.getParentTags(of: tag)
-                    self.disambiguationId = tag.disambiguationId
-                    updateName()
-                }
-                .onChange(of: disambiguationId) { _ in
-                    self.disambiguationName = nil
-                    if let disambiguationId = disambiguationId {
-                        let tag: Tag? = self.library.tags.getById(id: disambiguationId)
-                        if let tag = tag {
-                            self.disambiguationName = tag.name
+                            Text("Delete Tag")
                         }
                     }
-                    updateName()
                 }
-                .onChange(of: name) { _ in
-                    updateName()
+            }
+            .onAppear {
+                self.parentTags = self.library.tags.getParentTags(of: tag)
+                self.disambiguationId = tag.disambiguationId
+                updateName()
+            }
+            .onChange(of: disambiguationId) {
+                self.disambiguationName = nil
+                if let disambiguationId = disambiguationId {
+                    let tag: Tag? = self.library.tags.getById(id: disambiguationId)
+                    if let tag = tag {
+                        self.disambiguationName = tag.name
+                    }
                 }
+                updateName()
+            }
+            .onChange(of: name) {
+                updateName()
+            }
         }
     }
     
