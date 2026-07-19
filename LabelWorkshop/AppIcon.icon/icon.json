@@ -6,25 +6,10 @@
     {
       "layers" : [
         {
-          "blend-mode" : "normal",
-          "fill-specializations" : [
-            {
-              "appearance" : "tinted",
-              "value" : {
-                "solid" : "gray:1.00000,1.00000"
-              }
-            }
-          ],
-          "image-name" : "LogoIcon.png",
-          "name" : "LogoIcon",
-          "opacity-specializations" : [
-            {
-              "appearance" : "tinted",
-              "value" : 0.5
-            }
-          ],
+          "image-name" : "LogoIcon_Flat.png",
+          "name" : "LogoIcon_Flat",
           "position" : {
-            "scale" : 0.2,
+            "scale" : 0.5,
             "translation-in-points" : [
               0,
               0
@@ -44,6 +29,12 @@
     {
       "layers" : [
         {
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "Colour_Flat.png",
+          "name" : "Colour_Flat"
+        },
+        {
           "blend-mode" : "normal",
           "fill" : "none",
           "glass" : false,
@@ -53,7 +44,7 @@
             },
             {
               "appearance" : "light",
-              "value" : false
+              "value" : true
             }
           ],
           "image-name" : "Colour.png",
