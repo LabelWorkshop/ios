@@ -34,7 +34,6 @@ struct TagDetailsView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
                 VStack(spacing: 8) {
                     if #available(iOS 26.0, *) {
                         VisualTagEdit(displayName: $displayName, colors: $colors)
@@ -49,105 +48,97 @@ struct TagDetailsView: View {
                         Text("Alias").tag(2)
                     }.pickerStyle(SegmentedPickerStyle())
                     if tagDetailsTab == 0 {
-                        VStack {
-                            TextBox(title: "Name", value: $name)
-                            TextBox(title: "Shorthand", value: $shorthand)
-                            Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                            Button(action: {
-                                showTagColorSelector.toggle()
-                            }) {
-                                TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
-                            }
-                            .sheet(isPresented: $showTagColorSelector) {
-                                NavigationView {
-                                    ScrollView {
-                                        VStack {
-                                            ForEach($tagColors) { tagColor in
-                                                Button(action: {
-                                                    colors = tagColor.wrappedValue
-                                                    showTagColorSelector = false
-                                                }) {
-                                                    TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
-                                                }
-                                            }
-                                        }
-                                        .padding(16)
-                                    }
-                                    .navigationTitle("Color")
-                                    .toolbar {
-                                        ToolbarItem(placement: .navigationBarLeading){
+                        List {
+                            TextField("Name", text: $name)
+                            TextField("Shorthand", text: $shorthand)
+                            NavigationLink {
+                                ScrollView {
+                                    VStack {
+                                        ForEach($tagColors) { tagColor in
                                             Button(action: {
+                                                colors = tagColor.wrappedValue
                                                 showTagColorSelector = false
                                             }) {
-                                                Image(systemName: "chevron.backward")
+                                                TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
                                             }
                                         }
                                     }
+                                    .padding(16)
+                                }
+                            } label: {
+                                HStack {
+                                    Text("Color")
+                                    Text(colors.name)
+                                        .foregroundStyle(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
                                 }
                             }
                             Toggle("Is Category?", isOn: $isCategory)
                         }
+                        .listStyle(.plain)
                     } else if tagDetailsTab == 1 {
-                        VStack {
-                            Text("Parent Tags").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.bottom, 8)
+                        ScrollView {
                             VStack {
-                                ForEach($parentTags){ $tag in
-                                    HStack {
-                                        Button(action: {
-                                            if disambiguationId != tag.id {
-                                                disambiguationId = tag.id
-                                            } else {
-                                                disambiguationId = nil
+                                Text("Parent Tags").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.bottom, 8)
+                                VStack {
+                                    ForEach($parentTags){ $tag in
+                                        HStack {
+                                            Button(action: {
+                                                if disambiguationId != tag.id {
+                                                    disambiguationId = tag.id
+                                                } else {
+                                                    disambiguationId = nil
+                                                }
+                                            }, label: {
+                                                HStack {
+                                                    Image(systemName: disambiguationId == tag.id ? "checkmark.circle" : "circle").font(.title)
+                                                }
+                                            })
+                                            TagView(tag: tag, fullWidth: true)
+                                            Button(role: .destructive, action: {
+                                                if let index = parentTags.firstIndex(where: {$0.id == tag.id}) {
+                                                    parentTags.remove(at: index)
+                                                }
+                                            }) {
+                                                Image(systemName: "minus")
+                                                    .frame(minHeight: 0, maxHeight: .infinity)
                                             }
-                                        }, label: {
-                                            HStack {
-                                                Image(systemName: disambiguationId == tag.id ? "checkmark.circle" : "circle").font(.title)
-                                            }
-                                        })
-                                        TagView(tag: tag, fullWidth: true)
-                                        Button(role: .destructive, action: {
-                                            if let index = parentTags.firstIndex(where: {$0.id == tag.id}) {
-                                                parentTags.remove(at: index)
-                                            }
-                                        }) {
-                                            Image(systemName: "minus")
-                                                .frame(minHeight: 0, maxHeight: .infinity)
+                                            .tint(.red)
+                                            .buttonStyle(.bordered)
                                         }
-                                        .tint(.red)
-                                        .buttonStyle(.bordered)
                                     }
-                                }
-                                Button(action: {
-                                    showTagParentSelector = true
-                                }) {
-                                    Label("Add Parent Tag", systemImage: "plus")
-                                        .frame(minWidth: 0, maxWidth: .infinity)
-                                }
-                                .tint(.blue)
-                                .buttonStyle(.bordered)
-                                .sheet(isPresented: $showTagParentSelector) {
-                                    NavigationView {
-                                        ScrollView {
-                                            VStack {
-                                                ForEach(self.library.tags.all) { tag in
-                                                    Button(action: {
-                                                        parentTags.filter({$0.id == tag.id}).count == 0 ? parentTags.append(tag) : ()
-                                                        showTagParentSelector = false
-                                                    }) {
-                                                        TagView(tag: tag, fullWidth: true)
+                                    Button(action: {
+                                        showTagParentSelector = true
+                                    }) {
+                                        Label("Add Parent Tag", systemImage: "plus")
+                                            .frame(minWidth: 0, maxWidth: .infinity)
+                                    }
+                                    .tint(.blue)
+                                    .buttonStyle(.bordered)
+                                    .sheet(isPresented: $showTagParentSelector) {
+                                        NavigationView {
+                                            ScrollView {
+                                                VStack {
+                                                    ForEach(self.library.tags.all) { tag in
+                                                        Button(action: {
+                                                            parentTags.filter({$0.id == tag.id}).count == 0 ? parentTags.append(tag) : ()
+                                                            showTagParentSelector = false
+                                                        }) {
+                                                            TagView(tag: tag, fullWidth: true)
+                                                        }
                                                     }
                                                 }
+                                                .padding(16)
                                             }
-                                            .padding(16)
-                                        }
-                                        .navigationTitle("Tags")
-                                        .toolbar {
-                                            ToolbarItem(placement: .navigationBarLeading){
-                                                Button(action: {
-                                                    showTagParentSelector = false
-                                                }) {
-                                                    Image(systemName: "chevron.backward")
+                                            .navigationTitle("Tags")
+                                            .toolbar {
+                                                ToolbarItem(placement: .navigationBarLeading){
+                                                    Button(action: {
+                                                        showTagParentSelector = false
+                                                    }) {
+                                                        Image(systemName: "chevron.backward")
+                                                    }
                                                 }
                                             }
                                         }
@@ -156,39 +147,41 @@ struct TagDetailsView: View {
                             }
                         }
                     } else if tagDetailsTab == 2 {
-                        VStack {
-                            Text("Aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                        ScrollView {
                             VStack {
-                                ForEach($aliases){ $alias in
-                                    HStack {
-                                        TextField("Alias", text: $alias.name)
-                                        Button(role: .destructive, action: {
-                                            if let index = aliases.firstIndex(where: {$0.id == alias.id}) {
-                                                aliases.remove(at: index)
+                                Text("Aliases").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                                VStack {
+                                    ForEach($aliases){ $alias in
+                                        HStack {
+                                            TextField("Alias", text: $alias.name)
+                                            Button(role: .destructive, action: {
+                                                if let index = aliases.firstIndex(where: {$0.id == alias.id}) {
+                                                    aliases.remove(at: index)
+                                                }
+                                            }) {
+                                                Image(systemName: "minus")
+                                                    .frame(minHeight: 0, maxHeight: .infinity)
                                             }
-                                        }) {
-                                            Image(systemName: "minus")
-                                                .frame(minHeight: 0, maxHeight: .infinity)
+                                            .tint(.red)
+                                            .buttonStyle(.bordered)
                                         }
-                                        .tint(.red)
-                                        .buttonStyle(.bordered)
                                     }
+                                    Button(action: {
+                                        aliases.append(TagAlias(id: Int.random(in: (-9999)..<(-1)), name: "", tagId: tag.id))
+                                    }) {
+                                        Label("Add Alias", systemImage: "plus")
+                                            .frame(minWidth: 0, maxWidth: .infinity)
+                                    }
+                                    .tint(.blue)
+                                    .buttonStyle(.bordered)
                                 }
-                                Button(action: {
-                                    aliases.append(TagAlias(id: Int.random(in: (-9999)..<(-1)), name: "", tagId: tag.id))
-                                }) {
-                                    Label("Add Alias", systemImage: "plus")
-                                        .frame(minWidth: 0, maxWidth: .infinity)
-                                }
-                                .tint(.blue)
-                                .buttonStyle(.bordered)
                             }
                         }
                     }
                 }
                 .padding(16)
                 .padding(.bottom, 80)
-            }.navigationTitle(tag.name)
+            .navigationTitle(tag.name)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading){
                         CloseButton(dismiss: dismiss)

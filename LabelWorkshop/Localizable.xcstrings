@@ -1220,6 +1220,9 @@
         }
       }
     },
+    "Name" : {
+
+    },
     "No preview available" : {
       "localizations" : {
         "fr" : {
@@ -1259,6 +1262,9 @@
           }
         }
       }
+    },
+    "Shorthand" : {
+
     },
     "Show Names" : {
 
