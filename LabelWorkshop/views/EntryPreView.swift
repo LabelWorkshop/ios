@@ -2,16 +2,29 @@ import SwiftUI
 import AVKit
 import Foundation
 
+extension CGSize {
+    var largest: CGFloat {
+        if width > height {
+            return width
+        } else {
+            return height
+        }
+    }
+}
+
 func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
     guard let path = entry.fullPath else { return nil }
     guard let bookmark = entry.library.bookmark else { return nil }
     guard bookmark.startAccessingSecurityScopedResource() else { return nil }
     defer { bookmark.stopAccessingSecurityScopedResource() }
     if let data = try? Data(contentsOf: path) {
-        let uiImage = UIImage(data: data)
+        guard let uiImage = UIImage(data: data) else {return nil}
         if thumbnail {
-            let thumbnail = uiImage?.preparingThumbnail(of: CGSize(width: 300, height: 300))
-            return thumbnail
+            if uiImage.size.largest > 300 {
+                let thumbnailImage = uiImage.preparingThumbnail(of: CGSize(width: 300, height: 300))
+                return thumbnailImage
+            }
+            return uiImage
         }
         return uiImage
     }
