@@ -152,7 +152,8 @@ struct EntryPreView: View {
                     } else if isVideo {
                         Image(systemName: "zipper.page").font(.system(size: 32))
                     } else if isText {
-                        if let content = getTextContents(for: entry) {
+                        let content = getTextContents(for: entry) ?? ""
+                        if !content.isEmpty {
                             Text(content)
                                 .font(.callout)
                                 .foregroundStyle(Color(UIColor.label))
