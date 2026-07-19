@@ -62,8 +62,7 @@ struct TagDetailsView: View {
                     TagEditorInfo(tagId: tag.id, usageCount: $usageCount)
                 }
             }
-            .padding(16)
-            .padding(.bottom, 80)
+            .padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
             .navigationTitle(tag.name)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){
