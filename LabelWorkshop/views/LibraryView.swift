@@ -24,6 +24,9 @@ struct LibraryView: View {
     
     private let tagFilterTip = TagFilterTip()
     
+    private let namedPadding: EdgeInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+    private let unnamedPadding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+    
     init(library: Library) {
         self.library = library
         self.entries = library.safeGetEntries(limit: 30)
@@ -89,7 +92,7 @@ struct LibraryView: View {
                             }
                         }
                     }
-                }.padding(namesShown ? 16 : 0)
+                }.padding(namesShown ? namedPadding : unnamedPadding)
             }
         }
         .toolbar {
