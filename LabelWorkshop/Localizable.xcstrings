@@ -68,7 +68,6 @@
       }
     },
     "Aliases" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1244,6 +1243,7 @@
       }
     },
     "Parent Tags" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1252,6 +1252,9 @@
           }
         }
       }
+    },
+    "Parents" : {
+
     },
     "Remove" : {
       "localizations" : {

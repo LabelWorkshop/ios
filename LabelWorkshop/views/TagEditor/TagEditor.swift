@@ -48,8 +48,8 @@ struct TagDetailsView: View {
                 }
                 Picker("", selection: $tagDetailsTab) {
                     Text("General").tag(0)
-                    Text("Parent Tags").tag(1)
-                    Text("Alias").tag(2)
+                    Text("Parents").tag(1)
+                    Text("Aliases").tag(2)
                     Text("Info").tag(3)
                 }.pickerStyle(SegmentedPickerStyle())
                 if tagDetailsTab == 0 {
