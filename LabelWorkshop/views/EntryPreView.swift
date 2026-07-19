@@ -50,6 +50,19 @@ func getVideoThumbnail(url: URL) async -> UIImage? {
     return UIImage(cgImage: thumbnailImageRef)
 }
 
+func getTextContents(for entry: Entry) -> String? {
+    guard let bookmark = entry.library.bookmark else {return nil}
+    guard bookmark.startAccessingSecurityScopedResource() == true else {return nil}
+    defer { bookmark.stopAccessingSecurityScopedResource() }
+    if let file = entry.fullPath {
+        do {
+            let fileData = try Data(contentsOf: file)
+            return String(data: fileData, encoding: .utf8) ?? ""
+        } catch {print(error)}
+    }
+    return nil
+}
+
 struct VideoPlayerContainer: UIViewControllerRepresentable {
     let entry: Entry
     
@@ -75,6 +88,7 @@ struct EntryPreView: View {
     var isImage: Bool
     var isAudio: Bool
     var isZIP: Bool
+    var isText: Bool
     @State var image: UIImage? = nil
     
     init(entry: Entry, square: Bool = false) {
@@ -86,6 +100,7 @@ struct EntryPreView: View {
         self.isImage = type?.conforms(to: .image) ?? false || self.ext == "pxd"
         self.isAudio = type?.conforms(to: .audio) ?? false
         self.isZIP = type?.conforms(to: .archive) ?? false
+        self.isText = ["txt", "json", "md", "plist", "strings", "yml", "yaml", "toml", "ini", "gitignore", "gitattributes", "log"].contains(self.ext)
     }
     
     var body: some View {
@@ -127,7 +142,7 @@ struct EntryPreView: View {
                 }
             }
             else {
-                LazyVStack {
+                VStack {
                     if isAudio {
                         Image(systemName: "waveform").font(.system(size: 32))
                     } else if isImage {
@@ -136,6 +151,16 @@ struct EntryPreView: View {
                         Image(systemName: "movieclapper").font(.system(size: 32))
                     } else if isVideo {
                         Image(systemName: "zipper.page").font(.system(size: 32))
+                    } else if isText {
+                        if let content = getTextContents(for: entry) {
+                            Text(content)
+                                .font(.callout)
+                                .foregroundStyle(Color(UIColor.label))
+                                .multilineTextAlignment(.leading)
+                                .frame(maxHeight: .infinity, alignment: .top)
+                        } else {
+                            Image(systemName: "text.document").font(.system(size: 32))
+                        }
                     } else {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.system(size: 32))
