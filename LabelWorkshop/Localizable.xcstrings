@@ -68,6 +68,7 @@
       }
     },
     "Aliases" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
