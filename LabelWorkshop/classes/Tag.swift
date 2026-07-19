@@ -87,22 +87,6 @@ class Tag: Identifiable, Equatable {
         self.name = realName
     }
     
-    @available(*, deprecated)
-    func delete() throws {
-        let query = TagsTable.table.filter(TagsTable.id == self.id).delete()
-        let query2 = TagEntriesTable.table.filter(TagEntriesTable.id == self.id).delete()
-        let query3 = TagAliasesTable.table.filter(TagAliasesTable.tagId == self.id).delete()
-        let query4 = TagParentsTable.table.filter(
-            TagParentsTable.childId == self.id || TagParentsTable.parentId == self.id
-        ).delete()
-        if let db = self.library!.db {
-            try db.run(query)
-            try db.run(query2)
-            try db.run(query3)
-            try db.run(query4)
-        }
-    }
-    
     func setColumn<T: Value>(column: SQLite.Expression<T>, value: T) throws {
         let query = TagsTable.table.filter(TagsTable.id == self.id)
         if let db = self.library!.db {
@@ -171,81 +155,6 @@ class Tag: Identifiable, Equatable {
         }
     }
     
-    @available(*, deprecated)
-    func getParentTags() -> [Tag] {
-        var parentTags: [Tag] = []
-        let query = TagParentsTable.table
-            .select(*)
-            .filter(TagParentsTable.childId == self.id)
-        do {
-            for raw in try self.library!.db!.prepare(query) {
-                let tag = Tag.fetch(library: library!, id: raw[TagParentsTable.parentId])
-                if let tag = tag {
-                    parentTags.append(tag)
-                }
-            }
-        } catch {print(error)}
-        return parentTags
-    }
-    
-    @available(*, deprecated)
-    func setParentTags(_ parentTags: [Tag]) {
-        let currentParentTags = self.getParentTags()
-        for parentTag in parentTags {
-            // New Parent Tags
-            var isNew = true
-            for currentParentTag in currentParentTags {
-                if currentParentTag.id == parentTag.id {
-                    isNew = false
-                }
-            }
-            if isNew {
-                let query = TagParentsTable.table.insert(
-                    TagParentsTable.parentId <- parentTag.id,
-                    TagParentsTable.childId <- self.id
-                )
-                do {
-                    try self.library!.db?.run(query)
-                } catch {print(error)}
-                continue
-            }
-        }
-        for currentParentTag in currentParentTags {
-            // Deleted Parent Tags
-            if parentTags.filter({$0.id == currentParentTag.id}).count == 0 {
-                let query = TagParentsTable.table
-                    .filter(TagParentsTable.parentId == currentParentTag.id && TagParentsTable.childId == self.id)
-                    .delete()
-                do {
-                    try self.library!.db?.run(query)
-                } catch {print(error)}
-            }
-        }
-    }
-    
-    @available(*, deprecated)
-    func getCategories() -> [Tag] {
-        var tags: [Tag] = []
-        let parentTags: [Tag] = self.getParentTags()
-        for parentTag in parentTags {
-            if parentTag.isCategory {
-                tags.append(parentTag)
-            }
-        }
-        return tags
-    }
-    
-    @available(*, deprecated)
-    static func getNoCategoryTags(_ tags: [Tag]) -> [Tag] {
-        var noCategoryTags: [Tag] = []
-        for tag in tags {
-            if tag.getCategories().isEmpty {
-                noCategoryTags.append(tag)
-            }
-        }
-        return noCategoryTags
-    }
-    
     static func getNoCategoryTags(library: Library, tags: [Tag]) -> [Tag] {
         var noCategoryTags: [Tag] = []
         for tag in tags {
@@ -254,23 +163,6 @@ class Tag: Identifiable, Equatable {
             }
         }
         return noCategoryTags
-    }
-    
-    @available(*, deprecated)
-    static func getAllCategories(_ tags: [Tag]) -> [TagCategorySet] {
-        var categories: [TagCategorySet] = []
-        for tag in tags {
-            let tagCategories = tag.getCategories()
-            for category in tagCategories {
-                let existingCategory = categories.filter{ $0.parent.id == category.id }
-                if (existingCategory.isEmpty) {
-                    categories.append(TagCategorySet(parent: category, children: [tag]))
-                } else {
-                    existingCategory.first!.children.append(tag)
-                }
-            }
-        }
-        return categories
     }
     
     static func getAllCategories(library: Library, tags: [Tag]) -> [TagCategorySet] {
@@ -345,10 +237,4 @@ class Tag: Identifiable, Equatable {
     static func == (lhs: Tag, rhs: Tag) -> Bool {
         return lhs.id == rhs.id
     }
-    
-    /*static func defaults() -> [Tag] {
-        let metaTag = Tag(name: "Meta Tags", id: 2, colors: TagColor.none, shorthand: nil, isCategory: true, disambiguationId: nil, isHidden: nil)
-        metaTag.setAliases(TagAlias(id: 2, name: "Meta"))
-    }*/
 }
-

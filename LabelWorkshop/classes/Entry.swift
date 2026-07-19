@@ -16,21 +16,6 @@ class Entry {
         self.tags = EntryTagManager(self)
     }
     
-    @available(*, deprecated)
-    func getTags() -> [Tag] {
-        let query = TagEntriesTable.table.select(*).filter(TagEntriesTable.entryId == self.id)
-        var tags: [Tag] = []
-        do {
-            for rawTag in try self.library.db!.prepare(query) {
-                let tag = Tag.fetch(library: self.library, id: rawTag[EntriesTable.id])
-                if let tag = tag {
-                    tags.append(tag)
-                }
-            }
-        } catch {print(error)}
-        return tags
-    }
-    
     func getFields() -> [Field] {
         var fields: [Field] = []
         let query = TextFieldsTable.table
@@ -99,35 +84,5 @@ class Entry {
                 try self.library.db!.run(query)
             }
         } catch {print(error)}
-    }
-    
-    @available(*, deprecated)
-    func addTag(_ tag: Tag) {
-        let query = TagEntriesTable.table.insert(TagEntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.id)
-        do {
-            try self.library.db!.run(query)
-        } catch {print(error)}
-    }
-    
-    @available(*, deprecated)
-    func removeTag(_ tag: Tag) {
-        let query = TagEntriesTable.table
-            .filter(TagEntriesTable.id == tag.id)
-            .filter(TagEntriesTable.entryId == self.id)
-            .delete()
-        do {
-            try self.library.db!.run(query)
-        } catch {print(error)}
-    }
-    
-    @available(*, deprecated)
-    func containsAllTags(_ tags: [Tag]) -> Bool {
-        let entryTags = self.getTags()
-        for tag in tags {
-            if !entryTags.contains(where: { $0.id == tag.id }) {
-                return false
-            }
-        }
-        return true
     }
 }

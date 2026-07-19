@@ -215,35 +215,6 @@ class Library: Hashable, Identifiable, ObservableObject {
         }
     }
     
-    @available(*, deprecated)
-    func newTag(_ name: String) -> Tag? {
-        let sequenceQuery = SequenceTable.table.filter(SequenceTable.name == "tags")
-        do {
-            if let raw = try self.db?.pluck(sequenceQuery) {
-                let sequence = raw[SequenceTable.sequence]
-                if let sequence = sequence {
-                    let query = TagsTable.table.insert(
-                        TagsTable.name <- name,
-                        TagsTable.isCategory <- false,
-                        TagsTable.isHidden <- false
-                    )
-                    try self.db?.run(query)
-                    return Tag (
-                        library: self,
-                        name: name,
-                        id: sequence,
-                        colors: TagColor.none,
-                        shorthand: nil,
-                        isCategory: false,
-                        disambiguationId: nil,
-                        isHidden: false
-                    )
-                }
-            }
-        } catch {print(error)}
-        return nil
-    }
-    
     func backupDB() async throws {
         let backupPath = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite.bak")
         let backupDB = try Connection(backupPath?.path ?? "")
