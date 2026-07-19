@@ -8,6 +8,7 @@ struct TagDetailsView: View {
     @State private var shorthand: String
     @State private var colors: TagColor
     @State private var isCategory: Bool
+    @State private var isHidden: Bool
     @State var aliases: [TagAlias]
     @State var parentTags: [Tag]
     @State var disambiguationId: Int?
@@ -28,6 +29,7 @@ struct TagDetailsView: View {
         self.shorthand = tag.shorthand ?? ""
         self.colors = tag.colors
         self.isCategory = tag.isCategory
+        self.isHidden = tag.isHidden ?? false
         self.tagColors = tag.library?.tagColors?.colors ?? []
         self.aliases = tag.getAliases()
         self.parentTags = self.library.tags.getParentTags(of: tag)
@@ -51,7 +53,7 @@ struct TagDetailsView: View {
                     Text("Info").tag(3)
                 }.pickerStyle(SegmentedPickerStyle())
                 if tagDetailsTab == 0 {
-                    TagEditorGeneral(name: $name, shorthand: $shorthand, colors: $colors, tagColors: $tagColors, isCategory: $isCategory)
+                    TagEditorGeneral(name: $name, shorthand: $shorthand, colors: $colors, tagColors: $tagColors, isCategory: $isCategory, isHidden: $isHidden)
                 } else if tagDetailsTab == 1 {
                     TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.all)
                 } else if tagDetailsTab == 2 {
@@ -135,6 +137,7 @@ struct TagDetailsView: View {
             try tag.setColumn(column: TagsTable.name, value: self.name)
             try tag.setColumn(column: TagsTable.shorthand, value: self.shorthand)
             try tag.setColumn(column: TagsTable.isCategory, value: self.isCategory)
+            try tag.setColumn(column: TagsTable.isHidden, value: self.isHidden)
             try tag.setColumn(column: TagsTable.disambiguationId, value: self.disambiguationId)
             tag.setAliases(self.aliases)
             try tag.setColor(self.colors)

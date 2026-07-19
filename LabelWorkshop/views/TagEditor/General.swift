@@ -6,6 +6,7 @@ struct TagEditorGeneral: View {
     @Binding var colors: TagColor
     @Binding var tagColors: [TagColor]
     @Binding var isCategory: Bool
+    @Binding var isHidden: Bool
     
     @Environment(\.dismiss) private var dismiss
     
@@ -36,6 +37,7 @@ struct TagEditorGeneral: View {
                 }
             }
             Toggle("Is Category?", isOn: $isCategory)
+            Toggle("Is Hidden?", isOn: $isHidden)
         }
         .listStyle(.plain)
     }
