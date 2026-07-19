@@ -1111,6 +1111,9 @@
         }
       }
     },
+    "Delete" : {
+
+    },
     "Delete Tag" : {
       "localizations" : {
         "fr" : {
@@ -1278,6 +1281,9 @@
           }
         }
       }
+    },
+    "Share" : {
+
     },
     "Shorthand" : {
 

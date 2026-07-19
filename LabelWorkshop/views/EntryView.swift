@@ -117,13 +117,22 @@ struct EntryView: View {
         }
         .navigationTitle(entry.path)
         .toolbar {
-            ToolbarItem(placement: .bottomBar) {
-                ShareLink(item: entry.fullPath!, message: Text(entry.path)) {
-                    Image(systemName: "square.and.arrow.up")
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    ShareLink(item: entry.fullPath!, message: Text(entry.path)) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    Button(role: .destructive, action: {
+                        do {
+                            try FileManager.default.removeItem(at: entry.fullPath!)
+                            entry.delete()
+                        } catch {print(error)}
+                    }) {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
                 }
-            }
-            if #available(iOS 26.0, *) {
-                ToolbarSpacer(.flexible, placement: .bottomBar)
             }
             ToolbarItemGroup(placement: .bottomBar) {
                 Button(action: {
@@ -154,19 +163,6 @@ struct EntryView: View {
                     Image(systemName: tags.filter { $0.id == 0 }.isEmpty ? "archivebox" : "archivebox.fill")
                 }
                 .tint(.red)
-            }
-            if #available(iOS 26.0, *) {
-                ToolbarSpacer(.flexible, placement: .bottomBar)
-            }
-            ToolbarItem(placement: .bottomBar) {
-                Button(role: .destructive, action: {
-                    do {
-                        try FileManager.default.removeItem(at: entry.fullPath!)
-                        entry.delete()
-                    } catch {print(error)}
-                }) {
-                    Image(systemName: "trash")
-                }
             }
         }
         .onAppear {
