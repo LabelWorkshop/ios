@@ -160,5 +160,9 @@ class LibraryTagManager {
         }
         self.refresh()
     }
+    
+    func getUsageCount (of: Tag) -> Int {
+        return self.tags.filter({$0.id == of.id}).count
+    }
 }
 

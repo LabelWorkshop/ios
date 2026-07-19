@@ -1175,6 +1175,12 @@
     "Hide Names" : {
 
     },
+    "ID" : {
+
+    },
+    "Info" : {
+
+    },
     "Is Category?" : {
       "localizations" : {
         "fr" : {
@@ -1309,6 +1315,9 @@
           }
         }
       }
+    },
+    "Usage Count" : {
+
     },
     "version %@" : {
       "localizations" : {

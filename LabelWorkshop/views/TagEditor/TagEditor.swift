@@ -19,6 +19,7 @@ struct TagDetailsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var tagColors: [TagColor]
     @State var tagDetailsTab = 0
+    @State var usageCount: Int
     
     init(library: Library, tag: Tag) {
         self.tag = tag
@@ -30,6 +31,7 @@ struct TagDetailsView: View {
         self.tagColors = tag.library?.tagColors?.colors ?? []
         self.aliases = tag.getAliases()
         self.parentTags = self.library.tags.getParentTags(of: tag)
+        self.usageCount = self.library.tags.getUsageCount(of: tag)
     }
     
     var body: some View {
@@ -46,6 +48,7 @@ struct TagDetailsView: View {
                     Text("General").tag(0)
                     Text("Parent Tags").tag(1)
                     Text("Alias").tag(2)
+                    Text("Info").tag(3)
                 }.pickerStyle(SegmentedPickerStyle())
                 if tagDetailsTab == 0 {
                     TagEditorGeneral(name: $name, shorthand: $shorthand, colors: $colors, tagColors: $tagColors, isCategory: $isCategory)
@@ -53,6 +56,8 @@ struct TagDetailsView: View {
                     TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.all)
                 } else if tagDetailsTab == 2 {
                     TagEditorAlias(aliases: $aliases, tagId: tag.id)
+                } else if tagDetailsTab == 3 {
+                    TagEditorInfo(tagId: tag.id, usageCount: $usageCount)
                 }
             }
             .padding(16)
