@@ -36,24 +36,13 @@ struct TagDetailsView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 8) {
-                    TagPreView(
-                        name: $displayName,
-                        colors: $colors
-                    )
-                    .shadow(color: colors.border, radius: 16)
-                    .padding(50)
-                    .frame(maxWidth: .infinity)
-                    .background(Color(UIColor.tertiarySystemFill))
-                    .background(
-                        Image("dots")
-                            .opacity(0.3)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.black, lineWidth: 2)
-                            .blur(radius: 14)
-                    )
-                    .cornerRadius(40)
+                    if #available(iOS 26.0, *) {
+                        VisualTagEdit(displayName: $displayName, colors: $colors)
+                            .clipShape(.rect(cornerRadius: 16))
+                    } else {
+                        VisualTagEdit(displayName: $displayName, colors: $colors)
+                            .clipShape(.rect(cornerRadius: 8))
+                    }
                     Picker("", selection: $tagDetailsTab) {
                         Text("General").tag(0)
                         Text("Parent Tags").tag(1)
