@@ -94,46 +94,22 @@ struct EntryView: View {
                             }
                         }
                     }
-                    Button(action: {
-                        showFieldTypeSelector = true
-                    }) {
+                    Menu {
+                        ForEach(entry.library.fieldTypes) { fieldType in
+                            Button(action: {
+                                if let field = entry.addField(fieldType) {
+                                    fields.append(field)
+                                }
+                            }) {
+                                Text(fieldType.name)
+                            }
+                        }
+                    } label: {
                         Label("Add Field", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
                     }
                     .buttonStyle(.bordered)
                     .tint(.blue)
                     .cornerRadius(8)
-                    .sheet(isPresented: $showFieldTypeSelector) {
-                        NavigationView {
-                            ScrollView {
-                                VStack {
-                                    ForEach(entry.library.fieldTypes) { fieldType in
-                                            Button(action: {
-                                                if let field = entry.addField(fieldType) {
-                                                    fields.append(field)
-                                                }
-                                                showFieldTypeSelector = false
-                                            }) {
-                                                TagPreView(
-                                                    name: .constant(fieldType.name),
-                                                    colors: .constant(TagColor.none),
-                                                    fullWidth: true
-                                                )
-                                            }
-                                    }
-                                }
-                                .padding(16)
-                            }
-                            .toolbar {
-                                ToolbarItem(placement: .navigationBarLeading) {
-                                    Button(action: {
-                                        showFieldTypeSelector = false
-                                    }) {
-                                        Image(systemName: "chevron.backward")
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
             .padding(16)
