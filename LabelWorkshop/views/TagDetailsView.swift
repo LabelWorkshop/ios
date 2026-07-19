@@ -52,47 +52,40 @@ struct TagDetailsView: View {
                         VStack {
                             TextBox(title: "Name", value: $name)
                             TextBox(title: "Shorthand", value: $shorthand)
-                            HStack{
-                                VStack {
-                                    Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                                    Button(action: {
-                                        showTagColorSelector.toggle()
-                                    }) {
-                                        TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
-                                    }
-                                    .sheet(isPresented: $showTagColorSelector) {
-                                        NavigationView {
-                                            ScrollView {
-                                                VStack {
-                                                    ForEach($tagColors) { tagColor in
-                                                        Button(action: {
-                                                            colors = tagColor.wrappedValue
-                                                            showTagColorSelector = false
-                                                        }) {
-                                                            TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
-                                                        }
-                                                    }
-                                                }
-                                                .padding(16)
-                                            }
-                                            .navigationTitle("Color")
-                                            .toolbar {
-                                                ToolbarItem(placement: .navigationBarLeading){
-                                                    Button(action: {
-                                                        showTagColorSelector = false
-                                                    }) {
-                                                        Image(systemName: "chevron.backward")
-                                                    }
+                            Text("Color").font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
+                            Button(action: {
+                                showTagColorSelector.toggle()
+                            }) {
+                                TagPreView(name: $colors.name, colors: $colors, fullWidth: true)
+                            }
+                            .sheet(isPresented: $showTagColorSelector) {
+                                NavigationView {
+                                    ScrollView {
+                                        VStack {
+                                            ForEach($tagColors) { tagColor in
+                                                Button(action: {
+                                                    colors = tagColor.wrappedValue
+                                                    showTagColorSelector = false
+                                                }) {
+                                                    TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
                                                 }
                                             }
                                         }
+                                        .padding(16)
                                     }
-                                }.frame(maxWidth: .infinity, alignment: .leading)
-                                VStack {
-                                    Text("Is Category?").font(.caption2)
-                                    Toggle("Is Category?", isOn: $isCategory).labelsHidden()
-                                }.frame(maxHeight: .infinity, alignment: .top)
+                                    .navigationTitle("Color")
+                                    .toolbar {
+                                        ToolbarItem(placement: .navigationBarLeading){
+                                            Button(action: {
+                                                showTagColorSelector = false
+                                            }) {
+                                                Image(systemName: "chevron.backward")
+                                            }
+                                        }
+                                    }
+                                }
                             }
+                            Toggle("Is Category?", isOn: $isCategory)
                         }
                     } else if tagDetailsTab == 1 {
                         VStack {
