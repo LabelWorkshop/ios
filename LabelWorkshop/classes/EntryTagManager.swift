@@ -8,6 +8,7 @@ class EntryTagManager {
             return self.tags
         }
     }
+    var isHidden: Bool = false
     
     init(_ entry: Entry) {
         self.entry = entry
@@ -27,6 +28,16 @@ class EntryTagManager {
             }
         } catch {print(error)}
         self.tags = tags
+        updateIsHidden()
+    }
+    
+    /// Check the list of tags and find if a tag is hidding the entry
+    func updateIsHidden() {
+        self.tags.forEach { tag in
+            if tag.isHidden ?? false {
+                self.isHidden = true
+            }
+        }
     }
     
     func isEmpty() -> Bool {

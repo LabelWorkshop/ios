@@ -18,6 +18,7 @@ struct LibraryView: View {
     @State var namesShown: Bool = true
     @State var tags: [Tag] = []
     @State var migrationClosed: Bool = false
+    @State var hiddenShown: Bool = false
     
     @Environment(\.openURL) private var openURL
     
@@ -68,6 +69,12 @@ struct LibraryView: View {
         }
     }
     
+    func isEntryHidden(_ entry: Entry) -> Bool {
+        if hiddenShown {return false}
+        else if !entry.tags.isHidden {return false}
+        return true
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
@@ -76,8 +83,10 @@ struct LibraryView: View {
                 }
                 LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
                     ForEach(shownEntries, id: \.path) { entry in
-                        GridRow {
-                            EntryMiniView(entry: entry, namesShown: $namesShown)
+                        if !isEntryHidden(entry) {
+                            GridRow {
+                                EntryMiniView(entry: entry, namesShown: $namesShown)
+                            }
                         }
                     }
                 }.padding(namesShown ? 16 : 0)
@@ -104,6 +113,11 @@ struct LibraryView: View {
                         self.namesShown.toggle()
                     }) {
                         Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                    }
+                    Button(action: {
+                        self.hiddenShown.toggle()
+                    }) {
+                        Label(self.hiddenShown ? "Hide Hidden Entries" : "Show Hidden Entries", systemImage: self.hiddenShown ? "eye.slash" : "eye")
                     }
                 } label: {
                     Image(systemName: "ellipsis")

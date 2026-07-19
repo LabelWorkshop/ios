@@ -1171,6 +1171,9 @@
         }
       }
     },
+    "Hide Hidden Entries" : {
+
+    },
     "Hide Names" : {
 
     },
@@ -1277,6 +1280,9 @@
       }
     },
     "Shorthand" : {
+
+    },
+    "Show Hidden Entries" : {
 
     },
     "Show Names" : {
