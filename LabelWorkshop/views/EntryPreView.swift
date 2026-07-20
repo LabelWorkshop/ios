@@ -162,6 +162,8 @@ struct EntryPreView: View {
             }
             else if self.type == .AnimatedImage && !square {
                 AnimatedImage(url: entry.fullPath!)
+                    .resizable()
+                    .scaledToFit()
             }
             else if let image {
                 if square {
