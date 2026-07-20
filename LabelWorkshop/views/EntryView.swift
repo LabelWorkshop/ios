@@ -7,6 +7,7 @@ struct EntryView: View {
     @State var fields: [Field] = []
     @State var showTagSelector: Bool = false
     @State var showFieldTypeSelector: Bool = false
+    @State var fullScreen: Bool = false
     
     init(entry: Entry) {
         self.entry = entry
@@ -21,7 +22,11 @@ struct EntryView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
-                EntryPreView(entry: entry)
+                Button {
+                    fullScreen = true
+                } label: {
+                    EntryPreView(entry: entry)
+                }
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 8) {
                     Text("Tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
@@ -168,6 +173,15 @@ struct EntryView: View {
         .onAppear {
             self.tags = entry.tags.all
             self.fields = entry.getFields()
+        }
+        .fullScreenCover(isPresented: $fullScreen) {
+            Button{
+                fullScreen = false
+            } label: {
+                EntryPreView(entry: self.entry, square: false)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .ignoresSafeArea()
+            }
         }
     }
 }
