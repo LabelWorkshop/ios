@@ -170,7 +170,7 @@ struct LibraryView: View {
                             self.viewType = .Grid
                         }
                     }) {
-                        Label(self.viewType == .Grid ? "ListView" : "Grid View", systemImage: self.zoom == .LargeEntries ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                        Label(self.viewType == .Grid ? "List View" : "Grid View", systemImage: self.viewType == .Grid ? "list.bullet" : "square.grid.2x2")
                     }
                     Button(action: {
                         self.namesShown.toggle()
