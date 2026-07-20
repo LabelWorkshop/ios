@@ -37,6 +37,9 @@
         }
       }
     },
+    "Add Library" : {
+
+    },
     "Add Parent Tag" : {
       "localizations" : {
         "fr" : {

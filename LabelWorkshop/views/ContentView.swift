@@ -53,23 +53,26 @@ struct ContentView: View {
                 }.onDelete(perform: removeLibrary)
             }
             .toolbar {
-                ToolbarItem( placement: .navigationBarTrailing){
-                    Button(action: {
-                        showFileImporter = true
-                    }) {
-                        Image(systemName: "plus")
-                    }
-                }
                 ToolbarItem(placement: .topBarLeading){
                     Button(action: {
                         showAbout = true
                     }) {
-                        Image(systemName: "info.circle")
+                        Image(systemName: "info")
                     }
                     .sheet(isPresented: $showAbout, content: { AboutView() })
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                Button(action: {
+                    showFileImporter = true
+                }) {
+                    Label("Add Library", systemImage: "plus")
+                        .padding(16)
+                }
+                .buttonStyle(ProminentButtonStyle())
+            }
             .navigationTitle("LabelWorkshop")
+            .toolbarTitleDisplayMode(.large)
         } content: {
             if let selectedLibrary {
                 LibraryView(library: selectedLibrary)
