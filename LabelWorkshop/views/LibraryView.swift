@@ -163,7 +163,6 @@ struct LibraryView: View {
         .navigationTitle(library.getName())
         .task {
             do {
-                try await library.migrate()
                 try library.addNewEntries()
             } catch {print(error)}
             self.entries = library.safeGetEntries()

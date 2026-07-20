@@ -73,7 +73,7 @@ class Library: Hashable, Identifiable, ObservableObject {
     var db: Connection?
     var tagColors: TagColorManager!
     var fieldTypes: [FieldType] = []
-    var ignoreList: String = ""
+    var ignoreList: String = "\n.TagStudio\n.DS_Store"
     var matcher: TSIgnoreMatcher?
     var migrationState: MigrationState = .Unknown
     var migrationDebug: MigrationDebug = .Default
@@ -101,6 +101,20 @@ class Library: Hashable, Identifiable, ObservableObject {
             // Inititalize Database
             let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
             self.db = try Connection(dbFile)
+            // Check for migrations asynchronously
+            Task { [weak self] in
+                do {
+                    try await self?.migrate()
+                    self?.refresh()
+                } catch {
+                    print(error)
+                }
+            }
+        } catch {print(error)}
+    }
+    
+    func refresh() {
+        do {
             // Get Field Types
             for rawFieldType in try self.db!.prepare(TextFieldTemplatesTable.table) {
                 self.fieldTypes.append(
@@ -110,25 +124,25 @@ class Library: Hashable, Identifiable, ObservableObject {
                     )
                 )
             }
-        } catch {print(error)}
-        
-        let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore")
-        do {
+            
+            // Get .ts_ignore file
+            let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore")
             guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
             defer { bookmark?.stopAccessingSecurityScopedResource() }
             if let ignoreFile = ignoreFile {
                 let ignoreData = try Data(contentsOf: ignoreFile)
                 ignoreList = String(data: ignoreData, encoding: .utf8) ?? ""
             }
+            ignoreList.append("\n.TagStudio\n.DS_Store")
+            
+            if let bookmark = self.bookmark {
+                self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark)
+            }
+            
+            // Get Tags & Tag Colors
+            self.tagColors = TagColorManager(library: self)
+            self.tags = LibraryTagManager(library: self)
         } catch {print(error)}
-        
-        ignoreList.append("\n.TagStudio\n.DS_Store")
-        
-        self.tagColors = TagColorManager(library: self)
-        if let bookmark = self.bookmark {
-            self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark)
-        }
-        self.tags = LibraryTagManager(library: self)
     }
     
     func findNewFiles() throws -> [Path] {
