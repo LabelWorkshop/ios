@@ -1186,6 +1186,9 @@
         }
       }
     },
+    "Grid View" : {
+
+    },
     "Hidden Entries" : {
 
     },
@@ -1215,6 +1218,9 @@
       "shouldTranslate" : false
     },
     "Library" : {
+
+    },
+    "ListView" : {
 
     },
     "Migration Complete" : {

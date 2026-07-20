@@ -271,7 +271,7 @@ struct EntryPreView: View {
                     minHeight: 0,
                     maxHeight: .infinity
                 )
-                .aspectRatio(1/1, contentMode: .fill)
+                .aspectRatio(1/1, contentMode: .fit)
                 .background(Color(UIColor.secondarySystemBackground))
             }
         }

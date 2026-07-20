@@ -5,6 +5,12 @@ enum LibraryZoom: CGFloat {
     case MediumEntries = 70
 }
 
+enum LibraryViewType {
+    case Grid
+    case List
+    case Masonry
+}
+
 struct LibraryCommands: Commands {
     @Bindable var appState: AppState
     
@@ -35,6 +41,7 @@ struct LibraryView: View {
     @State var namesShown: Bool = true
     @State var hiddenShown: Bool = false
     @State var filterUntagged: Bool = false
+    @State var viewType: LibraryViewType = .Grid
     
     @Environment(AppState.self) private var appState
     
@@ -92,22 +99,51 @@ struct LibraryView: View {
         return filterUntagged && entry.tags.isEmpty
     }
     
+    func isEntryVisable(_ entry: Entry) -> Bool {
+        !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry)
+    }
+    
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
-            ScrollView {
-                if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
-                    MigrationProgress(library: library, closed: $migrationClosed)
+            switch self.viewType {
+            case .Grid:
+                ScrollView {
+                    if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
+                        MigrationProgress(library: library, closed: $migrationClosed)
+                    }
+                    LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
+                        ForEach(library.entries.all, id: \.path) { entry in
+                            if isEntryVisable(entry) {
+                                GridRow {
+                                    EntryMiniView(entry: entry, namesShown: $namesShown)
+                                }
+                            }
+                        }
+                    }.padding(namesShown ? namedPadding : unnamedPadding)
                 }
-                LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
+            case .List:
+                List {
                     ForEach(library.entries.all, id: \.path) { entry in
-                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry) {
-                            GridRow {
-                                EntryMiniView(entry: entry, namesShown: $namesShown)
+                        if isEntryVisable(entry) {
+                            NavigationLink(destination: EntryView(entry: entry).id(entry.id)){
+                                HStack {
+                                    EntryPreView(entry: entry, square: true)
+                                        .clipShape(.rect(cornerRadius: 8))
+                                        .frame(maxHeight: self.zoom.rawValue)
+                                    VStack {
+                                        Text(entry.path)
+                                    }
+                                }
                             }
                         }
                     }
-                }.padding(namesShown ? namedPadding : unnamedPadding)
+                }
+                .alignmentGuide(.listRowSeparatorLeading) { viewDimensions in
+                    return 0
+                }
+            case .Masonry:
+                EmptyView()
             }
         }
         .toolbar {
@@ -126,6 +162,15 @@ struct LibraryView: View {
                         }
                     }) {
                         Label(self.zoom == .LargeEntries ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .LargeEntries ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                    }
+                    Button(action: {
+                        if self.viewType == .Grid {
+                            self.viewType = .List
+                        } else {
+                            self.viewType = .Grid
+                        }
+                    }) {
+                        Label(self.viewType == .Grid ? "ListView" : "Grid View", systemImage: self.zoom == .LargeEntries ? "minus.magnifyingglass" : "plus.magnifyingglass")
                     }
                     Button(action: {
                         self.namesShown.toggle()
