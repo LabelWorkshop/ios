@@ -163,14 +163,9 @@ struct LibraryView: View {
                     }) {
                         Label(self.zoom == .LargeEntries ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .LargeEntries ? "minus.magnifyingglass" : "plus.magnifyingglass")
                     }
-                    Button(action: {
-                        if self.viewType == .Grid {
-                            self.viewType = .List
-                        } else {
-                            self.viewType = .Grid
-                        }
-                    }) {
-                        Label(self.viewType == .Grid ? "List View" : "Grid View", systemImage: self.viewType == .Grid ? "list.bullet" : "square.grid.2x2")
+                    Picker("", selection: $viewType) {
+                        Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
+                        Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
                     }
                     Button(action: {
                         self.namesShown.toggle()
