@@ -50,7 +50,10 @@ struct AboutView: View {
         .background {
             VStack {
                 Image("LabelSky")
+                    .resizable()
+                    .frame(maxWidth: .infinity)
                     .opacity(0.5)
+                    .scaledToFit()
                 Spacer()
             }
             .background(.black)
