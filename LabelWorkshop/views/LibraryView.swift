@@ -5,11 +5,22 @@ enum LibraryZoom: CGFloat {
     case MediumEntries = 70
 }
 
+struct LibraryCommands: Commands {
+    @Bindable var appState: AppState
+    
+    var body: some Commands {
+        CommandMenu("Library") {
+            Button("Tag Manager", systemImage: "tag") {
+                appState.showTagManager = true
+            }
+            .keyboardShortcut(KeyboardShortcut("M", modifiers: [.command, .shift]))
+        }
+    }
+}
+
 struct LibraryView: View {
     let library: Library
     @State var entries: [Entry]
-    
-    @State private var showTagManager: Bool = false
     @State var showTagfilter: Bool = false
     @State var searchQuery: String = ""
     @State var tagFilters: [Tag] = []
@@ -20,6 +31,7 @@ struct LibraryView: View {
     @State var migrationClosed: Bool = false
     @State var hiddenShown: Bool = false
     
+    @Environment(AppState.self) private var appState
     @Environment(\.openURL) private var openURL
     
     private let tagFilterTip = TagFilterTip()
@@ -79,6 +91,7 @@ struct LibraryView: View {
     }
     
     var body: some View {
+        @Bindable var appState = appState
         GeometryReader { geometry in
             ScrollView {
                 if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
@@ -99,7 +112,7 @@ struct LibraryView: View {
             ToolbarItem( placement: .navigationBarTrailing){
                 Menu {
                     Button(action: {
-                        showTagManager = true
+                        appState.showTagManager = true
                     }) {
                         Label("Tag Manager", systemImage: "tag")
                     }
@@ -144,7 +157,7 @@ struct LibraryView: View {
                 }
             }
         }
-        .sheet(isPresented: $showTagManager) {
+        .sheet(isPresented: $appState.showTagManager) {
             TagManagerView(library: library)
         }
         .navigationTitle(library.getName())

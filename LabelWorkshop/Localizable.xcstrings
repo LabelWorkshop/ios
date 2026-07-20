@@ -1202,6 +1202,9 @@
     "LabelWorkshop" : {
       "shouldTranslate" : false
     },
+    "Library" : {
+
+    },
     "Migration Complete" : {
       "extractionState" : "manual",
       "localizations" : {
