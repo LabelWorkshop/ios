@@ -14,6 +14,42 @@ extension CGSize {
     }
 }
 
+actor ThumbnailLoader {
+    private var inFlight: [String: Task<UIImage?, Never>] = [:]
+    static let shared = ThumbnailLoader()
+    
+    func thumbnail(
+        for entry: Entry,
+        square: Bool,
+        type: ExtensionTypes
+    ) async -> UIImage? {
+        let cacheName = "\(entry.id)-\(square)"
+        if let cached = entry.library.thumbnailCache.image(for: cacheName) {
+            return cached
+        }
+        
+        if let existing = inFlight[cacheName] {
+            return await existing.value
+            
+        }
+        
+        let task = Task<UIImage?, Never>(priority: .userInitiated) {
+            var image: UIImage?
+            if type == .Video {
+                image = await getVideoThumbnail(url: entry.fullPath!)
+            } else {
+                image = await loadImage(for: entry, thumbnail: square)
+            }
+            entry.library.thumbnailCache.set(image!, for: cacheName)
+            return image
+        }
+        inFlight[cacheName] = task
+        let result = await task.value
+        inFlight[cacheName] = nil
+        return result
+    }
+}
+
 func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
     guard let path = entry.fullPath else { return nil }
     guard let bookmark = entry.library.bookmark else { return nil }
@@ -23,8 +59,9 @@ func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
         guard let uiImage = UIImage(data: data) else {return nil}
         if thumbnail {
             if uiImage.size.largest > 300 {
-                let thumbnailImage = uiImage.preparingThumbnail(of: CGSize(width: 300, height: 300))
-                return thumbnailImage
+                return await Task(priority: .userInitiated) {
+                    uiImage.preparingThumbnail(of: CGSize(width: 300, height: 300))
+                }.value
             }
             return uiImage
         }
@@ -230,20 +267,7 @@ struct EntryPreView: View {
         .cornerRadius(square ? 0 : 8)
         .task {
             guard self.type == .Image || self.type == .Video || self.type == .AnimatedImage else {return}
-            let cacheName = "\(self.entry.id)-\(square)"
-            if let cachedThumbnail = self.entry.library.thumbnailCache.image(for: cacheName) {
-                self.image = cachedThumbnail
-                return
-            }
-            var image: UIImage?
-            if self.type == .Video {
-                image = await getVideoThumbnail(url: entry.fullPath!)
-            } else {
-                image = await loadImage(for: entry, thumbnail: square)
-            }
-            guard image != nil else {return}
-            self.entry.library.thumbnailCache.set(image!, for: cacheName)
-            self.image = image
+            self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square, type: type)
         }
     }
 }
