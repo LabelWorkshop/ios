@@ -142,6 +142,11 @@ class Library: Hashable, Identifiable, ObservableObject {
             // Get Tags & Tag Colors
             self.tagColors = TagColorManager(library: self)
             self.tags = LibraryTagManager(library: self)
+            
+            // Find New Entries
+            do {
+                try self.addNewEntries()
+            } catch {print(error)}
         } catch {print(error)}
     }
     
