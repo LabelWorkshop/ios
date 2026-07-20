@@ -1,6 +1,8 @@
 import SwiftUI
+import SDWebImageSwiftUI
 import AVKit
 import Foundation
+import SDWebImage
 
 extension CGSize {
     var largest: CGFloat {
@@ -157,6 +159,9 @@ struct EntryPreView: View {
             else if self.type == .Video && !square {
                 VideoPlayerContainer(entry: entry)
                     .scaledToFill()
+            }
+            else if self.type == .AnimatedImage && !square {
+                AnimatedImage(url: entry.fullPath!)
             }
             else if let image {
                 if square {
