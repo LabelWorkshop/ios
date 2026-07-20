@@ -132,7 +132,7 @@ struct LibraryView: View {
                                         .clipShape(.rect(cornerRadius: 8))
                                         .frame(maxHeight: self.zoom.rawValue)
                                     VStack {
-                                        Text(entry.path)
+                                        Text(entry.path).lineLimit(2)
                                     }
                                 }
                             }
