@@ -167,10 +167,12 @@ struct LibraryView: View {
                         Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
                         Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
                     }
-                    Button(action: {
-                        self.namesShown.toggle()
-                    }) {
-                        Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                    if viewType == .Grid {
+                        Button(action: {
+                            self.namesShown.toggle()
+                        }) {
+                            Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                        }
                     }
                     Menu {
                         Toggle(isOn: $filterUntagged) {
