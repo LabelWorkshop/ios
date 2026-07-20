@@ -80,27 +80,63 @@ struct VideoPlayerContainer: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {}
 }
 
+enum ExtensionTypes {
+    case Image
+    case Video
+    case AnimatedImage
+    case Audio
+    case Archive
+    case PlainText
+    case Unknown
+}
+
+func getExtensionType(for ext: String) -> ExtensionTypes {
+    let type = UTType(filenameExtension: ext)
+    if type?.conforms(to: .gif) ?? false {
+        return .AnimatedImage
+    }
+    if type?.conforms(to: .movie) ?? false {
+        return .Video
+    }
+    if type?.conforms(to: .image) ?? false || ext == "pxd" {
+        return .Image
+    }
+    if type?.conforms(to: .audio) ?? false {
+        return .Audio
+    }
+    if type?.conforms(to: .archive) ?? false {
+        return .Archive
+    }
+    if ["txt",
+        "json",
+        "md",
+        "plist",
+        "strings",
+        "yml",
+        "yaml",
+        "toml",
+        "ini",
+        "gitignore",
+        "gitattributes",
+        "log"
+    ].contains(ext) {
+        return .PlainText
+    }
+    return .Unknown
+}
+
 struct EntryPreView: View {
     public var entry: Entry
     public var square: Bool = false
-    var ext: String?
-    var isVideo: Bool
-    var isImage: Bool
-    var isAudio: Bool
-    var isZIP: Bool
-    var isText: Bool
+    var ext: String
+    var type: ExtensionTypes
     @State var image: UIImage? = nil
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
         self.square = square
-        self.ext = entry.path.split(separator: ".").last?.lowercased()
-        let type = UTType(filenameExtension: self.entry.fullPath?.pathExtension ?? "")
-        self.isVideo = type?.conforms(to: .movie) ?? false
-        self.isImage = type?.conforms(to: .image) ?? false || self.ext == "pxd"
-        self.isAudio = type?.conforms(to: .audio) ?? false
-        self.isZIP = type?.conforms(to: .archive) ?? false
-        self.isText = ["txt", "json", "md", "plist", "strings", "yml", "yaml", "toml", "ini", "gitignore", "gitattributes", "log"].contains(self.ext)
+        self.ext = entry.path.split(separator: ".").last?.lowercased() ?? ""
+        self.type = getExtensionType(for: ext)
     }
     
     var body: some View {
@@ -118,7 +154,7 @@ struct EntryPreView: View {
                     .background(Color(UIColor.secondarySystemBackground))
                     .tint(.red)
             }
-            else if self.isVideo && !square {
+            else if self.type == .Video && !square {
                 VideoPlayerContainer(entry: entry)
                     .scaledToFill()
             }
@@ -143,15 +179,16 @@ struct EntryPreView: View {
             }
             else {
                 VStack {
-                    if isAudio {
+                    switch self.type {
+                    case .Audio:
                         Image(systemName: "waveform").font(.system(size: 32))
-                    } else if isImage {
+                    case .Image:
                         Image(systemName: "photo").font(.system(size: 32))
-                    } else if isVideo {
+                    case .Video:
                         Image(systemName: "movieclapper").font(.system(size: 32))
-                    } else if isVideo {
+                    case .Archive:
                         Image(systemName: "zipper.page").font(.system(size: 32))
-                    } else if isText {
+                    case .PlainText:
                         let content = getTextContents(for: entry) ?? ""
                         if !content.isEmpty {
                             Text(content)
@@ -162,7 +199,9 @@ struct EntryPreView: View {
                         } else {
                             Image(systemName: "text.document").font(.system(size: 32))
                         }
-                    } else {
+                    case .AnimatedImage:
+                        Image(systemName: "square.3.layers.3d.down.forward").font(.system(size: 32))
+                    case .Unknown:
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.system(size: 32))
                         Text("No preview available")
@@ -183,16 +222,14 @@ struct EntryPreView: View {
         .clipped()
         .cornerRadius(square ? 0 : 8)
         .task {
-            if !(isImage || isVideo) {
-                return
-            }
+            guard self.type == .Image || self.type == .Video || self.type == .AnimatedImage else {return}
             let cacheName = "\(self.entry.id)-\(square)"
             if let cachedThumbnail = self.entry.library.thumbnailCache.image(for: cacheName) {
                 self.image = cachedThumbnail
                 return
             }
             var image: UIImage?
-            if isVideo {
+            if self.type == .Video {
                 image = await getVideoThumbnail(url: entry.fullPath!)
             } else {
                 image = await loadImage(for: entry, thumbnail: square)
