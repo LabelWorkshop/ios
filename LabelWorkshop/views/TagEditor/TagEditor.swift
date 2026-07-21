@@ -65,8 +65,10 @@ struct TagDetailsView: View {
             .padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
             .navigationTitle(tag.name)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading){
-                    CloseButton(dismiss: dismiss)
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    ToolbarItem(placement: .navigationBarLeading){
+                        CloseButton(dismiss: dismiss)
+                    }
                 }
                 ToolbarItem(placement: .navigationBarTrailing){
                     if #available(iOS 26.0, *) {
