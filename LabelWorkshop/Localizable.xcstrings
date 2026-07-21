@@ -83,6 +83,9 @@
       }
     },
     "An error occured while trying to delete this entry." : {
+        
+    },
+    "Archive" : {
 
     },
     "Checking for Migration" : {
@@ -1166,7 +1169,10 @@
     "Failed to save color." : {
 
     },
-    "Field" : {
+    "Field" : {>>>>>>> ccf7b22 (feat: add fav and archive to right click)
+        
+    },
+    "Favorite" : {
 
     },
     "Fields" : {
