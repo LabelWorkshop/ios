@@ -9,7 +9,9 @@ func openTagManager(appState: AppState, openWindow: OpenWindowAction) {
     if UIDevice.current.userInterfaceIdiom == .phone {
         appState.showTagManager = true
     } else {
-        openWindow(id: "tag-manager")
+        if !appState.tagManagerWindowOpen {
+            openWindow(id: "tag-manager")
+        }
     }
 }
 
