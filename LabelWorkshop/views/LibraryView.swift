@@ -25,7 +25,6 @@ struct LibraryView: View {
     // Sheets
     @State var showTagfilter: Bool = false
     @State var migrationClosed: Bool = false
-    @State var hiddenShown: Bool = false
     
     // Filtering
     @State var searchQuery: String = ""
@@ -34,6 +33,7 @@ struct LibraryView: View {
     // View Options
     @State var zoom: LibraryZoom = .LargeEntries
     @State var namesShown: Bool = true
+    @State var hiddenShown: Bool = false
     
     @Environment(AppState.self) private var appState
     
