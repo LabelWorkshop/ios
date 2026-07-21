@@ -17,20 +17,6 @@ struct TagSearch: View {
     let library: Library?
     let closeButton: Bool
     @Binding var tags: [Tag]
-    var visableTags: [Tag] {
-        if searchQuery.isEmpty { return tags }
-        return tags.filter { tag in
-            var fullName = tag.name
-            if let library = self.library {
-                var parentNames = " "
-                for parent in library.tags.getParentTags(of: tag) {
-                    parentNames.append("\(parent.name) ")
-                }
-                fullName.append(parentNames)
-            }
-            return fullName.lowercased().contains(searchQuery.lowercased())
-        }
-    }
     @State var searchQuery: String = ""
     @State var selected: [Tag]
     
@@ -54,6 +40,19 @@ struct TagSearch: View {
         self.closeButton = closeButton
     }
     
+    func tagQualifiesSearch(_ tag: Tag) -> Bool {
+        if searchQuery.isEmpty { return true }
+        var fullName = tag.name
+        if let library = self.library {
+            var parentNames = " "
+            for parent in library.tags.getParentTags(of: tag) {
+                parentNames.append("\(parent.name) ")
+            }
+            fullName.append(parentNames)
+        }
+        return fullName.lowercased().contains(searchQuery.lowercased())
+    }
+    
     func isTagSelected(_ tag: Tag) -> Bool {
         self.selected.contains(tag)
     }
@@ -61,7 +60,7 @@ struct TagSearch: View {
     var body: some View {
         let scroller = ScrollView {
             VStack {
-                ForEach(visableTags) { tag in
+                ForEach($tags) { $tag in
                     let tagSelectionBinding = Binding<Bool>(
                         get: { self.isTagSelected(tag) },
                         set: { newValue in
@@ -77,18 +76,20 @@ struct TagSearch: View {
                             self.selectAction(tag)
                         }
                     )
-                    HStack {
-                        if multiSelect {
-                            Toggle("Selected", isOn: tagSelectionBinding).labelsHidden()
-                        }
-                        Button(action: {
-                            if !multiSelect {
-                                self.selectAction(tag)
-                            } else {
-                                tagSelectionBinding.wrappedValue = !self.isTagSelected(tag)
+                    if tagQualifiesSearch(tag) {
+                        HStack {
+                            if multiSelect {
+                                Toggle("Selected", isOn: tagSelectionBinding).labelsHidden()
                             }
-                        }) {
-                            TagView(tag: tag, fullWidth: true)
+                            Button(action: {
+                                if !multiSelect {
+                                    self.selectAction(tag)
+                                } else {
+                                    tagSelectionBinding.wrappedValue = !self.isTagSelected(tag)
+                                }
+                            }) {
+                                TagView(tag: tag, fullWidth: true)
+                            }
                         }
                     }
                 }

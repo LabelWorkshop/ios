@@ -21,11 +21,9 @@ struct LabelWorkshopApp: App {
         }
         
         WindowGroup(id:"tag-manager") {
-            if appState.selectedLibrary != nil {
-                TagManagerView(library: appState.selectedLibrary!)
-                    .onAppear {appState.tagManagerWindowOpen = true}
-                    .onDisappear {appState.tagManagerWindowOpen = false}
-            }
+            TagManagerView(library: appState.selectedLibrary)
+                .onAppear {appState.tagManagerWindowOpen = true}
+                .onDisappear {appState.tagManagerWindowOpen = false}
         }
         .defaultSize(width: 300, height: 600)
     }
