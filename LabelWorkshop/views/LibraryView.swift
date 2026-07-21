@@ -65,7 +65,7 @@ struct LibraryView: View {
         return true
     }
     
-    func isEntryQualifingSearch(_ entry: Entry) -> Bool {
+    func isEntryQualifyingSearch(_ entry: Entry) -> Bool {
         if searchQuery == "" && self.tagFilters.isEmpty {
             return true
         }
@@ -90,7 +90,7 @@ struct LibraryView: View {
                 }
                 LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
                     ForEach(library.entries.all, id: \.path) { entry in
-                        if !isEntryHidden(entry) && isEntryQualifingSearch(entry) {
+                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) {
                             GridRow {
                                 EntryMiniView(entry: entry, namesShown: $namesShown)
                             }

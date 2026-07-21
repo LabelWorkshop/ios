@@ -2,7 +2,7 @@ import SQLite
 import Foundation
 
 enum EntryManagerError: Error {
-    case InsertError
+    case insertionFailed
 }
 
 @Observable
@@ -13,10 +13,10 @@ class EntryManager {
     
     init(library: Library) {
         self.library = library
-        self.update()
+        self.refresh()
     }
     
-    func update() {
+    func refresh() {
         var updatedEntries: [Entry] = []
         guard let db = self.library.db else { return }
         do {
@@ -46,7 +46,7 @@ class EntryManager {
             EntriesTable.folderId <- 0
         )
         
-        guard let id = try self.library.db?.run(insertEntry) else {throw EntryManagerError.InsertError}
+        guard let id = try self.library.db?.run(insertEntry) else {throw EntryManagerError.insertionFailed}
         
         self.entries.append(Entry(library: self.library, path: filepath, id: Int(id)))
     }
