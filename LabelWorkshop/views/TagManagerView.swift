@@ -35,9 +35,10 @@ struct TagManagerView: View {
                     }
                     .buttonStyle(ProminentButtonStyle())
                 }
-                
-                ToolbarItem(placement: .navigationBarLeading){
-                    CloseButton(dismiss: dismiss)
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    ToolbarItem(placement: .navigationBarLeading){
+                        CloseButton(dismiss: dismiss)
+                    }
                 }
             }
         }
