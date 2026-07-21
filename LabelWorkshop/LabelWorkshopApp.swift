@@ -3,6 +3,7 @@ import SwiftUI
 @Observable
 final class AppState {
     var showTagManager = false
+    var selectedLibrary: Library?
 }
 
 @main
@@ -17,5 +18,12 @@ struct LabelWorkshopApp: App {
         .commands {
             LibraryCommands(appState: appState)
         }
+        
+        WindowGroup(id:"tag-manager") {
+            if appState.selectedLibrary != nil {
+                TagManagerView(library: appState.selectedLibrary!)
+            }
+        }
+        .defaultSize(width: 300, height: 600)
     }
 }
