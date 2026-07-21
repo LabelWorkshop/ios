@@ -5,6 +5,7 @@ enum EntryManagerError: Error {
     case InsertError
 }
 
+@Observable
 class EntryManager {
     let library: Library
     private var entries: [Entry] = []
@@ -48,5 +49,30 @@ class EntryManager {
         guard let id = try self.library.db?.run(insertEntry) else {throw EntryManagerError.InsertError}
         
         self.entries.append(Entry(library: self.library, path: filepath, id: Int(id)))
+    }
+    
+    func delete(_ entry: Entry) {
+        let queries = [
+            DateFieldsTable.table
+                .filter(EntriesTable.id == entry.id)
+                .delete(),
+            TextFieldsTable.table
+                .filter(EntriesTable.id == entry.id)
+                .delete(),
+            TagEntriesTable.table
+                .filter(EntriesTable.id == entry.id)
+                .delete(),
+            EntriesTable.table
+                .filter(EntriesTable.id == entry.id)
+                .delete()
+        ]
+        do {
+            try self.library.db?.transaction {
+                for query in queries {
+                    try self.library.db!.run(query)
+                }
+            }
+            self.entries.removeAll(where: { $0.id == entry.id })
+        } catch {print(error)}
     }
 }

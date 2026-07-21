@@ -130,7 +130,7 @@ struct EntryView: View {
                     Button(role: .destructive, action: {
                         do {
                             try FileManager.default.removeItem(at: entry.fullPath!)
-                            entry.delete()
+                            self.entry.library.entries.delete(entry)
                         } catch {print(error)}
                     }) {
                         Label("Delete", systemImage: "trash")
