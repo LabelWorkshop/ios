@@ -64,6 +64,7 @@ class Entry {
         try self.library.db!.run(query)
     }
     
+    @available(*, deprecated, message: "Use EntryManager.delete instead.")
     func delete() {
         let queries = [
             DateFieldsTable.table

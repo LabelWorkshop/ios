@@ -78,6 +78,7 @@ class Library: Hashable, Identifiable, ObservableObject {
     var migrationState: MigrationState = .Unknown
     var migrationDebug: MigrationDebug = .Default
     var isNew: Bool
+    var entries: EntryManager!
     @Published var migrationPercentage = 0.0
     
     var tags: LibraryTagManager!
@@ -143,6 +144,9 @@ class Library: Hashable, Identifiable, ObservableObject {
             self.tagColors = TagColorManager(library: self)
             self.tags = LibraryTagManager(library: self)
             
+            // Get Entries
+            self.entries = EntryManager(library: self)
+            
             // Find New Entries
             do {
                 try self.addNewEntries()
@@ -160,7 +164,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         
         var allChildren: [Path] = try libPath.recursiveChildren()
         var newFiles: [Path] = []
-        let entries: [Entry] = self.safeGetEntries()
+        let entries: [Entry] = self.entries.all
         
         // Remove any paths that are already present as entries
         allChildren.removeAll { child in
@@ -185,52 +189,10 @@ class Library: Hashable, Identifiable, ObservableObject {
         return String(name)
     }
     
-    func getEntries(limit: Int? = nil) throws -> [Entry] {
-        if self.db == nil { throw LibraryError.databaseInvalid }
-        var entries: [Entry] = []
-        do {
-            for rawEntry in try self.db!.prepare(EntriesTable.table.limit(limit)) {
-                let path: String = rawEntry[EntriesTable.path]
-                let id: Int = rawEntry[EntriesTable.id]
-                entries.append(Entry(library: self, path: path, id: id))
-            }
-        } catch {
-            throw LibraryError.databaseInvalid
-        }
-        return entries
-    }
-    
-    func safeGetEntries(limit: Int? = nil) -> [Entry] {
-        do {
-            return try self.getEntries()
-        } catch {
-            return []
-        }
-    }
-    
-    func addEntry(path: URL) throws {
-        // Path
-        guard let filepath = path.absoluteString.replacingOccurrences(of: self.bookmark!.absoluteString, with: "").removingPercentEncoding else {
-            throw LibraryError.databaseInvalid
-        }
-        // Filename
-        let filename = path.lastPathComponent
-        
-        let insertEntry = EntriesTable.table.insert(
-            EntriesTable.path <- filepath,
-            EntriesTable.filename <- filename,
-            EntriesTable.dateCreated <- Date(),
-            EntriesTable.suffix <- path.pathExtension,
-            EntriesTable.folderId <- 0
-        )
-        
-        try self.db?.run(insertEntry)
-    }
-    
     func addNewEntries() throws {
         let newFiles = try findNewFiles()
         for file in newFiles {
-            try self.addEntry(path: file.url)
+            try self.entries.add(path: file.url)
         }
     }
     
@@ -602,7 +564,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         try self.db?.execute("ALTER TABLE entries ADD COLUMN filename TEXT NOT NULL DEFAULT ''")
         
         // Populate filename column
-        try self.safeGetEntries().forEach { entry in
+        try self.entries.all.forEach { entry in
             let sqlEntry = EntriesTable.table.filter(EntriesTable.id == entry.id)
             try self.db?.run(sqlEntry.update(EntriesTable.filename <- entry.fullPath?.lastPathComponent ?? ""))
         }

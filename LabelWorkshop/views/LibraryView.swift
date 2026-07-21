@@ -20,11 +20,9 @@ struct LibraryCommands: Commands {
 
 struct LibraryView: View {
     let library: Library
-    @State var entries: [Entry]
     @State var showTagfilter: Bool = false
     @State var searchQuery: String = ""
     @State var tagFilters: [Tag] = []
-    @State var shownEntries: [Entry]
     @State var zoom: LibraryZoom = .LargeEntries
     @State var namesShown: Bool = true
     @State var tags: [Tag] = []
@@ -41,30 +39,7 @@ struct LibraryView: View {
     
     init(library: Library) {
         self.library = library
-        self.entries = library.safeGetEntries(limit: 30)
         self.tags = self.library.tags.all
-        self.shownEntries = library.safeGetEntries()
-        self.updateEntries()
-    }
-    
-    func updateEntries() {
-        let allEntries = library.safeGetEntries()
-        if searchQuery == "" && self.tagFilters.isEmpty {
-            self.shownEntries = allEntries
-            return
-        }
-        var updatedEntriesList: [Entry] = []
-        
-        for entry in allEntries {
-            var qualifiesSearch = true
-            if searchQuery != "" {
-                qualifiesSearch = entry.path.lowercased().contains(searchQuery.lowercased())
-            }
-            if qualifiesSearch && entry.tags.containsAll(tagFilters)  {
-                updatedEntriesList.append(entry)
-            }
-        }
-        self.shownEntries = updatedEntriesList
     }
     
     func getViewGrid(_ geometry: GeometryProxy) -> [GridItem] {
@@ -90,6 +65,22 @@ struct LibraryView: View {
         return true
     }
     
+    func isEntryQualifyingSearch(_ entry: Entry) -> Bool {
+        if searchQuery == "" && self.tagFilters.isEmpty {
+            return true
+        }
+        
+        var qualifiesSearch = true
+        if searchQuery != "" {
+            qualifiesSearch = entry.path.lowercased().contains(searchQuery.lowercased())
+        }
+        if !entry.tags.containsAll(tagFilters)  {
+            qualifiesSearch = false
+        }
+        
+        return qualifiesSearch
+    }
+    
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
@@ -98,8 +89,8 @@ struct LibraryView: View {
                     MigrationProgress(library: library, closed: $migrationClosed)
                 }
                 LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
-                    ForEach(shownEntries, id: \.path) { entry in
-                        if !isEntryHidden(entry) {
+                    ForEach(library.entries.all, id: \.path) { entry in
+                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) {
                             GridRow {
                                 EntryMiniView(entry: entry, namesShown: $namesShown)
                             }
@@ -161,18 +152,8 @@ struct LibraryView: View {
             TagManagerView(library: library)
         }
         .navigationTitle(library.getName())
-        .task {
-            self.entries = library.safeGetEntries()
-            updateEntries()
-        }
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
         .searchPresentationToolbarBehavior(.avoidHidingContent)
-        .onChange(of: tagFilters) {
-            self.updateEntries()
-        }
-        .onChange(of: searchQuery) {
-            self.updateEntries()
-        }
     }
 }
 
