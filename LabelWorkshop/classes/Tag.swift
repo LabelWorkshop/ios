@@ -49,7 +49,7 @@ extension Color {
     }
 }
 
-class Tag: Identifiable, Equatable {
+class Tag: Identifiable, Equatable, Hashable {
     var library: Library?
     var realName: String
     var name: String
@@ -254,5 +254,9 @@ class Tag: Identifiable, Equatable {
     
     static func == (lhs: Tag, rhs: Tag) -> Bool {
         return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }

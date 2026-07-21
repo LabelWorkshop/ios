@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TagManagerView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openWindow) private var openWindow
     let library: Library?
     @State var tags: [Tag]
     @State var editTag: Tag?
@@ -48,12 +49,19 @@ struct TagManagerView: View {
                     .navigationTitle("Tag Manager")
             }
         }
-        .sheet(item: $editTag) { editTag in
-            if let library = library {
-                TagDetailsView(library: library, tag: editTag)
-                    .onDisappear {
-                        self.refreshTags()
-                    }
+        .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
+            view.sheet(item: $editTag) { editTag in
+                if let library = library {
+                    TagDetailsView(library: library, tag: editTag)
+                        .onDisappear {
+                            self.refreshTags()
+                        }
+                }
+            }
+        }
+        .onChange(of: editTag) {
+            if let editTag = editTag {
+                openWindow(id: "tag-editor", value: editTag.id)
             }
         }
         .onAppear() {
