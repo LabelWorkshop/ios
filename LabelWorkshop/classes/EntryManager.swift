@@ -68,9 +68,10 @@ class EntryManager {
                 .filter(EntriesTable.id == entry.id)
                 .delete()
         ]
-        try self.library.db?.transaction {
+        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
+        try db.transaction {
             for query in queries {
-                try self.library.db!.run(query)
+                try db.run(query)
             }
             self.entries.removeAll(where: { $0.id == entry.id })
         }
