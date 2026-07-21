@@ -1,6 +1,10 @@
 import SQLite
 import Foundation
 
+enum EntryManagerError: Error {
+    case InsertError
+}
+
 class EntryManager {
     let library: Library
     private var entries: [Entry] = []
@@ -41,7 +45,8 @@ class EntryManager {
             EntriesTable.folderId <- 0
         )
         
-        try self.library.db?.run(insertEntry)
-        self.update()
+        guard let id = try self.library.db?.run(insertEntry) else {throw EntryManagerError.InsertError}
+        
+        self.entries.append(Entry(library: self.library, path: filepath, id: Int(id)))
     }
 }
