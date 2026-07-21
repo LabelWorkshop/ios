@@ -23,11 +23,12 @@ enum LibraryViewType {
 
 struct LibraryCommands: Commands {
     @Bindable var appState: AppState
+    @Environment(\.openWindow) private var openWindow
     
     var body: some Commands {
         CommandMenu("Library") {
             Button("Tag Manager", systemImage: "tag") {
-                appState.showTagManager = true
+                openWindow(id: "tag-manager")
             }
             .keyboardShortcut(KeyboardShortcut("M", modifiers: [.command, .shift]))
         }
@@ -55,6 +56,8 @@ struct LibraryView: View {
     @State var viewType: LibraryViewType = .Grid
     
     @Environment(AppState.self) private var appState
+    @Environment(\.openURL) private var openURL
+    @Environment(\.openWindow) private var openWindow
     
     let LIST_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 50, .Medium: 30]
     let GRID_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 120, .Medium: 70]
@@ -177,7 +180,7 @@ struct LibraryView: View {
             ToolbarItem( placement: .navigationBarTrailing){
                 Menu {
                     Button(action: {
-                        appState.showTagManager = true
+                        openWindow(id: "tag-manager")
                     }) {
                         Label("Tag Manager", systemImage: "tag")
                     }
