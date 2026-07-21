@@ -13,7 +13,11 @@ struct TagManagerView: View {
     }
     
     func openEditor(_ tag: Tag) {
-        editTag = tag
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            editTag = tag
+        } else {
+            openWindow(id: "tag-editor", value: tag.id)
+        }
     }
     
     func refreshTags() {
@@ -56,13 +60,6 @@ struct TagManagerView: View {
                         .onDisappear {
                             self.refreshTags()
                         }
-                }
-            }
-        }
-        .if(UIDevice.current.userInterfaceIdiom != .phone) { view in
-            view.onChange(of: editTag) {
-                if let editTag = editTag {
-                    openWindow(id: "tag-editor", value: editTag.id)
                 }
             }
         }
