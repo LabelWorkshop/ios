@@ -78,6 +78,7 @@ class Library: Hashable, Identifiable, ObservableObject {
     var migrationState: MigrationState = .Unknown
     var migrationDebug: MigrationDebug = .Default
     var isNew: Bool
+    var entries: EntryManager!
     @Published var migrationPercentage = 0.0
     
     var tags: LibraryTagManager!
@@ -147,6 +148,9 @@ class Library: Hashable, Identifiable, ObservableObject {
             do {
                 try self.addNewEntries()
             } catch {print(error)}
+            
+            // Get Entries
+            self.entries = EntryManager(library: self)
         } catch {print(error)}
     }
     
@@ -185,6 +189,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         return String(name)
     }
     
+    @available(*, deprecated, message: "Use the EntryManager instead")
     func getEntries(limit: Int? = nil) throws -> [Entry] {
         if self.db == nil { throw LibraryError.databaseInvalid }
         var entries: [Entry] = []
@@ -200,6 +205,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         return entries
     }
     
+    @available(*, deprecated, message: "Use the EntryManager instead")
     func safeGetEntries(limit: Int? = nil) -> [Entry] {
         do {
             return try self.getEntries()
@@ -208,6 +214,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         }
     }
     
+    @available(*, deprecated, message: "Use the EntryManager instead")
     func addEntry(path: URL) throws {
         // Path
         guard let filepath = path.absoluteString.replacingOccurrences(of: self.bookmark!.absoluteString, with: "").removingPercentEncoding else {

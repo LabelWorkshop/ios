@@ -20,7 +20,6 @@ struct LibraryCommands: Commands {
 
 struct LibraryView: View {
     let library: Library
-    @State var entries: [Entry]
     @State var showTagfilter: Bool = false
     @State var searchQuery: String = ""
     @State var tagFilters: [Tag] = []
@@ -41,14 +40,13 @@ struct LibraryView: View {
     
     init(library: Library) {
         self.library = library
-        self.entries = library.safeGetEntries(limit: 30)
         self.tags = self.library.tags.all
-        self.shownEntries = library.safeGetEntries()
+        self.shownEntries = library.entries.all
         self.updateEntries()
     }
     
     func updateEntries() {
-        let allEntries = library.safeGetEntries()
+        let allEntries = library.entries.all
         if searchQuery == "" && self.tagFilters.isEmpty {
             self.shownEntries = allEntries
             return
@@ -161,10 +159,6 @@ struct LibraryView: View {
             TagManagerView(library: library)
         }
         .navigationTitle(library.getName())
-        .task {
-            self.entries = library.safeGetEntries()
-            updateEntries()
-        }
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
         .searchPresentationToolbarBehavior(.avoidHidingContent)
         .onChange(of: tagFilters) {
