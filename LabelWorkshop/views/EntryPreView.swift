@@ -40,7 +40,8 @@ actor ThumbnailLoader {
             } else {
                 image = await loadImage(for: entry, thumbnail: square)
             }
-            entry.library.thumbnailCache.set(image!, for: cacheName)
+            guard let image = image else { return nil }
+            entry.library.thumbnailCache.set(image, for: cacheName)
             return image
         }
         inFlight[cacheName] = task
