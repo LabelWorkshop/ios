@@ -21,6 +21,14 @@ enum LibraryViewType {
     case Masonry
 }
 
+func openTagManager(appState: AppState, openWindow: OpenWindowAction) {
+    if UIDevice.current.userInterfaceIdiom == .phone {
+        appState.showTagManager = true
+    } else {
+        openWindow(id: "tag-manager")
+    }
+}
+
 struct LibraryCommands: Commands {
     @Bindable var appState: AppState
     @Environment(\.openWindow) private var openWindow
@@ -28,7 +36,7 @@ struct LibraryCommands: Commands {
     var body: some Commands {
         CommandMenu("Library") {
             Button("Tag Manager", systemImage: "tag") {
-                openWindow(id: "tag-manager")
+                openTagManager(appState: appState, openWindow: openWindow)
             }
             .keyboardShortcut(KeyboardShortcut("M", modifiers: [.command, .shift]))
         }
@@ -180,7 +188,7 @@ struct LibraryView: View {
             ToolbarItem( placement: .navigationBarTrailing){
                 Menu {
                     Button(action: {
-                        openWindow(id: "tag-manager")
+                        openTagManager(appState: appState, openWindow: openWindow)
                     }) {
                         Label("Tag Manager", systemImage: "tag")
                     }
