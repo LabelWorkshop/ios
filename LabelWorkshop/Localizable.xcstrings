@@ -80,6 +80,9 @@
         }
       }
     },
+    "Archive" : {
+
+    },
     "Checking for Migration" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1136,6 +1139,9 @@
           }
         }
       }
+    },
+    "Favorite" : {
+
     },
     "Fields" : {
       "localizations" : {
