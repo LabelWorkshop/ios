@@ -189,51 +189,6 @@ class Library: Hashable, Identifiable, ObservableObject {
         return String(name)
     }
     
-    @available(*, deprecated, message: "Use the EntryManager instead")
-    func getEntries(limit: Int? = nil) throws -> [Entry] {
-        if self.db == nil { throw LibraryError.databaseInvalid }
-        var entries: [Entry] = []
-        do {
-            for rawEntry in try self.db!.prepare(EntriesTable.table.limit(limit)) {
-                let path: String = rawEntry[EntriesTable.path]
-                let id: Int = rawEntry[EntriesTable.id]
-                entries.append(Entry(library: self, path: path, id: id))
-            }
-        } catch {
-            throw LibraryError.databaseInvalid
-        }
-        return entries
-    }
-    
-    @available(*, deprecated, message: "Use the EntryManager instead")
-    func safeGetEntries(limit: Int? = nil) -> [Entry] {
-        do {
-            return try self.getEntries()
-        } catch {
-            return []
-        }
-    }
-    
-    @available(*, deprecated, message: "Use the EntryManager instead")
-    func addEntry(path: URL) throws {
-        // Path
-        guard let filepath = path.absoluteString.replacingOccurrences(of: self.bookmark!.absoluteString, with: "").removingPercentEncoding else {
-            throw LibraryError.databaseInvalid
-        }
-        // Filename
-        let filename = path.lastPathComponent
-        
-        let insertEntry = EntriesTable.table.insert(
-            EntriesTable.path <- filepath,
-            EntriesTable.filename <- filename,
-            EntriesTable.dateCreated <- Date(),
-            EntriesTable.suffix <- path.pathExtension,
-            EntriesTable.folderId <- 0
-        )
-        
-        try self.db?.run(insertEntry)
-    }
-    
     func addNewEntries() throws {
         let newFiles = try findNewFiles()
         for file in newFiles {
