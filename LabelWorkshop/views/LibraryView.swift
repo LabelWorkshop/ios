@@ -20,17 +20,22 @@ struct LibraryCommands: Commands {
 
 struct LibraryView: View {
     let library: Library
-    @State var showTagfilter: Bool = false
-    @State var searchQuery: String = ""
-    @State var tagFilters: [Tag] = []
-    @State var zoom: LibraryZoom = .LargeEntries
-    @State var namesShown: Bool = true
     @State var tags: [Tag] = []
+    
+    // Sheets
+    @State var showTagfilter: Bool = false
     @State var migrationClosed: Bool = false
     @State var hiddenShown: Bool = false
     
+    // Filtering
+    @State var searchQuery: String = ""
+    @State var tagFilters: [Tag] = []
+    
+    // View Options
+    @State var zoom: LibraryZoom = .LargeEntries
+    @State var namesShown: Bool = true
+    
     @Environment(AppState.self) private var appState
-    @Environment(\.openURL) private var openURL
     
     private let tagFilterTip = TagFilterTip()
     
