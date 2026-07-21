@@ -13,8 +13,9 @@ class EntryManager {
     
     func update() {
         var updatedEntries: [Entry] = []
+        guard let db = self.library.db else { return }
         do {
-            for rawEntry in try library.db!.prepare(EntriesTable.table) {
+            for rawEntry in try db.prepare(EntriesTable.table) {
                 let path: String = rawEntry[EntriesTable.path]
                 let id: Int = rawEntry[EntriesTable.id]
                 updatedEntries.append(Entry(library: self.library, path: path, id: id))
@@ -25,7 +26,8 @@ class EntryManager {
     
     func add(path: URL) throws {
         // Path
-        guard let filepath = path.absoluteString.replacingOccurrences(of: self.library.bookmark!.absoluteString, with: "").removingPercentEncoding else {
+        guard let bookmark = self.library.bookmark else { throw LibraryError.databaseInvalid }
+        guard let filepath = path.absoluteString.replacingOccurrences(of: bookmark.absoluteString, with: "").removingPercentEncoding else {
             throw LibraryError.databaseInvalid
         }
         // Filename
