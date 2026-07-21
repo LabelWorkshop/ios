@@ -59,9 +59,11 @@ struct TagManagerView: View {
                 }
             }
         }
-        .onChange(of: editTag) {
-            if let editTag = editTag {
-                openWindow(id: "tag-editor", value: editTag.id)
+        .if(UIDevice.current.userInterfaceIdiom != .phone) { view in
+            view.onChange(of: editTag) {
+                if let editTag = editTag {
+                    openWindow(id: "tag-editor", value: editTag.id)
+                }
             }
         }
         .onAppear() {
