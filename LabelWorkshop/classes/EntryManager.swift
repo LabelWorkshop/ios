@@ -13,19 +13,21 @@ class EntryManager {
     
     init(library: Library) {
         self.library = library
-        self.refresh()
+        do {
+            try self.refresh()
+        } catch {
+            print("EntryManager couldn't be initialized")
+        }
     }
     
-    func refresh() {
+    func refresh() throws {
         var updatedEntries: [Entry] = []
         guard let db = self.library.db else { return }
-        do {
-            for rawEntry in try db.prepare(EntriesTable.table) {
-                let path: String = rawEntry[EntriesTable.path]
-                let id: Int = rawEntry[EntriesTable.id]
-                updatedEntries.append(Entry(library: self.library, path: path, id: id))
-            }
-        } catch {print(error)}
+        for rawEntry in try db.prepare(EntriesTable.table) {
+            let path: String = rawEntry[EntriesTable.path]
+            let id: Int = rawEntry[EntriesTable.id]
+            updatedEntries.append(Entry(library: self.library, path: path, id: id))
+        }
         self.entries = updatedEntries
     }
     
@@ -51,7 +53,7 @@ class EntryManager {
         self.entries.append(Entry(library: self.library, path: filepath, id: Int(id)))
     }
     
-    func delete(_ entry: Entry) {
+    func delete(_ entry: Entry) throws {
         let queries = [
             DateFieldsTable.table
                 .filter(EntriesTable.id == entry.id)
@@ -66,13 +68,11 @@ class EntryManager {
                 .filter(EntriesTable.id == entry.id)
                 .delete()
         ]
-        do {
-            try self.library.db?.transaction {
-                for query in queries {
-                    try self.library.db!.run(query)
-                }
+        try self.library.db?.transaction {
+            for query in queries {
+                try self.library.db!.run(query)
             }
             self.entries.removeAll(where: { $0.id == entry.id })
-        } catch {print(error)}
+        }
     }
 }

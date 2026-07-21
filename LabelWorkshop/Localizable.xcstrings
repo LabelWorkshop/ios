@@ -80,6 +80,9 @@
         }
       }
     },
+    "An error occured while trying to delete this entry." : {
+
+    },
     "Checking for Migration" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1117,6 +1120,9 @@
     "Delete" : {
 
     },
+    "Delete Failed" : {
+
+    },
     "Delete Tag" : {
       "localizations" : {
         "fr" : {
@@ -1253,6 +1259,9 @@
           }
         }
       }
+    },
+    "OK" : {
+
     },
     "Parent Tags" : {
       "extractionState" : "stale",

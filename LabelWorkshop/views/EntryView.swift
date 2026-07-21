@@ -8,6 +8,7 @@ struct EntryView: View {
     @State var showTagSelector: Bool = false
     @State var showFieldTypeSelector: Bool = false
     @State var fullScreen: Bool = false
+    @State var deletionError: Bool = false
     
     init(entry: Entry) {
         self.entry = entry
@@ -129,9 +130,11 @@ struct EntryView: View {
                     }
                     Button(role: .destructive, action: {
                         do {
+                            try self.entry.library.entries.delete(entry)
                             try FileManager.default.removeItem(at: entry.fullPath!)
-                            self.entry.library.entries.delete(entry)
-                        } catch {print(error)}
+                        } catch {
+                            self.deletionError = true
+                        }
                     }) {
                         Label("Delete", systemImage: "trash")
                     }
@@ -182,6 +185,11 @@ struct EntryView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .ignoresSafeArea()
             }
+        }
+        .alert("Delete Failed", isPresented: $deletionError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("An error occured while trying to delete this entry.")
         }
     }
 }
