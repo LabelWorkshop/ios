@@ -24,7 +24,7 @@ struct LabelWorkshopApp: App {
             if appState.selectedLibrary != nil {
                 TagManagerView(library: appState.selectedLibrary!)
                     .onAppear {appState.tagManagerWindowOpen = true}
-                    .onDisappear {appState.tagManagerWindowOpen = true}
+                    .onDisappear {appState.tagManagerWindowOpen = false}
             }
         }
         .defaultSize(width: 300, height: 600)
