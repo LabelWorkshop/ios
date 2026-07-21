@@ -144,13 +144,13 @@ class Library: Hashable, Identifiable, ObservableObject {
             self.tagColors = TagColorManager(library: self)
             self.tags = LibraryTagManager(library: self)
             
+            // Get Entries
+            self.entries = EntryManager(library: self)
+            
             // Find New Entries
             do {
                 try self.addNewEntries()
             } catch {print(error)}
-            
-            // Get Entries
-            self.entries = EntryManager(library: self)
         } catch {print(error)}
     }
     
@@ -164,7 +164,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         
         var allChildren: [Path] = try libPath.recursiveChildren()
         var newFiles: [Path] = []
-        let entries: [Entry] = self.safeGetEntries()
+        let entries: [Entry] = self.entries.all
         
         // Remove any paths that are already present as entries
         allChildren.removeAll { child in
@@ -237,7 +237,7 @@ class Library: Hashable, Identifiable, ObservableObject {
     func addNewEntries() throws {
         let newFiles = try findNewFiles()
         for file in newFiles {
-            try self.addEntry(path: file.url)
+            try self.entries.add(path: file.url)
         }
     }
     
@@ -609,7 +609,7 @@ class Library: Hashable, Identifiable, ObservableObject {
         try self.db?.execute("ALTER TABLE entries ADD COLUMN filename TEXT NOT NULL DEFAULT ''")
         
         // Populate filename column
-        try self.safeGetEntries().forEach { entry in
+        try self.entries.all.forEach { entry in
             let sqlEntry = EntriesTable.table.filter(EntriesTable.id == entry.id)
             try self.db?.run(sqlEntry.update(EntriesTable.filename <- entry.fullPath?.lastPathComponent ?? ""))
         }
