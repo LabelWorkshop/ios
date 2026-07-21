@@ -40,10 +40,12 @@ class EntryTagManager {
         }
     }
     
+    /// Check if the entry has no tags
     func isEmpty() -> Bool {
         return self.tags.isEmpty
     }
     
+    /// Does the entry contain all the input tags
     func containsAll(_ tags: [Tag]) -> Bool {
         for tag in tags {
             if !self.tags.contains(where: { $0.id == tag.id }) {
@@ -53,6 +55,7 @@ class EntryTagManager {
         return true
     }
     
+    /// Add a tag from the entry
     func add(_ tag: Tag) {
         // Check if tag already exists on entry
         if self.containsAll([tag]) {
@@ -66,6 +69,7 @@ class EntryTagManager {
         self.refresh()
     }
     
+    /// Remove a tag from the entry
     func remove(_ tag: Tag) {
         let query = TagEntriesTable.table
             .filter(TagEntriesTable.id == tag.id)
