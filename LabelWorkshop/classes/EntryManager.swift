@@ -9,7 +9,7 @@ enum EntryManagerError: Error {
 class EntryManager {
     let library: Library
     private var entries: [Entry] = []
-    var all: [Entry] { return self.entries }
+    var all: [Entry] { entries }
     
     init(library: Library) {
         self.library = library
