@@ -37,7 +37,7 @@ struct TagDetailsView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 8) {
                 if #available(iOS 26.0, *) {
                     VisualTagEdit(displayName: $displayName, colors: $colors)

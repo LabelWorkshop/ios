@@ -26,5 +26,12 @@ struct LabelWorkshopApp: App {
                 .onDisappear {appState.tagManagerWindowOpen = false}
         }
         .defaultSize(width: 300, height: 600)
+        
+        WindowGroup(id:"tag-editor", for: Int.self) { $tagId in
+            if let library = appState.selectedLibrary, let tag = library.tags.getById(id: tagId ?? -1) {
+                TagDetailsView(library: library, tag: tag)
+            }
+        }
+        .defaultSize(width: 300, height: 600)
     }
 }
