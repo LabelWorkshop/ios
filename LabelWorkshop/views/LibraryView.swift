@@ -254,7 +254,7 @@ struct LibraryView: View {
             }
         }
         .sheet(isPresented: $appState.showTagManager) {
-            TagManagerView(library: library)
+            TagManagerView(appState)
         }
         .sheet(isPresented: $showColorManager) {
             ColorManager(tagColors: self.library.tagColors)

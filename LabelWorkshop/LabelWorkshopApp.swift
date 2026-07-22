@@ -21,7 +21,7 @@ struct LabelWorkshopApp: App {
         }
         
         WindowGroup(id:"tag-manager") {
-            TagManagerView(library: appState.selectedLibrary)
+            TagManagerView(appState)
                 .onAppear {appState.tagManagerWindowOpen = true}
                 .onDisappear {appState.tagManagerWindowOpen = false}
         }
