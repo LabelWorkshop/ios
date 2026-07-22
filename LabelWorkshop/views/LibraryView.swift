@@ -34,6 +34,7 @@ struct LibraryView: View {
     @State var zoom: LibraryZoom = .LargeEntries
     @State var namesShown: Bool = true
     @State var hiddenShown: Bool = false
+    @State var filterUntagged: Bool = false
     
     @Environment(AppState.self) private var appState
     
@@ -126,10 +127,15 @@ struct LibraryView: View {
                     }) {
                         Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
                     }
-                    Button(action: {
-                        self.hiddenShown.toggle()
-                    }) {
-                        Label(self.hiddenShown ? "Hide Hidden Entries" : "Show Hidden Entries", systemImage: self.hiddenShown ? "eye.slash" : "eye")
+                    Menu {
+                        Toggle(isOn: $filterUntagged) {
+                            Label("Untagged Entries", systemImage: "tag.slash")
+                        }
+                        Toggle(isOn: $hiddenShown) {
+                            Label("Hidden Entries", systemImage: "eye.slash")
+                        }
+                    } label: {
+                        Label("Filter", systemImage: "line.3.horizontal.decrease")
                     }
                 } label: {
                     Image(systemName: "ellipsis")
