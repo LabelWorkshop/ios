@@ -532,40 +532,6 @@
         }
       }
     },
-    "colors.tagstudio-neon.neon-rose" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neon Rose"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rose Vif Néon"
-          }
-        }
-      }
-    },
-    "colors.tagstudio-neon.neon-sky" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neon Sky"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ciel Néon"
-          }
-        }
-      }
-    },
     "colors.tagstudio-neon.neon-teal" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -579,6 +545,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sarcelle Néon"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-neon.neon-white" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neon White"
           }
         }
       }
@@ -600,87 +577,101 @@
         }
       }
     },
-    "colors.tagstudio-pastels.apricot" : {
+    "colors.tagstudio-pastels.coral" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apricot"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abricot"
+            "value" : "Coral"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.blue" : {
+    "colors.tagstudio-pastels.lavender" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Blue"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bleu"
+            "value" : "Lavender"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.cyan" : {
+    "colors.tagstudio-pastels.light-amber" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cyan"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cyan"
+            "value" : "Light Amber"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.green" : {
+    "colors.tagstudio-pastels.light-blue" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Green"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vert"
+            "value" : "Light Blue"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.indigo" : {
+    "colors.tagstudio-pastels.light-green" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Indigo"
+            "value" : "Light Green"
           }
-        },
-        "fr" : {
+        }
+      }
+    },
+    "colors.tagstudio-pastels.light-lime" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Indigo"
+            "value" : "Light Lime"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-pastels.light-orange" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light Orange"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-pastels.light-pink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light Pink"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-pastels.light-yellow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light Yellow"
           }
         }
       }
@@ -702,23 +693,6 @@
         }
       }
     },
-    "colors.tagstudio-pastels.magenta" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Magenta"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Magenta"
-          }
-        }
-      }
-    },
     "colors.tagstudio-pastels.mint" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -736,104 +710,79 @@
         }
       }
     },
-    "colors.tagstudio-pastels.peach" : {
+    "colors.tagstudio-pastels.salmon" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Peach"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pêche"
+            "value" : "Salmon"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.pink" : {
+    "colors.tagstudio-pastels.sky-blue" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pink"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rose"
+            "value" : "Sky Blue"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.rose" : {
+    "colors.tagstudio-shades.auburn" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rose"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rose Vif"
+            "value" : "Auburn"
           }
         }
       }
     },
-    "colors.tagstudio-pastels.yellow" : {
+    "colors.tagstudio-shades.berry" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yellow"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jaune"
+            "value" : "Berry"
           }
         }
       }
     },
-    "colors.tagstudio-shades.aqua" : {
+    "colors.tagstudio-shades.burgundy" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aqua"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aqua"
+            "value" : "Burgundy"
           }
         }
       }
     },
-    "colors.tagstudio-shades.maroon" : {
+    "colors.tagstudio-shades.dark_lavender" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maroon"
+            "value" : "Dark Lavender"
           }
-        },
-        "fr" : {
+        }
+      }
+    },
+    "colors.tagstudio-shades.dark-teal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bordeaux"
+            "value" : "Dark Teal"
           }
         }
       }
