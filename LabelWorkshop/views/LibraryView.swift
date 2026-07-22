@@ -87,6 +87,11 @@ struct LibraryView: View {
         return qualifiesSearch
     }
     
+    func isEntryUntagged(_ entry: Entry) -> Bool {
+        if !filterUntagged {return true}
+        return filterUntagged && entry.tags.isEmpty
+    }
+    
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
@@ -96,7 +101,7 @@ struct LibraryView: View {
                 }
                 LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
                     ForEach(library.entries.all, id: \.path) { entry in
-                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) {
+                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry) {
                             GridRow {
                                 EntryMiniView(entry: entry, namesShown: $namesShown)
                             }
