@@ -41,6 +41,7 @@ struct LibraryView: View {
     // Sheets
     @State var showTagfilter: Bool = false
     @State var migrationClosed: Bool = false
+    @State var showColorManager: Bool = false
     
     // Filtering
     @State var searchQuery: String = ""
@@ -201,6 +202,11 @@ struct LibraryView: View {
                             Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
                         }
                     }
+                    Button {
+                        showColorManager = true
+                    } label: {
+                        Label("Color Manager", systemImage: "paintpalette")
+                    }
                     Menu {
                         Toggle(isOn: $filterUntagged) {
                             Label("Untagged Entries", systemImage: "tag.slash")
@@ -235,6 +241,9 @@ struct LibraryView: View {
         }
         .sheet(isPresented: $appState.showTagManager) {
             TagManagerView(library: library)
+        }
+        .sheet(isPresented: $showColorManager) {
+            ColorManager(tagColors: self.library.tagColors)
         }
         .navigationTitle(library.getName())
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
