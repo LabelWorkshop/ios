@@ -9,6 +9,7 @@ class EntryTagManager {
         }
     }
     var isHidden: Bool = false
+    var isEmpty: Bool { self.tags.isEmpty }
     
     init(_ entry: Entry) {
         self.entry = entry
@@ -38,11 +39,6 @@ class EntryTagManager {
                 self.isHidden = true
             }
         }
-    }
-    
-    /// Check if the entry has no tags
-    func isEmpty() -> Bool {
-        return self.tags.isEmpty
     }
     
     /// Does the entry contain all the input tags

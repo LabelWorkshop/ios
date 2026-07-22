@@ -34,6 +34,7 @@ struct LibraryView: View {
     @State var zoom: LibraryZoom = .LargeEntries
     @State var namesShown: Bool = true
     @State var hiddenShown: Bool = false
+    @State var filterUntagged: Bool = false
     
     @Environment(AppState.self) private var appState
     
@@ -86,6 +87,11 @@ struct LibraryView: View {
         return qualifiesSearch
     }
     
+    func isEntryUntagged(_ entry: Entry) -> Bool {
+        if !filterUntagged {return true}
+        return filterUntagged && entry.tags.isEmpty
+    }
+    
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
@@ -95,7 +101,7 @@ struct LibraryView: View {
                 }
                 LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
                     ForEach(library.entries.all, id: \.path) { entry in
-                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) {
+                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry) {
                             GridRow {
                                 EntryMiniView(entry: entry, namesShown: $namesShown)
                             }
@@ -126,10 +132,15 @@ struct LibraryView: View {
                     }) {
                         Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
                     }
-                    Button(action: {
-                        self.hiddenShown.toggle()
-                    }) {
-                        Label(self.hiddenShown ? "Hide Hidden Entries" : "Show Hidden Entries", systemImage: self.hiddenShown ? "eye.slash" : "eye")
+                    Menu {
+                        Toggle(isOn: $filterUntagged) {
+                            Label("Untagged Entries", systemImage: "tag.slash")
+                        }
+                        Toggle(isOn: $hiddenShown) {
+                            Label("Hidden Entries", systemImage: "eye.slash")
+                        }
+                    } label: {
+                        Label("Filter", systemImage: "line.3.horizontal.decrease")
                     }
                 } label: {
                     Image(systemName: "ellipsis")
