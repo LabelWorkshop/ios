@@ -1153,6 +1153,9 @@
         }
       }
     },
+    "Filter" : {
+
+    },
     "Filter by Tag" : {
       "localizations" : {
         "fr" : {
@@ -1183,7 +1186,7 @@
         }
       }
     },
-    "Hide Hidden Entries" : {
+    "Hidden Entries" : {
 
     },
     "Hide Names" : {
@@ -1303,9 +1306,6 @@
     "Shorthand" : {
 
     },
-    "Show Hidden Entries" : {
-
-    },
     "Show Names" : {
 
     },
@@ -1348,6 +1348,9 @@
           }
         }
       }
+    },
+    "Untagged Entries" : {
+
     },
     "Usage Count" : {
 
