@@ -1,6 +1,7 @@
 class TagColorManager {
     var colors: [TagColor] = [TagColor.none]
     let library: Library
+    var namespaces: [TagColorNamespace] = []
     
     init(library: Library) {
         self.library = library
@@ -25,6 +26,14 @@ class TagColorManager {
                 )
             }
         } catch {print(error)}
+        
+        for color in colors {
+            if !namespaces.contains(where: { $0.namespace == color.namespace }) && color.namespace != "none" {
+                namespaces.append(
+                    TagColorNamespace(namespace: color.namespace, manager: self)
+                )
+            }
+        }
     }
     
     func find(namespace: String, slug: String) -> TagColor? {
