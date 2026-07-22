@@ -101,7 +101,7 @@ func getVideoThumbnail(url: URL) async -> UIImage? {
     return UIImage(cgImage: thumbnailImageRef)
 }
 
-func getTextContents(for entry: Entry) -> String? {
+func getTextContents(for entry: Entry) async -> String? {
     guard let bookmark = entry.library.bookmark else {return nil}
     guard bookmark.startAccessingSecurityScopedResource() == true else {return nil}
     defer { bookmark.stopAccessingSecurityScopedResource() }
@@ -182,6 +182,7 @@ struct EntryPreView: View {
     var ext: String
     var type: ExtensionTypes
     @State var image: UIImage? = nil
+    @State var text: String?
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
@@ -245,9 +246,8 @@ struct EntryPreView: View {
                     case .Archive:
                         Image(systemName: "zipper.page").font(.system(size: 32))
                     case .PlainText:
-                        let content = getTextContents(for: entry) ?? ""
-                        if !content.isEmpty {
-                            Text(content)
+                        if let text = text  {
+                            Text(text)
                                 .font(.callout)
                                 .foregroundStyle(Color(UIColor.label))
                                 .multilineTextAlignment(.leading)
@@ -280,6 +280,10 @@ struct EntryPreView: View {
         .task {
             guard self.type == .Image || self.type == .Video || self.type == .AnimatedImage else {return}
             self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square, type: type)
+        }
+        .task {
+            guard self.type == .PlainText else {return}
+            self.text = await getTextContents(for: entry)
         }
         .onAppear {
             Task {
