@@ -14,7 +14,12 @@ struct ColorManager: View {
         NavigationStack {
             ScrollView {
                 ForEach(tagColors.namespaces) { namespace in
-                    Text(namespace.namespace)
+                    Text(
+                        NSLocalizedString(
+                            "colors.\(namespace.namespace)",
+                            comment: ""
+                        )
+                    )
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                         .foregroundStyle(.secondary)
                     HFlow {
