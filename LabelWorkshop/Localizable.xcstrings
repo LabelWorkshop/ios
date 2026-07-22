@@ -126,6 +126,17 @@
         }
       }
     },
+    "colors.tagstudio-earth-tones" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TagStudio Earth Tones"
+          }
+        }
+      }
+    },
     "colors.tagstudio-earth-tones.blonde" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -245,6 +256,17 @@
         }
       }
     },
+    "colors.tagstudio-grayscale" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TagStudio Grayscale"
+          }
+        }
+      }
+    },
     "colors.tagstudio-grayscale.black" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -326,6 +348,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blanc"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-neon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TagStudio Neon"
           }
         }
       }
@@ -579,6 +612,17 @@
         }
       }
     },
+    "colors.tagstudio-pastels" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TagStudio Pastel"
+          }
+        }
+      }
+    },
     "colors.tagstudio-pastels.coral" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -734,6 +778,17 @@
         }
       }
     },
+    "colors.tagstudio-shades" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TagStudio Shades"
+          }
+        }
+      }
+    },
     "colors.tagstudio-shades.auburn" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -819,6 +874,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Olive"
+          }
+        }
+      }
+    },
+    "colors.tagstudio-standard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TagStudio Standard"
           }
         }
       }
@@ -1170,6 +1236,9 @@
     },
     "Is Hidden?" : {
 
+    },
+    "Key" : {
+      "extractionState" : "manual"
     },
     "LabelWorkshop" : {
       "shouldTranslate" : false
