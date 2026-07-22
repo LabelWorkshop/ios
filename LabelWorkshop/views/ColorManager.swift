@@ -13,10 +13,15 @@ struct ColorManager: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                HFlow {
-                    ForEach(tagColors.colors) { color in
-                        TagPreView(name: .constant(color.name), colors: .constant(color))
-                    }
+                ForEach(tagColors.namespaces) { namespace in
+                    Text(namespace.namespace)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .foregroundStyle(.secondary)
+                    HFlow {
+                        ForEach(namespace.colors) { color in
+                            TagPreView(name: .constant(color.name), colors: .constant(color))
+                        }
+                    }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal)
             }
