@@ -102,6 +102,14 @@ class Library: Hashable, Identifiable, ObservableObject {
             // Inititalize Database
             let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
             self.db = try Connection(dbFile)
+            
+            // Get Tags & Tag Colors
+            self.tagColors = TagColorManager(library: self)
+            self.tags = LibraryTagManager(library: self)
+            
+            // Get Entries
+            self.entries = EntryManager(library: self)
+            
             // Check for migrations asynchronously
             Task { [weak self] in
                 do {
@@ -139,13 +147,6 @@ class Library: Hashable, Identifiable, ObservableObject {
             if let bookmark = self.bookmark {
                 self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark)
             }
-            
-            // Get Tags & Tag Colors
-            self.tagColors = TagColorManager(library: self)
-            self.tags = LibraryTagManager(library: self)
-            
-            // Get Entries
-            self.entries = EntryManager(library: self)
             
             // Find New Entries
             do {
