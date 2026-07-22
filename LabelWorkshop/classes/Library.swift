@@ -59,7 +59,7 @@ enum MigrationDebug {
     case Crash
 }
 
-class Library: Hashable, Identifiable, ObservableObject {
+class Library: Hashable, Identifiable, ObservableObject, Equatable {
     static func == (lhs: Library, rhs: Library) -> Bool {
         return lhs.bookmarkKey == rhs.bookmarkKey
     }

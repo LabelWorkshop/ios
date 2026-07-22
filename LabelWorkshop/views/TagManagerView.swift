@@ -3,13 +3,13 @@ import SwiftUI
 struct TagManagerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openWindow) private var openWindow
-    let library: Library?
+    private var appState: AppState
     @State var tags: [Tag]
     @State var editTag: Tag?
     
-    init(library: Library?) {
-        self.library = library
-        self.tags = self.library?.tags.all ?? []
+    init(_ appState: AppState) {
+        self.appState = appState
+        _tags = State(initialValue: [])
     }
     
     func openEditor(_ tag: Tag) {
@@ -21,13 +21,13 @@ struct TagManagerView: View {
     }
     
     func refreshTags() {
-        self.library?.tags.refresh()
-        self.tags = self.library?.tags.all ?? []
+        appState.selectedLibrary?.tags.refresh()
+        self.tags = appState.selectedLibrary?.tags.all ?? []
     }
     
     var body: some View {
         NavigationStack {
-            if let library = library {
+            if let library = appState.selectedLibrary {
                 TagSearch(library: library, tags: $tags, selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
                 .navigationTitle("Tag Manager")
                 .toolbar {
@@ -55,7 +55,7 @@ struct TagManagerView: View {
         }
         .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
             view.sheet(item: $editTag) { editTag in
-                if let library = library {
+                if let library = appState.selectedLibrary {
                     TagDetailsView(library: library, tag: editTag)
                         .onDisappear {
                             self.refreshTags()
@@ -64,6 +64,9 @@ struct TagManagerView: View {
             }
         }
         .onAppear() {
+            refreshTags()
+        }
+        .onChange(of: appState.selectedLibrary) {
             refreshTags()
         }
     }

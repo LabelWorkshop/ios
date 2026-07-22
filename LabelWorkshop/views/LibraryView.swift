@@ -170,7 +170,7 @@ struct LibraryView: View {
             }
         }
         .sheet(isPresented: $appState.showTagManager) {
-            TagManagerView(library: library)
+            TagManagerView(appState)
         }
         .navigationTitle(library.getName())
         .task {
