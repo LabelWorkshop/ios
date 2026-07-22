@@ -17,6 +17,15 @@ extension CGSize {
 actor ThumbnailLoader {
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
     static let shared = ThumbnailLoader()
+    private var priorityEntryIds: Set<Int> = []
+    
+    func priorityUp(for entry: Entry) {
+        priorityEntryIds.insert(entry.id)
+    }
+    
+    func priorityDown(for entry: Entry) {
+        priorityEntryIds.remove(entry.id)
+    }
     
     func thumbnail(
         for entry: Entry,
@@ -30,10 +39,12 @@ actor ThumbnailLoader {
         
         if let existing = inFlight[cacheName] {
             return await existing.value
-            
         }
         
-        let task = Task<UIImage?, Never>(priority: .userInitiated) {
+        // Set the priority depending on if the entry is visiable or not
+        let priority: TaskPriority = priorityEntryIds.contains(entry.id) ? .high : .userInitiated
+        
+        let task = Task<UIImage?, Never>(priority: priority) {
             var image: UIImage?
             if type == .Video {
                 image = await getVideoThumbnail(url: entry.fullPath!)
@@ -269,6 +280,16 @@ struct EntryPreView: View {
         .task {
             guard self.type == .Image || self.type == .Video || self.type == .AnimatedImage else {return}
             self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square, type: type)
+        }
+        .onAppear {
+            Task {
+                await ThumbnailLoader.shared.priorityUp(for: entry)
+            }
+        }
+        .onDisappear {
+            Task {
+                await ThumbnailLoader.shared.priorityDown(for: entry)
+            }
         }
     }
 }
