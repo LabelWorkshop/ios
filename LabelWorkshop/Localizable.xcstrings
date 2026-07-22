@@ -104,6 +104,9 @@
         }
       }
     },
+    "Color Manager" : {
+
+    },
     "colors.none.none" : {
       "extractionState" : "manual",
       "localizations" : {
