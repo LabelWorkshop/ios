@@ -1,0 +1,52 @@
+name: Nightly Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Cache SPM
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - name: Build
+      run: |
+        xcodebuild \
+        -project LabelWorkshop.xcodeproj \
+        -scheme LabelWorkshop \
+        -configuration Release \
+        -archivePath $RUNNER_TEMP/LabelWorkshop.xcarchive \
+        CODE_SIGNING_REQUIRED=NO \
+        CODE_SIGN_IDENTITY="" \
+        CODE_SIGNING_ALLOWED=NO \
+        archive
+
+    - name: Package as .ipa
+      run: |
+        mkdir -p $RUNNER_TEMP/Payload
+        cp -r "$RUNNER_TEMP/LabelWorkshop.xcarchive/Products/Applications/LabelWorkshop.app" $RUNNER_TEMP/Payload/
+        cd $RUNNER_TEMP
+        zip -r LabelWorkshop.ipa Payload
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: LabelWorkshop-nightly-${{ github.sha }}
+        path: ${{ runner.temp }}/LabelWorkshop.ipa
