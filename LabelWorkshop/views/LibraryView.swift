@@ -1,8 +1,24 @@
 import SwiftUI
 
+enum LibraryGridZoom: CGFloat {
+    case Large = 120
+    case Medium = 70
+}
+
+enum LibraryListZoom: CGFloat {
+    case Large = 50
+    case Medium = 30
+}
+
 enum LibraryZoom: CGFloat {
-    case LargeEntries = 120
-    case MediumEntries = 70
+    case Large
+    case Medium
+}
+
+enum LibraryViewType {
+    case Grid
+    case List
+    case Masonry
 }
 
 struct LibraryCommands: Commands {
@@ -31,12 +47,16 @@ struct LibraryView: View {
     @State var tagFilters: [Tag] = []
     
     // View Options
-    @State var zoom: LibraryZoom = .LargeEntries
+    @State var zoom: LibraryZoom = .Large
     @State var namesShown: Bool = true
     @State var hiddenShown: Bool = false
     @State var filterUntagged: Bool = false
+    @State var viewType: LibraryViewType = .Grid
     
     @Environment(AppState.self) private var appState
+    
+    let LIST_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 50, .Medium: 30]
+    let GRID_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 120, .Medium: 70]
     
     private let tagFilterTip = TagFilterTip()
     
@@ -48,8 +68,22 @@ struct LibraryView: View {
         self.tags = self.library.tags.all
     }
     
+    func getZoomSize() -> CGFloat {
+        var viewSizes: [LibraryZoom: CGFloat] = [:]
+        switch self.viewType {
+        case .Grid:
+            viewSizes = GRID_VIEW_SIZES
+        case .List:
+            viewSizes = LIST_VIEW_SIZES
+        case .Masonry:
+            viewSizes = GRID_VIEW_SIZES
+        }
+        print(viewSizes[self.zoom] ?? 0)
+        return viewSizes[self.zoom] ?? 0
+    }
+    
     func getViewGrid(_ geometry: GeometryProxy) -> [GridItem] {
-        let entriesInRow = (geometry.size.width / CGFloat(self.zoom.rawValue)).rounded(.down)
+        let entriesInRow = (geometry.size.width / getZoomSize()).rounded(.down)
         return Array(repeating: GridItem(.flexible(), spacing: namesShown ? 8 : 1), count: Int(entriesInRow))
     }
     
@@ -92,22 +126,51 @@ struct LibraryView: View {
         return filterUntagged && entry.tags.isEmpty
     }
     
+    func isEntryVisable(_ entry: Entry) -> Bool {
+        !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry)
+    }
+    
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
-            ScrollView {
-                if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
-                    MigrationProgress(library: library, closed: $migrationClosed)
+            switch self.viewType {
+            case .Grid:
+                ScrollView {
+                    if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
+                        MigrationProgress(library: library, closed: $migrationClosed)
+                    }
+                    LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
+                        ForEach(library.entries.all, id: \.path) { entry in
+                            if isEntryVisable(entry) {
+                                GridRow {
+                                    EntryMiniView(entry: entry, namesShown: $namesShown)
+                                }
+                            }
+                        }
+                    }.padding(namesShown ? namedPadding : unnamedPadding)
                 }
-                LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
+            case .List:
+                List {
                     ForEach(library.entries.all, id: \.path) { entry in
-                        if !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry) {
-                            GridRow {
-                                EntryMiniView(entry: entry, namesShown: $namesShown)
+                        if isEntryVisable(entry) {
+                            NavigationLink(destination: EntryView(entry: entry).id(entry.id)){
+                                HStack {
+                                    EntryPreView(entry: entry, square: true)
+                                        .clipShape(.rect(cornerRadius: 8))
+                                        .frame(maxHeight: getZoomSize())
+                                    VStack {
+                                        Text(entry.path).lineLimit(2)
+                                    }
+                                }
                             }
                         }
                     }
-                }.padding(namesShown ? namedPadding : unnamedPadding)
+                }
+                .alignmentGuide(.listRowSeparatorLeading) { viewDimensions in
+                    return 0
+                }
+            case .Masonry:
+                EmptyView()
             }
         }
         .toolbar {
@@ -119,18 +182,24 @@ struct LibraryView: View {
                         Label("Tag Manager", systemImage: "tag")
                     }
                     Button(action: {
-                        if self.zoom == .LargeEntries {
-                            self.zoom = .MediumEntries
+                        if self.zoom == .Large {
+                            self.zoom = .Medium
                         } else {
-                            self.zoom = .LargeEntries
+                            self.zoom = .Large
                         }
                     }) {
-                        Label(self.zoom == .LargeEntries ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .LargeEntries ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                        Label(self.zoom == .Large ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .Large ? "minus.magnifyingglass" : "plus.magnifyingglass")
                     }
-                    Button(action: {
-                        self.namesShown.toggle()
-                    }) {
-                        Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                    Picker("", selection: $viewType) {
+                        Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
+                        Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
+                    }
+                    if viewType == .Grid {
+                        Button(action: {
+                            self.namesShown.toggle()
+                        }) {
+                            Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                        }
                     }
                     Menu {
                         Toggle(isOn: $filterUntagged) {
