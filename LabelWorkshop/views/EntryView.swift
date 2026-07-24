@@ -15,8 +15,10 @@ struct EntryView: View {
     }
     
     func addTag (_ tag: Tag) {
-        tags.filter { $0.id == tag.id }.count == 0 ? self.entry.tags.add(tag) : ()
-        tags.append(tag)
+        if tags.filter({ $0.id == tag.id }).isEmpty {
+            self.entry.tags.add(tag)
+            tags.append(tag)
+        }
         showTagSelector = false
     }
     
