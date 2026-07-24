@@ -28,6 +28,7 @@
       }
     },
     "Add Field" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -51,6 +52,7 @@
       }
     },
     "Add Tags" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1143,6 +1145,9 @@
         }
       }
     },
+    "Field" : {
+
+    },
     "Fields" : {
       "localizations" : {
         "fr" : {
@@ -1313,6 +1318,9 @@
 
     },
     "Show Names" : {
+
+    },
+    "Tag" : {
 
     },
     "Tag Manager" : {

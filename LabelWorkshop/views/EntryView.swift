@@ -67,17 +67,6 @@ struct EntryView: View {
                             }
                         }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
-                    Button(action: {
-                        showTagSelector = true
-                    }) {
-                        Label("Add Tags", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.blue)
-                    .containerShape(Capsule())
-                    .sheet(isPresented: $showTagSelector) {
-                        TagSearch(library: self.entry.library, tags: .constant(entry.library.tags.all), selectAction: addTag, multiSelect: false, selected: [], closeButton: true)
-                    }
                 }
                 VStack(spacing: 8) {
                     Text("Fields").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
@@ -102,22 +91,6 @@ struct EntryView: View {
                             }
                         }
                     }
-                    Menu {
-                        ForEach(entry.library.fieldTypes) { fieldType in
-                            Button(action: {
-                                if let field = entry.addField(fieldType) {
-                                    fields.append(field)
-                                }
-                            }) {
-                                Text(fieldType.name)
-                            }
-                        }
-                    } label: {
-                        Label("Add Field", systemImage: "plus").frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.blue)
-                    .cornerRadius(8)
                 }
             }
             .padding(16)
@@ -144,6 +117,44 @@ struct EntryView: View {
                     Image(systemName: "ellipsis")
                 }
             }
+            
+            ToolbarItem(placement: .bottomBar) {
+                Menu {
+                    Menu {
+                        ForEach(entry.library.fieldTypes) { fieldType in
+                            Button(action: {
+                                if let field = entry.addField(fieldType) {
+                                    fields.append(field)
+                                }
+                            }) {
+                                Text(fieldType.name)
+                            }
+                        }
+                    } label: {
+                        Label("Field", systemImage: "character.textbox")
+                    }
+                    Button {
+                        showTagSelector = true
+                    } label: {
+                        Label("Tag", systemImage: "tag")
+                    }
+                } label: {
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .buttonStyle(ProminentButtonStyle())
+                }
+                .sheet(isPresented: $showTagSelector) {
+                    TagSearch(library: self.entry.library, tags: .constant(entry.library.tags.all), selectAction: addTag, multiSelect: false, selected: [], closeButton: true)
+                }
+            }
+            
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.fixed, placement: .bottomBar)
+            }
+            
             ToolbarItemGroup(placement: .bottomBar) {
                 Button(action: {
                     if let tag = entry.library.tags.getById(id: 1) {
