@@ -30,7 +30,7 @@ struct EntryView: View {
                 }
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 8) {
-                    Text("Tags").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    Text("Tags").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     HFlow {
                         ForEach(Tag.getNoCategoryTags(library: self.entry.library, tags: self.tags)) { tag in
                             Menu {
@@ -48,7 +48,7 @@ struct EntryView: View {
                     }
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     ForEach(Tag.getAllCategories(library: self.entry.library, tags: self.tags), id: \.parent.id) { category in
-                        Text(category.parent.name).font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                        Text(category.parent.name).font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                         HFlow {
                             ForEach(category.children) { tag in
                                 Menu {
@@ -78,7 +78,7 @@ struct EntryView: View {
                     }
                 }
                 VStack(spacing: 8) {
-                    Text("Fields").font(.title2).frame(maxWidth: .infinity, alignment: .leading)
+                    Text("Fields").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     ForEach($fields) { $field in
                         VStack {
                             Text(field.name).font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
