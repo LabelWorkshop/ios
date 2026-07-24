@@ -1,3 +1,5 @@
+import SQLite
+
 class TagColorManager {
     var colors: [TagColor] = [TagColor.none]
     let library: Library
@@ -25,15 +27,20 @@ class TagColorManager {
                     )
                 )
             }
-        } catch {print(error)}
-        
-        for color in colors {
-            if !namespaces.contains(where: { $0.namespace == color.namespace }) && color.namespace != "none" {
-                namespaces.append(
-                    TagColorNamespace(namespace: color.namespace, manager: self)
-                )
+            
+            let namespacesRows = try self.library.db?.prepare(
+                NamespacesTable.table.select(*)
+            )
+            
+            if let namespacesRows {
+                let namespacesArray = Array(namespacesRows)
+                for namespace in namespacesArray {
+                    namespaces.append(TagColorNamespace(namespace: namespace[NamespacesTable.namespace], manager: self))
+                }
             }
-        }
+            
+            
+        } catch {print(error)}
     }
     
     func find(namespace: String, slug: String) -> TagColor? {
@@ -44,5 +51,14 @@ class TagColorManager {
             }
         }
         return color
+    }
+    
+    func newNamespace(name: String, namespace: String) throws {
+        try self.library.db?.run(
+            NamespacesTable.table.insert(
+                NamespacesTable.name <- name,
+                NamespacesTable.namespace <- namespace
+            )
+        )
     }
 }

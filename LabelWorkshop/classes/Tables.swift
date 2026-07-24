@@ -99,3 +99,9 @@ struct TextFieldTemplatesTable {
     static let name = Expression<String>("name")
     static let isMultiline = Expression<Bool>("is_multiline")
 }
+
+struct NamespacesTable {
+    static let table = Table("namespaces")
+    static let namespace = Expression<String>("namespace")
+    static let name = Expression<String>("name")
+}

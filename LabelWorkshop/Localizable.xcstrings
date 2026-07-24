@@ -1280,6 +1280,15 @@
     "Name" : {
 
     },
+    "Namespace" : {
+
+    },
+    "Namespace Creation Error" : {
+
+    },
+    "New" : {
+
+    },
     "No preview available" : {
       "localizations" : {
         "fr" : {
@@ -1307,6 +1316,9 @@
     "Parents" : {
 
     },
+    "Primary" : {
+
+    },
     "Remove" : {
       "localizations" : {
         "fr" : {
@@ -1316,6 +1328,12 @@
           }
         }
       }
+    },
+    "Save" : {
+
+    },
+    "Secondary" : {
+
     },
     "Selected" : {
       "localizations" : {
@@ -1334,6 +1352,9 @@
 
     },
     "Show Names" : {
+
+    },
+    "Slug" : {
 
     },
     "Tag Manager" : {
@@ -1366,6 +1387,9 @@
         }
       }
     },
+    "There was an error while trying to create your namespace." : {
+
+    },
     "This tag and all references of it will be deleted." : {
       "localizations" : {
         "fr" : {
@@ -1380,6 +1404,9 @@
 
     },
     "Usage Count" : {
+
+    },
+    "Use secondary as border" : {
 
     },
     "version %@" : {
