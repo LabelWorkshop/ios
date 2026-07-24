@@ -1,0 +1,25 @@
+site_name: LabelWorkshop
+site_url: https://labelworkshop.github.io/
+rpeo_url: https://github.com/LabelWorkshop/ios
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: deep orange
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - content.tabs.link
+
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Getting Started: getting_started.md
+
