@@ -78,7 +78,6 @@ struct LibraryView: View {
         case .Masonry:
             viewSizes = GRID_VIEW_SIZES
         }
-        print(viewSizes[self.zoom] ?? 0)
         return viewSizes[self.zoom] ?? 0
     }
     
