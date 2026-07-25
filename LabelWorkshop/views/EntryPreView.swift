@@ -47,7 +47,11 @@ actor ThumbnailLoader {
         let task = Task<UIImage?, Never>(priority: priority) {
             var image: UIImage?
             if type == .Video {
-                image = await getVideoThumbnail(url: entry.fullPath!)
+                if let fullPath = entry.fullPath {
+                    image = await getVideoThumbnail(url: fullPath)
+                } else {
+                    return nil
+                }
             } else {
                 image = await loadImage(for: entry, thumbnail: square)
             }
@@ -115,10 +119,10 @@ func getTextContents(for entry: Entry) async -> String? {
 }
 
 struct VideoPlayerContainer: UIViewControllerRepresentable {
-    let entry: Entry
+    let fullPath: URL
     
     func makeUIViewController(context: Context) -> AVPlayerViewController {
-        let player = AVPlayer(url: entry.fullPath!)
+        let player = AVPlayer(url: fullPath)
         let controller = AVPlayerViewController()
         controller.player = player
         player.isMuted = true
@@ -193,7 +197,7 @@ struct EntryPreView: View {
     
     var body: some View {
         Group {
-            if !FileManager.default.fileExists(atPath: entry.fullPath!.path) {
+            if !FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "") {
                 Image(systemName: "link")
                     .font(.system(size: 32))
                     .frame(
@@ -206,12 +210,12 @@ struct EntryPreView: View {
                     .background(Color(UIColor.secondarySystemBackground))
                     .tint(.red)
             }
-            else if self.type == .Video && !square {
-                VideoPlayerContainer(entry: entry)
+            else if self.type == .Video && !square, let fullPath = entry.fullPath {
+                VideoPlayerContainer(fullPath: fullPath)
                     .scaledToFill()
             }
-            else if self.type == .AnimatedImage && !square {
-                AnimatedImage(url: entry.fullPath!)
+            else if self.type == .AnimatedImage && !square, let fullPath = entry.fullPath {
+                AnimatedImage(url: fullPath)
                     .resizable()
                     .scaledToFit()
             }
