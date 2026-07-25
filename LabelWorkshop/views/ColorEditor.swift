@@ -71,7 +71,14 @@ struct ColorEditor: View {
                     Button {
                         do {
                             if let color = color{
-                                throw TagColorError.updateError
+                                try manager.updateColor(
+                                    color: color,
+                                    primary: primary,
+                                    secondary: secondary,
+                                    name: name,
+                                    slug: slug,
+                                    secondaryAsBorder: secondaryAsBorder
+                                )
                             } else {
                                 try manager.newColor(
                                     namespace: belongingNamespace ?? "",

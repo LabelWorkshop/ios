@@ -14,6 +14,13 @@ class TagColorManager {
     
     init(library: Library) {
         self.library = library
+        do {
+            try refreshColors()
+            try refreshNamespaces()
+        } catch {print(error)}
+    }
+    
+    func refreshColors() throws {
         let query = TagColorsTable.table.select(
             TagColorsTable.primary,
             TagColorsTable.secondary,
@@ -22,24 +29,25 @@ class TagColorManager {
             TagColorsTable.name,
             TagColorsTable.colorBorder
         )
-        do {
-            for rawColor in try library.db!.prepare(query) {
-                let namespace = rawColor[TagColorsTable.namespace]
-                let slug = rawColor[TagColorsTable.slug]
-                self.colors.append(
-                    TagColor(
-                        namespace: namespace,
-                        slug: slug,
-                        primaryColor: rawColor[TagColorsTable.primary],
-                        secondaryColor: rawColor[TagColorsTable.secondary],
-                        name: rawColor[TagColorsTable.name],
-                        useSecondaryBorder: rawColor[TagColorsTable.colorBorder]
-                    )
+        
+        var updatedColors = [TagColor.none]
+        
+        for rawColor in try library.db!.prepare(query) {
+            let namespace = rawColor[TagColorsTable.namespace]
+            let slug = rawColor[TagColorsTable.slug]
+            updatedColors.append(
+                TagColor(
+                    namespace: namespace,
+                    slug: slug,
+                    primaryColor: rawColor[TagColorsTable.primary],
+                    secondaryColor: rawColor[TagColorsTable.secondary],
+                    name: rawColor[TagColorsTable.name],
+                    useSecondaryBorder: rawColor[TagColorsTable.colorBorder]
                 )
-            }
-            
-            try refreshNamespaces()
-        } catch {print(error)}
+            )
+        }
+        
+        self.colors = updatedColors
     }
     
     func refreshNamespaces() throws {
@@ -164,5 +172,39 @@ class TagColorManager {
             slug: slug,
             secondaryAsBorder: secondaryAsBorder
         )
+    }
+    
+    func updateColor(
+        oldSlug: String,
+        primary: Color,
+        secondary: Color,
+        name: String,
+        slug: String,
+        secondaryAsBorder: Bool
+    ) throws {
+        try self.library.db?.run(
+            TagColorsTable.table.filter(
+                TagColorsTable.slug == oldSlug
+            ).update(
+                TagColorsTable.primary <- primary.toHex() ?? "",
+                TagColorsTable.secondary <- secondary.toHex() ?? "",
+                TagColorsTable.name <- name,
+                TagColorsTable.slug <- slug,
+                TagColorsTable.colorBorder <- secondaryAsBorder
+            )
+        )
+        
+        try self.refreshColors()
+    }
+    
+    func updateColor(
+        color: TagColor,
+        primary: Color,
+        secondary: Color,
+        name: String,
+        slug: String,
+        secondaryAsBorder: Bool
+    ) throws {
+        try self.updateColor(oldSlug: color.slug, primary: primary, secondary: secondary, name: name, slug: slug, secondaryAsBorder: secondaryAsBorder)
     }
 }
