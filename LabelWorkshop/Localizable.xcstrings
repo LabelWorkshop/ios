@@ -1163,10 +1163,10 @@
         }
       }
     },
-    "Field" : {
-        
-    },
     "Failed to save color." : {
+
+    },
+    "Field" : {
 
     },
     "Fields" : {
@@ -1389,10 +1389,10 @@
     "Show Names" : {
 
     },
-    "Tag" : {
-        
-    },
     "Slug" : {
+
+    },
+    "Tag" : {
 
     },
     "Tag Manager" : {
@@ -1471,6 +1471,9 @@
           }
         }
       }
+    },
+    "View Options" : {
+
     },
     "Zoom In" : {
       "localizations" : {

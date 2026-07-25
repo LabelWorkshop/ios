@@ -182,30 +182,32 @@ struct LibraryView: View {
                     }) {
                         Label("Tag Manager", systemImage: "tag")
                     }
-                    Button(action: {
-                        if self.zoom == .Large {
-                            self.zoom = .Medium
-                        } else {
-                            self.zoom = .Large
-                        }
-                    }) {
-                        Label(self.zoom == .Large ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .Large ? "minus.magnifyingglass" : "plus.magnifyingglass")
-                    }
-                    Picker("", selection: $viewType) {
-                        Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
-                        Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
-                    }
-                    if viewType == .Grid {
-                        Button(action: {
-                            self.namesShown.toggle()
-                        }) {
-                            Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
-                        }
-                    }
                     Button {
                         showColorManager = true
                     } label: {
                         Label("Color Manager", systemImage: "paintpalette")
+                    }
+                    Section("View Options") {
+                        Button(action: {
+                            if self.zoom == .Large {
+                                self.zoom = .Medium
+                            } else {
+                                self.zoom = .Large
+                            }
+                        }) {
+                            Label(self.zoom == .Large ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .Large ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                        }
+                        if viewType == .Grid {
+                            Button(action: {
+                                self.namesShown.toggle()
+                            }) {
+                                Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                            }
+                        }
+                        Picker("", selection: $viewType) {
+                            Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
+                            Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
+                        }
                     }
                     Menu {
                         Toggle(isOn: $filterUntagged) {
