@@ -23,6 +23,7 @@ class TagColor: Hashable, Identifiable {
         }
     }
     var name: String
+    var useSecondaryBorder: Bool
     private let primaryColor: String?
     private let secondaryColor: String?
     
@@ -530,7 +531,8 @@ class TagColor: Hashable, Identifiable {
         namespace: String?,
         slug: String?,
         primaryColor: String?,
-        secondaryColor: String?
+        secondaryColor: String?,
+        useSecondaryBorder: Bool = false
     ){
         self.namespace = namespace ?? "none"
         self.slug = slug ?? "none"
@@ -538,6 +540,7 @@ class TagColor: Hashable, Identifiable {
         self.id = UUID()
         self.primaryColor = primaryColor
         self.secondaryColor = secondaryColor
+        self.useSecondaryBorder = useSecondaryBorder
         if let primaryColor = primaryColor {
             self.background = Color(hex: primaryColor)
         } else {

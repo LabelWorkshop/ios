@@ -1,6 +1,11 @@
 import SwiftUI
 import SQLite
 
+enum TagColorError: Error {
+    case hexConversionError
+    case updateError
+}
+
 @Observable
 class TagColorManager {
     var colors: [TagColor] = [TagColor.none]
@@ -14,7 +19,8 @@ class TagColorManager {
             TagColorsTable.secondary,
             TagColorsTable.slug,
             TagColorsTable.namespace,
-            TagColorsTable.name
+            TagColorsTable.name,
+            TagColorsTable.colorBorder
         )
         do {
             for rawColor in try library.db!.prepare(query) {
@@ -25,7 +31,8 @@ class TagColorManager {
                         namespace: namespace,
                         slug: slug,
                         primaryColor: rawColor[TagColorsTable.primary],
-                        secondaryColor: rawColor[TagColorsTable.secondary]
+                        secondaryColor: rawColor[TagColorsTable.secondary],
+                        useSecondaryBorder: rawColor[TagColorsTable.colorBorder]
                     )
                 )
             }
@@ -102,5 +109,58 @@ class TagColorManager {
     
     func renameNamespace(namespace: TagColorNamespace, to name: String) throws {
         try renameNamespace(namespace: namespace.namespace, to: name)
+    }
+    
+    func newColor(
+        namespace: String,
+        primary: Color,
+        secondary: Color,
+        name: String,
+        slug: String,
+        secondaryAsBorder: Bool
+    ) throws -> TagColor {
+        guard let primaryHex = primary.toHex(),
+              let secondaryHex = secondary.toHex() else {
+            throw TagColorError.hexConversionError
+        }
+        
+        try self.library.db?.run(
+            TagColorsTable.table.insert(
+                TagColorsTable.namespace <- namespace,
+                TagColorsTable.primary <- primaryHex,
+                TagColorsTable.secondary <- secondaryHex,
+                TagColorsTable.name <- name,
+                TagColorsTable.slug <- slug,
+                TagColorsTable.colorBorder <- secondaryAsBorder
+            )
+        )
+        
+        let created = TagColor(
+            namespace: namespace,
+            slug: slug,
+            primaryColor: primaryHex,
+            secondaryColor: secondaryHex,
+            useSecondaryBorder: secondaryAsBorder
+        )
+        self.colors.append(created)
+        return created
+    }
+    
+    func newColor(
+        namespace: TagColorNamespace,
+        primary: Color,
+        secondary: Color,
+        name: String,
+        slug: String,
+        secondaryAsBorder: Bool
+    ) throws -> TagColor {
+        try self.newColor(
+            namespace: namespace.namespace,
+            primary: primary,
+            secondary: secondary,
+            name: name,
+            slug: slug,
+            secondaryAsBorder: secondaryAsBorder
+        )
     }
 }

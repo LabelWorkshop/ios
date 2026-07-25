@@ -6,6 +6,7 @@ struct ColorManager: View {
     
     @State var editingColor: TagColor?
     @State var newNamespace: Bool = false
+    @State var newColorNamespace: TagColorNamespace?
     @State var namespaceInsertionError: Bool = false
     @State var namespaceDeletionError: Bool = false
     
@@ -31,7 +32,7 @@ struct ColorManager: View {
                         if !namespace.isReadOnly {
                             Menu {
                                 Button {
-                                    
+                                    newColorNamespace = namespace
                                 } label: {
                                     Label("New Color", systemImage: "lightspectrum.horizontal")
                                 }
@@ -94,7 +95,7 @@ struct ColorManager: View {
                             ForEach(tagColors.namespaces) { namespace in
                                 if !namespace.isReadOnly {
                                     Button {
-                                        
+                                        newColorNamespace = namespace
                                     } label: {
                                         Text(namespace.namespace)
                                     }
@@ -119,6 +120,15 @@ struct ColorManager: View {
                 manager: self.tagColors,
                 color: editingColor
             )
+        }
+        .sheet(item: $newColorNamespace) { newColorNamespace in
+            ColorEditor(
+                manager: self.tagColors,
+                belongingNamespace: newColorNamespace
+            )
+            .onDisappear {
+                self.newColorNamespace = nil
+            }
         }
         .sheet(isPresented: $newNamespace) {
             NavigationStack {
