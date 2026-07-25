@@ -32,6 +32,7 @@ class TagColorManager {
                         slug: slug,
                         primaryColor: rawColor[TagColorsTable.primary],
                         secondaryColor: rawColor[TagColorsTable.secondary],
+                        name: rawColor[TagColorsTable.name],
                         useSecondaryBorder: rawColor[TagColorsTable.colorBorder]
                     )
                 )
@@ -140,6 +141,7 @@ class TagColorManager {
             slug: slug,
             primaryColor: primaryHex,
             secondaryColor: secondaryHex,
+            name: name,
             useSecondaryBorder: secondaryAsBorder
         )
         self.colors.append(created)
