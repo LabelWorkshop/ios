@@ -68,24 +68,24 @@ struct EntryView: View {
                 }
                 Text("Fields").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                 ForEach($fields) { $field in
-                    VStack {
-                        Text(field.name).font(.caption2).frame(maxWidth: .infinity, alignment: .leading)
-                        HStack {
-                            TextField(field.name, text: $field.text)
-                            Button(role: .destructive, action: {
-                                do {
-                                    try entry.deleteField($field.id)
-                                    if let index = fields.firstIndex(where: { $0.id == $field.id }) {
-                                        fields.remove(at: index)
-                                    }
-                                } catch {print(error)}
-                            }) {
-                                Image(systemName: "minus")
-                                    .frame(minHeight: 0, maxHeight: .infinity)
-                            }
-                            .tint(.red)
-                            .buttonStyle(.bordered)
+                    HStack {
+                        Text(field.name)
+                        TextField(field.name, text: $field.text)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.trailing)
+                        Button(role: .destructive, action: {
+                            do {
+                                try entry.deleteField($field.id)
+                                if let index = fields.firstIndex(where: { $0.id == $field.id }) {
+                                    fields.remove(at: index)
+                                }
+                            } catch {print(error)}
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .symbolRenderingMode(.hierarchical)
+                                .font(.title)
                         }
+                        .tint(.red)
                     }
                 }
             }
