@@ -28,23 +28,29 @@ class TagColorManager {
                 )
             }
             
-            let namespacesRows = try self.library.db?.prepare(
-                NamespacesTable.table.select(*)
-            )
-            
-            if let namespacesRows {
-                let namespacesArray = Array(namespacesRows)
-                for namespace in namespacesArray {
-                    namespaces.append(TagColorNamespace(
-                        namespace: namespace[NamespacesTable.namespace],
-                        name: namespace[NamespacesTable.name],
-                        manager: self
-                    ))
-                }
-            }
-            
-            
+            try refreshNamespaces()
         } catch {print(error)}
+    }
+    
+    func refreshNamespaces() throws {
+        let namespacesRows = try self.library.db?.prepare(
+            NamespacesTable.table.select(*)
+        )
+        
+        var newNamespaces: [TagColorNamespace] = []
+        
+        if let namespacesRows {
+            let namespacesArray = Array(namespacesRows)
+            for namespace in namespacesArray {
+                newNamespaces.append(TagColorNamespace(
+                    namespace: namespace[NamespacesTable.namespace],
+                    name: namespace[NamespacesTable.name],
+                    manager: self
+                ))
+            }
+        }
+        
+        namespaces = newNamespaces
     }
     
     func find(namespace: String, slug: String) -> TagColor? {
@@ -64,6 +70,7 @@ class TagColorManager {
                 NamespacesTable.namespace <- namespace
             )
         )
+        try self.refreshNamespaces()
     }
     
     func deleteNamespace(namespace: String) throws {
@@ -72,6 +79,7 @@ class TagColorManager {
                 NamespacesTable.namespace == namespace
             ).delete()
         )
+        try self.refreshNamespaces()
     }
     
     func deleteNamespace(namespace: TagColorNamespace) throws {
