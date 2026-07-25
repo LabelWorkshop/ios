@@ -7,6 +7,7 @@ struct ColorManager: View {
     @State var editingColor: TagColor?
     @State var newNamespace: Bool = false
     @State var namespaceInsertionError: Bool = false
+    @State var namespaceDeletionError: Bool = false
     
     @State var newNamespaceName: String = ""
     @State var newNamespaceSlug: String = ""
@@ -21,9 +22,44 @@ struct ColorManager: View {
         NavigationStack {
             ScrollView {
                 ForEach(tagColors.namespaces) { namespace in
-                    Text(namespace.displayName)
-                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                        .foregroundStyle(.secondary)
+                    HStack {
+                        Text(namespace.displayName)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(.secondary)
+                        if !namespace.isReadOnly {
+                            Menu {
+                                Button {
+                                    
+                                } label: {
+                                    Label("New Color", systemImage: "lightspectrum.horizontal")
+                                }
+                                Button {
+                                    
+                                } label: {
+                                    Label("Rename", systemImage: "pencil")
+                                }
+                                Button(role: .destructive) {
+                                    do {
+                                        try tagColors.deleteNamespace(namespace: namespace)
+                                    } catch {
+                                        print(error)
+                                        namespaceDeletionError = true
+                                    }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            } label: {
+                                Button {
+                                    
+                                } label: {
+                                    Image(systemName: "ellipsis.circle.fill")
+                                        .symbolRenderingMode(.hierarchical)
+                                        .imageScale(.large)
+                                }
+                                .tint(.gray)
+                            }
+                        }
+                    }
                     HFlow {
                         if namespace.colors.isEmpty {
                             Text("No Colors")
@@ -148,6 +184,11 @@ struct ColorManager: View {
             
         } message: {
             Text("There was an error while trying to create your namespace.")
+        }
+        .alert("Namespace Delete Error", isPresented: $namespaceDeletionError) {
+            
+        } message: {
+            Text("There was an error while trying to delete your namespace.")
         }
     }
 }

@@ -65,4 +65,16 @@ class TagColorManager {
             )
         )
     }
+    
+    func deleteNamespace(namespace: String) throws {
+        try self.library.db?.run(
+            NamespacesTable.table.filter(
+                NamespacesTable.namespace == namespace
+            ).delete()
+        )
+    }
+    
+    func deleteNamespace(namespace: TagColorNamespace) throws {
+        try deleteNamespace(namespace: namespace.namespace)
+    }
 }
