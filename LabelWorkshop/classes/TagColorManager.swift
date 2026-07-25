@@ -1,5 +1,7 @@
+import SwiftUI
 import SQLite
 
+@Observable
 class TagColorManager {
     var colors: [TagColor] = [TagColor.none]
     let library: Library
