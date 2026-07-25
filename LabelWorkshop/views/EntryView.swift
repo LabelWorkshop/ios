@@ -1,6 +1,26 @@
 import SwiftUI
 import Flow
 
+struct TagBoxTag: View {
+    let entry: Entry
+    let tag: Tag
+    @Binding var tags: [Tag]
+    
+    var body: some View {
+        Menu {
+            Button(role: .destructive, action: {
+                self.entry.tags.remove(tag)
+                self.tags = entry.tags.all
+            }) {
+                Label("Remove", systemImage: "minus")
+            }
+        } label: {
+            TagView(tag: tag)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 struct EntryView: View {
     let entry: Entry
     @State var tags: [Tag] = []
@@ -35,17 +55,7 @@ struct EntryView: View {
                     Text("Tags").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     HFlow {
                         ForEach(Tag.getNoCategoryTags(library: self.entry.library, tags: self.tags)) { tag in
-                            Menu {
-                                Button(role: .destructive, action: {
-                                    self.entry.tags.remove(tag)
-                                    self.tags = entry.tags.all
-                                }) {
-                                    Label("Remove", systemImage: "minus")
-                                }
-                            } label: {
-                                TagView(tag: tag)
-                            }
-                            .buttonStyle(.plain)
+                            TagBoxTag(entry: entry, tag: tag, tags: $tags)
                         }
                     }
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -53,17 +63,7 @@ struct EntryView: View {
                         Text(category.parent.name).font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                         HFlow {
                             ForEach(category.children) { tag in
-                                Menu {
-                                    Button(role: .destructive, action: {
-                                        self.entry.tags.remove(tag)
-                                        self.tags = entry.tags.all
-                                    }) {
-                                        Label("Remove", systemImage: "minus")
-                                    }
-                                } label: {
-                                    TagView(tag: tag)
-                                }
-                                .buttonStyle(.plain)
+                                TagBoxTag(entry: entry, tag: tag, tags: $tags)
                             }
                         }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
