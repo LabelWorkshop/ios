@@ -23,6 +23,7 @@ class TagColor: Hashable, Identifiable {
         }
     }
     var name: String
+    var useSecondaryBorder: Bool
     private let primaryColor: String?
     private let secondaryColor: String?
     
@@ -30,7 +31,8 @@ class TagColor: Hashable, Identifiable {
         namespace: nil,
         slug: nil,
         primaryColor: nil,
-        secondaryColor: nil
+        secondaryColor: nil,
+        name: "No Color"
     )
     
     
@@ -530,14 +532,17 @@ class TagColor: Hashable, Identifiable {
         namespace: String?,
         slug: String?,
         primaryColor: String?,
-        secondaryColor: String?
+        secondaryColor: String?,
+        name: String,
+        useSecondaryBorder: Bool = false
     ){
         self.namespace = namespace ?? "none"
         self.slug = slug ?? "none"
-        self.name = NSLocalizedString("colors.\(self.namespace).\(self.slug)", comment: "")
+        self.name = self.namespace.starts(with: "tagstudio") || self.namespace.starts(with: "none") ? NSLocalizedString("colors.\(self.namespace).\(self.slug)", comment: "") : name
         self.id = UUID()
         self.primaryColor = primaryColor
         self.secondaryColor = secondaryColor
+        self.useSecondaryBorder = useSecondaryBorder
         if let primaryColor = primaryColor {
             self.background = Color(hex: primaryColor)
         } else {
