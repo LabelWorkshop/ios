@@ -55,6 +55,7 @@ struct ColorEditor: View {
                     TextField("Slug", text: $slug)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.trailing)
+                        .disabled(true)
                 }
                 
                 ColorPicker("Primary", selection: $primary)
@@ -95,6 +96,11 @@ struct ColorEditor: View {
                     }
                 }
             }
+        }.onChange(of: name) {
+            let updatedSlug = name
+                .replacingOccurrences(of: " ", with: "-")
+                .lowercased()
+            slug = updatedSlug
         }
     }
 }
