@@ -57,7 +57,7 @@ struct ColorManager: View {
                                 } label: {
                                     Image(systemName: "ellipsis.circle.fill")
                                         .symbolRenderingMode(.hierarchical)
-                                        .imageScale(.large)
+                                        .font(.title)
                                 }
                                 .tint(.gray)
                             }
