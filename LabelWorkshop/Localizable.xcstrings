@@ -1288,6 +1288,9 @@
     "Namespace" : {
 
     },
+    "Namespace can't be created" : {
+
+    },
     "Namespace Creation Error" : {
 
     },
@@ -1396,6 +1399,9 @@
       }
     },
     "There was an error while trying to create your namespace." : {
+
+    },
+    "This name is reserved for TagStudio" : {
 
     },
     "This tag and all references of it will be deleted." : {

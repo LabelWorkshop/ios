@@ -82,6 +82,22 @@ struct ColorManager: View {
         .sheet(isPresented: $newNamespace) {
             NavigationStack {
                 List {
+                    if newNamespaceSlug.starts(with: "tagstudio") {
+                        Section {
+                            VStack {
+                                HStack {
+                                    Image(systemName: "exclamationmark.octagon.fill")
+                                        .tint(.red)
+                                        .symbolRenderingMode(.multicolor)
+                                    Text("Namespace can't be created")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("This name is reserved for TagStudio")
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }.listRowBackground(Color.red.opacity(0.15))
+                        }
+                    }
                     HStack {
                         Text("Name")
                         TextField("Name", text: $newNamespaceName)
@@ -113,6 +129,7 @@ struct ColorManager: View {
                             Label("Save", systemImage: "checkmark")
                         }
                         .buttonStyle(ProminentButtonStyle())
+                        .disabled(newNamespaceSlug.starts(with: "tagstudio"))
                     }
                 }
             }
