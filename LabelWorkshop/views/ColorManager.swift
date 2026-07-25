@@ -38,7 +38,7 @@ struct ColorManager: View {
                                 } label: {
                                     TagPreView(name: .constant(color.name), colors: .constant(color))
                                 }
-                                .disabled(namespace.namespace.starts(with: "tagstudio"))
+                                .disabled(namespace.isReadOnly)
                             }
                         }
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -54,7 +54,7 @@ struct ColorManager: View {
                     Menu {
                         Menu {
                             ForEach(tagColors.namespaces) { namespace in
-                                if !namespace.namespace.starts(with: "tagstudio") {
+                                if !namespace.isReadOnly {
                                     Button {
                                         
                                     } label: {
