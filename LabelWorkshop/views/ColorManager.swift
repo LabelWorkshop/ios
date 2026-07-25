@@ -25,13 +25,21 @@ struct ColorManager: View {
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                         .foregroundStyle(.secondary)
                     HFlow {
-                        ForEach(namespace.colors) { color in
-                            Button {
-                                editingColor = color
-                            } label: {
-                                TagPreView(name: .constant(color.name), colors: .constant(color))
+                        if namespace.colors.isEmpty {
+                            Text("No Colors")
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .foregroundStyle(.secondary)
+                                .font(.title3)
+                        } else {
+                            ForEach(namespace.colors) { color in
+                                Button {
+                                    editingColor = color
+                                } label: {
+                                    TagPreView(name: .constant(color.name), colors: .constant(color))
+                                }
+                                .disabled(namespace.namespace.starts(with: "tagstudio"))
                             }
-                            .disabled(namespace.namespace.starts(with: "tagstudio"))
                         }
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }
