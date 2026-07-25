@@ -35,7 +35,11 @@ class TagColorManager {
             if let namespacesRows {
                 let namespacesArray = Array(namespacesRows)
                 for namespace in namespacesArray {
-                    namespaces.append(TagColorNamespace(namespace: namespace[NamespacesTable.namespace], manager: self))
+                    namespaces.append(TagColorNamespace(
+                        namespace: namespace[NamespacesTable.namespace],
+                        name: namespace[NamespacesTable.name],
+                        manager: self
+                    ))
                 }
             }
             
