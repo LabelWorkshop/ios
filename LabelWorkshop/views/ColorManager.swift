@@ -132,6 +132,7 @@ struct ColorManager: View {
                         .disabled(newNamespaceSlug.starts(with: "tagstudio"))
                     }
                 }
+                .navigationTitle("New Namespace")
             }
         }
         .onChange(of: newNamespaceName){
