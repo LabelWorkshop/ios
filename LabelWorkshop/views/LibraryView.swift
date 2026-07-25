@@ -41,6 +41,7 @@ struct LibraryView: View {
     // Sheets
     @State var showTagfilter: Bool = false
     @State var migrationClosed: Bool = false
+    @State var showColorManager: Bool = false
     
     // Filtering
     @State var searchQuery: String = ""
@@ -180,24 +181,31 @@ struct LibraryView: View {
                     }) {
                         Label("Tag Manager", systemImage: "tag")
                     }
-                    Button(action: {
-                        if self.zoom == .Large {
-                            self.zoom = .Medium
-                        } else {
-                            self.zoom = .Large
-                        }
-                    }) {
-                        Label(self.zoom == .Large ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .Large ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                    Button {
+                        showColorManager = true
+                    } label: {
+                        Label("Color Manager", systemImage: "paintpalette")
                     }
-                    Picker("", selection: $viewType) {
-                        Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
-                        Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
-                    }
-                    if viewType == .Grid {
+                    Section("View Options") {
                         Button(action: {
-                            self.namesShown.toggle()
+                            if self.zoom == .Large {
+                                self.zoom = .Medium
+                            } else {
+                                self.zoom = .Large
+                            }
                         }) {
-                            Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                            Label(self.zoom == .Large ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .Large ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                        }
+                        if viewType == .Grid {
+                            Button(action: {
+                                self.namesShown.toggle()
+                            }) {
+                                Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+                            }
+                        }
+                        Picker("", selection: $viewType) {
+                            Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
+                            Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
                         }
                     }
                     Menu {
@@ -234,6 +242,9 @@ struct LibraryView: View {
         }
         .sheet(isPresented: $appState.showTagManager) {
             TagManagerView(library: library)
+        }
+        .sheet(isPresented: $showColorManager) {
+            ColorManager(tagColors: self.library.tagColors)
         }
         .navigationTitle(library.getName())
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
