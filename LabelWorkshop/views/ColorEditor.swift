@@ -22,7 +22,7 @@ struct ColorEditor: View {
         self.slug = color.slug
         self.primary = color.background
         self.secondary = color.border
-        self.secondaryAsBorder = false // CHANGE THIS!!!
+        self.secondaryAsBorder = color.useSecondaryBorder
         self.belongingNamespace = nil
     }
     
