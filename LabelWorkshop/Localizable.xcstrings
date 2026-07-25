@@ -1297,6 +1297,9 @@
     "Namespace Delete Error" : {
 
     },
+    "Namespace Rename Error" : {
+
+    },
     "New" : {
 
     },
@@ -1350,6 +1353,9 @@
       }
     },
     "Rename" : {
+
+    },
+    "Rename Namespace" : {
 
     },
     "Save" : {
@@ -1417,6 +1423,9 @@
 
     },
     "There was an error while trying to delete your namespace." : {
+
+    },
+    "There was an error while trying to rename your namespace." : {
 
     },
     "This name is reserved for TagStudio" : {

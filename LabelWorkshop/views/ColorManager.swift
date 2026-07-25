@@ -12,6 +12,8 @@ struct ColorManager: View {
     @State var newNamespaceName: String = ""
     @State var newNamespaceSlug: String = ""
     
+    @State var renameNamespace: TagColorNamespace?
+    
     @Environment(\.dismiss) private var dismiss
     
     init(tagColors: TagColorManager) {
@@ -34,7 +36,7 @@ struct ColorManager: View {
                                     Label("New Color", systemImage: "lightspectrum.horizontal")
                                 }
                                 Button {
-                                    
+                                    renameNamespace = namespace
                                 } label: {
                                     Label("Rename", systemImage: "pencil")
                                 }
@@ -190,6 +192,52 @@ struct ColorManager: View {
         } message: {
             Text("There was an error while trying to delete your namespace.")
         }
+        .sheet(item: $renameNamespace) { renameNamespace in
+            RenameNamespace(renameNamespace)
+        }
     }
 }
 
+struct RenameNamespace: View {
+    let renameNamespace: TagColorNamespace
+    @State var name: String
+    @Environment(\.dismiss) private var dismiss
+    @State var namespaceRenameError: Bool = false
+    
+    init(_ renameNamespace: TagColorNamespace) {
+        self.renameNamespace = renameNamespace
+        self.name = renameNamespace.displayName
+    }
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                TextField("Namespace", text: $name)
+            }
+            .presentationDetents([.fraction(0.2), .medium])
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    CloseButton(dismiss: dismiss)
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        do {
+                            try renameNamespace.manager.renameNamespace(namespace: renameNamespace, to: name)
+                            dismiss()
+                        } catch {
+                            namespaceRenameError = true
+                        }
+                    } label: {
+                        Label("Save", systemImage: "checkmark")
+                    }.buttonStyle(ProminentButtonStyle())
+                }
+            }
+            .navigationTitle("Rename Namespace")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .alert("Namespace Rename Error", isPresented: $namespaceRenameError) {} message: {
+            Text("There was an error while trying to rename your namespace.")
+        }
+    }
+}

@@ -87,4 +87,20 @@ class TagColorManager {
     func deleteNamespace(namespace: TagColorNamespace) throws {
         try deleteNamespace(namespace: namespace.namespace)
     }
+    
+    func renameNamespace(namespace: String, to name: String) throws {
+        try self.library.db?.run(
+            NamespacesTable.table.filter(
+                NamespacesTable.namespace == namespace
+            )
+            .update(
+                NamespacesTable.name <- name
+            )
+        )
+        try self.refreshNamespaces()
+    }
+    
+    func renameNamespace(namespace: TagColorNamespace, to name: String) throws {
+        try renameNamespace(namespace: namespace.namespace, to: name)
+    }
 }
