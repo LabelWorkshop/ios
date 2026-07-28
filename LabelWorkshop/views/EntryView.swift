@@ -96,6 +96,41 @@ struct EntryArchiveButton: View {
     }
 }
 
+struct EntryDeleteButton: View {
+    @Binding var entry: Entry
+    @Binding var deletionError: Bool
+    
+    var body: some View {
+        Button(role: .destructive, action: {
+            do {
+                try self.entry.library.entries.delete(entry)
+                try FileManager.default.removeItem(at: entry.fullPath!)
+            } catch {
+                self.deletionError = true
+            }
+        }) {
+            Label("Delete", systemImage: "trash")
+        }
+    }
+}
+
+struct EntryShareButton: View {
+    @Binding var entry: Entry
+    
+    var body: some View {
+        if let url = entry.fullPath {
+            ShareLink(item: url, message: Text(entry.path)) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+        } else {
+            Button {} label: {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            .disabled(true)
+        }
+    }
+}
+
 struct EntryView: View {
     @State var entry: Entry
     @State var fields: [Field] = []
@@ -168,19 +203,8 @@ struct EntryView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    ShareLink(item: entry.fullPath!, message: Text(entry.path)) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    Button(role: .destructive, action: {
-                        do {
-                            try self.entry.library.entries.delete(entry)
-                            try FileManager.default.removeItem(at: entry.fullPath!)
-                        } catch {
-                            self.deletionError = true
-                        }
-                    }) {
-                        Label("Delete", systemImage: "trash")
-                    }
+                    EntryShareButton(entry: $entry)
+                    EntryDeleteButton(entry: $entry, deletionError: $deletionError)
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -241,7 +265,6 @@ struct EntryView: View {
             }
         }
         .alert("Delete Failed", isPresented: $deletionError) {
-            Button("OK", role: .cancel) { }
         } message: {
             Text("An error occured while trying to delete this entry.")
         }

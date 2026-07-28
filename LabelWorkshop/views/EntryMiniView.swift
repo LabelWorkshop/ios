@@ -3,6 +3,7 @@ import SwiftUI
 struct EntryMiniView: View {
     @Binding var entry: Entry
     @Binding var namesShown: Bool
+    @State var deletionError: Bool = false
     
     init(entry: Binding<Entry>, namesShown: Binding<Bool>) {
         self._entry = entry
@@ -32,6 +33,15 @@ struct EntryMiniView: View {
         .contextMenu {
             EntryFavoriteButton(entry: $entry)
             EntryArchiveButton(entry: $entry)
+            
+            Divider()
+            
+            EntryShareButton(entry: $entry)
+            EntryDeleteButton(entry: $entry, deletionError: $deletionError)
+        }
+        .alert("Delete Failed", isPresented: $deletionError) {
+        } message: {
+            Text("An error occured while trying to delete this entry.")
         }
     }
 }
