@@ -1,6 +1,8 @@
+import SwiftUI
 import Foundation
 import SQLite
 
+@Observable
 class Entry {
     var path: String
     var id: Int

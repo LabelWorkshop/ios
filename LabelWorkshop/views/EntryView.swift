@@ -4,13 +4,12 @@ import Flow
 struct TagBoxTag: View {
     let entry: Entry
     let tag: Tag
-    @Binding var tags: [Tag]
     
     var body: some View {
         Menu {
             Button(role: .destructive, action: {
                 self.entry.tags.remove(tag)
-                self.tags = entry.tags.all
+                // self.tags = entry.tags.all
             }) {
                 Label("Remove", systemImage: "minus")
             }
@@ -22,8 +21,7 @@ struct TagBoxTag: View {
 }
 
 struct EntryView: View {
-    let entry: Entry
-    @State var tags: [Tag] = []
+    @State var entry: Entry
     @State var fields: [Field] = []
     @State var showTagSelector: Bool = false
     @State var showFieldTypeSelector: Bool = false
@@ -35,9 +33,8 @@ struct EntryView: View {
     }
     
     func addTag (_ tag: Tag) {
-        if tags.filter({ $0.id == tag.id }).isEmpty {
+        if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
             self.entry.tags.add(tag)
-            tags.append(tag)
         }
         showTagSelector = false
     }
@@ -53,16 +50,16 @@ struct EntryView: View {
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 Text("Tags").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                 HFlow {
-                    ForEach(Tag.getNoCategoryTags(library: self.entry.library, tags: self.tags)) { tag in
-                        TagBoxTag(entry: entry, tag: tag, tags: $tags)
+                    ForEach(Tag.getNoCategoryTags(library: self.entry.library, tags: self.entry.tags.all)) { tag in
+                        TagBoxTag(entry: entry, tag: tag)
                     }
                 }
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                ForEach(Tag.getAllCategories(library: self.entry.library, tags: self.tags), id: \.parent.id) { category in
+                ForEach(Tag.getAllCategories(library: self.entry.library, tags: self.entry.tags.all), id: \.parent.id) { category in
                     Text(category.parent.name).font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     HFlow {
                         ForEach(category.children) { tag in
-                            TagBoxTag(entry: entry, tag: tag, tags: $tags)
+                            TagBoxTag(entry: entry, tag: tag)
                         }
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }
@@ -153,36 +150,31 @@ struct EntryView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 Button(action: {
                     if let tag = entry.library.tags.getById(id: 1) {
-                        if tags.filter({ $0.id == tag.id }).isEmpty {
+                        if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
                             self.entry.tags.add(tag)
-                            tags.append(tag)
                         } else {
                             self.entry.tags.remove(tag)
-                            self.tags = entry.tags.all
                         }
                     }
                 }) {
-                    Image(systemName: tags.filter { $0.id == 1 }.isEmpty ? "star" : "star.fill")
+                    Image(systemName: entry.tags.all.filter { $0.id == 1 }.isEmpty ? "star" : "star.fill")
                 }
                 .tint(.yellow)
                 Button(action: {
                     if let tag = entry.library.tags.getById(id: 0) {
-                        if tags.filter({ $0.id == tag.id }).isEmpty {
+                        if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
                             self.entry.tags.add(tag)
-                            tags.append(tag)
                         } else {
                             self.entry.tags.remove(tag)
-                            self.tags = entry.tags.all
                         }
                     }
                 }) {
-                    Image(systemName: tags.filter { $0.id == 0 }.isEmpty ? "archivebox" : "archivebox.fill")
+                    Image(systemName: entry.tags.all.filter { $0.id == 0 }.isEmpty ? "archivebox" : "archivebox.fill")
                 }
                 .tint(.red)
             }
         }
         .onAppear {
-            self.tags = entry.tags.all
             self.fields = entry.getFields()
         }
         .fullScreenCover(isPresented: $fullScreen) {
