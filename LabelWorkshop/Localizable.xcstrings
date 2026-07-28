@@ -86,7 +86,7 @@
 
     },
     "Archive" : {
-
+      "extractionState" : "manual"
     },
     "Checking for Migration" : {
       "extractionState" : "manual",
@@ -1170,7 +1170,7 @@
 
     },
     "Favorite" : {
-
+      "extractionState" : "manual"
     },
     "Field" : {
 
@@ -1245,9 +1245,6 @@
     },
     "Is Hidden?" : {
 
-    },
-    "Key" : {
-      "extractionState" : "manual"
     },
     "LabelWorkshop" : {
       "shouldTranslate" : false

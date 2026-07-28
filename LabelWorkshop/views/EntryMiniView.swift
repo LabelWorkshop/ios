@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct EntryMiniView: View {
-    let entry: Entry
+    @Binding var entry: Entry
     @Binding var namesShown: Bool
     
-    init(entry: Entry, namesShown: Binding<Bool>) {
-        self.entry = entry
+    init(entry: Binding<Entry>, namesShown: Binding<Bool>) {
+        self._entry = entry
         self._namesShown = namesShown
     }
     
@@ -30,30 +30,8 @@ struct EntryMiniView: View {
             }
         }
         .contextMenu {
-            Button(action: {
-                if let tag = entry.library.tags.getById(id: 1) {
-                    if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
-                        self.entry.tags.add(tag)
-                    } else {
-                        self.entry.tags.remove(tag)
-                    }
-                }
-            }) {
-                Label("Favorite", systemImage: entry.tags.all.filter { $0.id == 1 }.isEmpty ? "star" : "star.fill")
-            }
-            .tint(.yellow)
-            Button(action: {
-                if let tag = entry.library.tags.getById(id: 0) {
-                    if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
-                        self.entry.tags.add(tag)
-                    } else {
-                        self.entry.tags.remove(tag)
-                    }
-                }
-            }) {
-                Label("Archive", systemImage: entry.tags.all.filter { $0.id == 0 }.isEmpty ? "archivebox" : "archivebox.fill")
-            }
-            .tint(.red)
+            EntryFavoriteButton(entry: $entry)
+            EntryArchiveButton(entry: $entry)
         }
     }
 }

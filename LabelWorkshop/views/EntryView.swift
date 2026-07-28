@@ -20,6 +20,82 @@ struct TagBoxTag: View {
     }
 }
 
+struct TagToggleButton: View {
+    @Binding var entry: Entry
+    let tag: Tag
+    let untoggledIcon: String
+    let toggledIcon: String
+    let name: String
+    let tint: Color
+    
+    var isOn: Bool {
+        entry.tags.all.contains{ $0.id == tag.id }
+    }
+    
+    var body: some View {
+        Button(action: {
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                if isOn {
+                    self.entry.tags.remove(tag)
+                } else {
+                    self.entry.tags.add(tag)
+                }
+            }
+        }) {
+            Label(NSLocalizedString(name, comment: ""), systemImage: isOn ? toggledIcon : untoggledIcon)
+        }
+        .tint(tint)
+    }
+}
+
+struct EntryFavoriteButton: View {
+    @Binding var entry: Entry
+    var tag: Tag?
+    
+    init(entry: Binding<Entry>) {
+        self._entry = entry
+        self.tag = self.entry.library.tags.getById(id: 1)
+    }
+    
+    var body: some View {
+        if let tag = tag {
+            TagToggleButton(
+                entry: $entry,
+                tag: tag,
+                untoggledIcon: "star",
+                toggledIcon: "star.fill",
+                name: "Favorite",
+                tint: .yellow
+            )
+        }
+    }
+}
+
+struct EntryArchiveButton: View {
+    @Binding var entry: Entry
+    var tag: Tag?
+    
+    init(entry: Binding<Entry>) {
+        self._entry = entry
+        self.tag = self.entry.library.tags.getById(id: 0)
+    }
+    
+    var body: some View {
+        if let tag = tag {
+            TagToggleButton(
+                entry: $entry,
+                tag: tag,
+                untoggledIcon: "archivebox",
+                toggledIcon: "archivebox.fill",
+                name: "Archive",
+                tint: .red
+            )
+        }
+    }
+}
+
 struct EntryView: View {
     @State var entry: Entry
     @State var fields: [Field] = []
@@ -148,30 +224,8 @@ struct EntryView: View {
             }
             
             ToolbarItemGroup(placement: .bottomBar) {
-                Button(action: {
-                    if let tag = entry.library.tags.getById(id: 1) {
-                        if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
-                            self.entry.tags.add(tag)
-                        } else {
-                            self.entry.tags.remove(tag)
-                        }
-                    }
-                }) {
-                    Image(systemName: entry.tags.all.filter { $0.id == 1 }.isEmpty ? "star" : "star.fill")
-                }
-                .tint(.yellow)
-                Button(action: {
-                    if let tag = entry.library.tags.getById(id: 0) {
-                        if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
-                            self.entry.tags.add(tag)
-                        } else {
-                            self.entry.tags.remove(tag)
-                        }
-                    }
-                }) {
-                    Image(systemName: entry.tags.all.filter { $0.id == 0 }.isEmpty ? "archivebox" : "archivebox.fill")
-                }
-                .tint(.red)
+                EntryFavoriteButton(entry: $entry)
+                EntryArchiveButton(entry: $entry)
             }
         }
         .onAppear {
