@@ -23,13 +23,13 @@ struct MigrationProgress: View {
                 .symbolRenderingMode(.hierarchical)
             }
             ProgressView(
-                value: max(0, min(self.library.migrationPercentage, 100)),
+                value: max(0, min(self.library.migrator.percentage, 100)),
                 total: 100
             )
         }
         .padding(16)
-        .onChange(of: self.library.migrationState) {
-            switch self.library.migrationState {
+        .onChange(of: self.library.migrator.state) {
+            switch self.library.migrator.state {
                 case .MigrationInProgress:
                     migrationText = "Migration in Progress"
                     migrationIcon = "arrow.trianglehead.2.clockwise.rotate.90"

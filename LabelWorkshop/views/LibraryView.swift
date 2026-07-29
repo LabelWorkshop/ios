@@ -136,7 +136,7 @@ struct LibraryView: View {
             switch self.viewType {
             case .Grid:
                 ScrollView {
-                    if self.library.migrationState != .MigrationNotRequired && !self.migrationClosed {
+                    if self.library.migrator.state != .MigrationNotRequired && !self.migrationClosed {
                         MigrationProgress(library: library, closed: $migrationClosed)
                     }
                     LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
