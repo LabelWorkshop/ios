@@ -1,5 +1,7 @@
+import SwiftUI
 import SQLite
 
+@Observable
 class EntryTagManager {
     let entry: Entry
     private var tags: [Tag] = []

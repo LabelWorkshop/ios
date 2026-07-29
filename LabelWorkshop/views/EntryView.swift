@@ -4,13 +4,12 @@ import Flow
 struct TagBoxTag: View {
     let entry: Entry
     let tag: Tag
-    @Binding var tags: [Tag]
     
     var body: some View {
         Menu {
             Button(role: .destructive, action: {
                 self.entry.tags.remove(tag)
-                self.tags = entry.tags.all
+                // self.tags = entry.tags.all
             }) {
                 Label("Remove", systemImage: "minus")
             }
@@ -21,9 +20,119 @@ struct TagBoxTag: View {
     }
 }
 
+struct TagToggleButton: View {
+    @Binding var entry: Entry
+    let tag: Tag
+    let untoggledIcon: String
+    let toggledIcon: String
+    let name: String
+    let tint: Color
+    
+    var isOn: Bool {
+        entry.tags.all.contains{ $0.id == tag.id }
+    }
+    
+    var body: some View {
+        Button(action: {
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                if isOn {
+                    self.entry.tags.remove(tag)
+                } else {
+                    self.entry.tags.add(tag)
+                }
+            }
+        }) {
+            Label(NSLocalizedString(name, comment: ""), systemImage: isOn ? toggledIcon : untoggledIcon)
+        }
+        .tint(tint)
+    }
+}
+
+struct EntryFavoriteButton: View {
+    @Binding var entry: Entry
+    var tag: Tag?
+    
+    init(entry: Binding<Entry>) {
+        self._entry = entry
+        self.tag = self.entry.library.tags.getById(id: 1)
+    }
+    
+    var body: some View {
+        if let tag = tag {
+            TagToggleButton(
+                entry: $entry,
+                tag: tag,
+                untoggledIcon: "star",
+                toggledIcon: "star.fill",
+                name: "Favorite",
+                tint: .yellow
+            )
+        }
+    }
+}
+
+struct EntryArchiveButton: View {
+    @Binding var entry: Entry
+    var tag: Tag?
+    
+    init(entry: Binding<Entry>) {
+        self._entry = entry
+        self.tag = self.entry.library.tags.getById(id: 0)
+    }
+    
+    var body: some View {
+        if let tag = tag {
+            TagToggleButton(
+                entry: $entry,
+                tag: tag,
+                untoggledIcon: "archivebox",
+                toggledIcon: "archivebox.fill",
+                name: "Archive",
+                tint: .red
+            )
+        }
+    }
+}
+
+struct EntryDeleteButton: View {
+    @Binding var entry: Entry
+    @Binding var deletionError: Bool
+    
+    var body: some View {
+        Button(role: .destructive, action: {
+            do {
+                try self.entry.library.entries.delete(entry)
+                try FileManager.default.removeItem(at: entry.fullPath!)
+            } catch {
+                self.deletionError = true
+            }
+        }) {
+            Label("Delete", systemImage: "trash")
+        }
+    }
+}
+
+struct EntryShareButton: View {
+    @Binding var entry: Entry
+    
+    var body: some View {
+        if let url = entry.fullPath {
+            ShareLink(item: url, message: Text(entry.path)) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+        } else {
+            Button {} label: {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            .disabled(true)
+        }
+    }
+}
+
 struct EntryView: View {
-    let entry: Entry
-    @State var tags: [Tag] = []
+    @State var entry: Entry
     @State var fields: [Field] = []
     @State var showTagSelector: Bool = false
     @State var showFieldTypeSelector: Bool = false
@@ -35,9 +144,8 @@ struct EntryView: View {
     }
     
     func addTag (_ tag: Tag) {
-        if tags.filter({ $0.id == tag.id }).isEmpty {
+        if entry.tags.all.filter({ $0.id == tag.id }).isEmpty {
             self.entry.tags.add(tag)
-            tags.append(tag)
         }
         showTagSelector = false
     }
@@ -53,16 +161,16 @@ struct EntryView: View {
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 Text("Tags").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                 HFlow {
-                    ForEach(Tag.getNoCategoryTags(library: self.entry.library, tags: self.tags)) { tag in
-                        TagBoxTag(entry: entry, tag: tag, tags: $tags)
+                    ForEach(Tag.getNoCategoryTags(library: self.entry.library, tags: self.entry.tags.all)) { tag in
+                        TagBoxTag(entry: entry, tag: tag)
                     }
                 }
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                ForEach(Tag.getAllCategories(library: self.entry.library, tags: self.tags), id: \.parent.id) { category in
+                ForEach(Tag.getAllCategories(library: self.entry.library, tags: self.entry.tags.all), id: \.parent.id) { category in
                     Text(category.parent.name).font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     HFlow {
                         ForEach(category.children) { tag in
-                            TagBoxTag(entry: entry, tag: tag, tags: $tags)
+                            TagBoxTag(entry: entry, tag: tag)
                         }
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }
@@ -95,19 +203,8 @@ struct EntryView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    ShareLink(item: entry.fullPath!, message: Text(entry.path)) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    Button(role: .destructive, action: {
-                        do {
-                            try self.entry.library.entries.delete(entry)
-                            try FileManager.default.removeItem(at: entry.fullPath!)
-                        } catch {
-                            self.deletionError = true
-                        }
-                    }) {
-                        Label("Delete", systemImage: "trash")
-                    }
+                    EntryShareButton(entry: $entry)
+                    EntryDeleteButton(entry: $entry, deletionError: $deletionError)
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -151,38 +248,11 @@ struct EntryView: View {
             }
             
             ToolbarItemGroup(placement: .bottomBar) {
-                Button(action: {
-                    if let tag = entry.library.tags.getById(id: 1) {
-                        if tags.filter({ $0.id == tag.id }).isEmpty {
-                            self.entry.tags.add(tag)
-                            tags.append(tag)
-                        } else {
-                            self.entry.tags.remove(tag)
-                            self.tags = entry.tags.all
-                        }
-                    }
-                }) {
-                    Image(systemName: tags.filter { $0.id == 1 }.isEmpty ? "star" : "star.fill")
-                }
-                .tint(.yellow)
-                Button(action: {
-                    if let tag = entry.library.tags.getById(id: 0) {
-                        if tags.filter({ $0.id == tag.id }).isEmpty {
-                            self.entry.tags.add(tag)
-                            tags.append(tag)
-                        } else {
-                            self.entry.tags.remove(tag)
-                            self.tags = entry.tags.all
-                        }
-                    }
-                }) {
-                    Image(systemName: tags.filter { $0.id == 0 }.isEmpty ? "archivebox" : "archivebox.fill")
-                }
-                .tint(.red)
+                EntryFavoriteButton(entry: $entry)
+                EntryArchiveButton(entry: $entry)
             }
         }
         .onAppear {
-            self.tags = entry.tags.all
             self.fields = entry.getFields()
         }
         .fullScreenCover(isPresented: $fullScreen) {
@@ -195,7 +265,6 @@ struct EntryView: View {
             }
         }
         .alert("Delete Failed", isPresented: $deletionError) {
-            Button("OK", role: .cancel) { }
         } message: {
             Text("An error occured while trying to delete this entry.")
         }

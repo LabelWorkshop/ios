@@ -143,7 +143,7 @@ struct LibraryView: View {
                         ForEach(library.entries.all, id: \.path) { entry in
                             if isEntryVisable(entry) {
                                 GridRow {
-                                    EntryMiniView(entry: entry, namesShown: $namesShown)
+                                    EntryMiniView(entry: .constant(entry), namesShown: $namesShown)
                                 }
                             }
                         }

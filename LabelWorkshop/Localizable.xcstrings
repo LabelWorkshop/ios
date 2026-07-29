@@ -85,6 +85,9 @@
     "An error occured while trying to delete this entry." : {
 
     },
+    "Archive" : {
+      "extractionState" : "manual"
+    },
     "Checking for Migration" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1166,6 +1169,9 @@
     "Failed to save color." : {
 
     },
+    "Favorite" : {
+      "extractionState" : "manual"
+    },
     "Field" : {
 
     },
@@ -1239,9 +1245,6 @@
     },
     "Is Hidden?" : {
 
-    },
-    "Key" : {
-      "extractionState" : "manual"
     },
     "LabelWorkshop" : {
       "shouldTranslate" : false
@@ -1324,9 +1327,6 @@
           }
         }
       }
-    },
-    "OK" : {
-
     },
     "Parent Tags" : {
       "extractionState" : "stale",
