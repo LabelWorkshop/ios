@@ -22,9 +22,8 @@ struct ColorManager: View {
     }
     
     func editColor(_ color: TagColor) {
-        if !color.namespace.starts(with: "tagstudio") {
-            self.editingColor = color
-        }
+        guard !color.namespace.starts(with: "tagstudio") else {return}
+        self.editingColor = color
     }
     
     var body: some View {

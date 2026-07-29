@@ -36,14 +36,14 @@ struct ColorSearch<NamespaceActions: View>: View {
         self.dismissOnSelection = dismissOnSelection
     }
     
-    func getFilteredColors(in namespace: TagColorNamespace) -> [TagColor] {
+    private func getFilteredColors(in namespace: TagColorNamespace) -> [TagColor] {
         if searchText.isEmpty {
             return namespace.colors
         }
         return namespace.colors.filter{$0.name.localizedCaseInsensitiveContains(searchText)}
     }
     
-    func isSearchEmpty() -> Bool {
+    private func isSearchEmpty() -> Bool {
         for namespace in tagColors.namespaces {
             if !getFilteredColors(in: namespace).isEmpty {
                 return false
