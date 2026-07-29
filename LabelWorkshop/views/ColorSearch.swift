@@ -36,7 +36,7 @@ struct ColorSearch<NamespaceActions: View>: View {
         if searchText.isEmpty {
             return namespace.colors
         }
-        return namespace.colors.filter {$0.name.contains(searchText)}
+        return namespace.colors.filter{$0.name.localizedCaseInsensitiveContains(searchText)}
     }
     
     var body: some View {
