@@ -27,7 +27,7 @@ struct TagEditorGeneral: View {
             NavigationLink {
                 ColorSearch(tagColors: tagColors, colorSelectAction: { color in
                     colors = color
-                })
+                }, dismissOnSelection: true)
             } label: {
                 HStack {
                     Text("Color")

@@ -4,11 +4,12 @@ import Flow
 extension ColorSearch where NamespaceActions == EmptyView {
     init(
         tagColors: TagColorManager,
-        colorSelectAction: @escaping (TagColor) -> Void
+        colorSelectAction: @escaping (TagColor) -> Void,
+        dismissOnSelection: Bool = false
     ) {
-        self.init(tagColors: tagColors, colorSelectAction: colorSelectAction) { _ in
+        self.init(tagColors: tagColors, colorSelectAction: colorSelectAction, namespaceActions:  { _ in
             EmptyView()
-        }
+        }, dismissOnSelection: dismissOnSelection)
     }
 }
 
@@ -18,6 +19,7 @@ struct ColorSearch<NamespaceActions: View>: View {
     @Environment(\.dismiss) private var dismiss
     
     let colorSelectAction: (_: TagColor) -> Void
+    let dismissOnSelection: Bool
     @ViewBuilder var namespaceActions: (_ namespace: TagColorNamespace) -> NamespaceActions
     
     @State var searchText: String = ""
@@ -25,11 +27,13 @@ struct ColorSearch<NamespaceActions: View>: View {
     init(
         tagColors: TagColorManager,
         colorSelectAction: @escaping (_: TagColor) -> Void,
-        @ViewBuilder namespaceActions: @escaping (_ namespace: TagColorNamespace) -> NamespaceActions
+        @ViewBuilder namespaceActions: @escaping (_ namespace: TagColorNamespace) -> NamespaceActions,
+        dismissOnSelection: Bool = false
     ) {
         self.tagColors = tagColors
         self.colorSelectAction = colorSelectAction
         self.namespaceActions = namespaceActions
+        self.dismissOnSelection = dismissOnSelection
     }
     
     func getFilteredColors(in namespace: TagColorNamespace) -> [TagColor] {
@@ -77,6 +81,9 @@ struct ColorSearch<NamespaceActions: View>: View {
                                         ForEach(colors) { color in
                                             Button {
                                                 self.colorSelectAction(color)
+                                                if dismissOnSelection {
+                                                    dismiss()
+                                                }
                                             } label: {
                                                 TagPreView(name: .constant(color.name), colors: .constant(color))
                                             }
