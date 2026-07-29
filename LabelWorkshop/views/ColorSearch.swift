@@ -39,44 +39,58 @@ struct ColorSearch<NamespaceActions: View>: View {
         return namespace.colors.filter{$0.name.localizedCaseInsensitiveContains(searchText)}
     }
     
+    func isSearchEmpty() -> Bool {
+        for namespace in tagColors.namespaces {
+            if !getFilteredColors(in: namespace).isEmpty {
+                return false
+            }
+        }
+        return true
+    }
+    
     var body: some View {
         NavigationStack {
-            ScrollView {
-                ForEach(tagColors.namespaces) { namespace in
-                    let colors = getFilteredColors(in: namespace)
-                    if colors.isEmpty && !searchText.isEmpty {
-                        EmptyView()
-                    } else {
-                        HStack {
-                            Text(namespace.displayName)
-                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                                .foregroundStyle(.secondary)
-                            namespaceActions(namespace)
-                        }
-                        HFlow {
-                            if namespace.colors.isEmpty {
-                                Text("No Colors")
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .foregroundStyle(.secondary)
-                                    .font(.title3)
+            Group {
+                if isSearchEmpty() {
+                    ContentUnavailableView.search(text: searchText)
+                } else {
+                    ScrollView {
+                        ForEach(tagColors.namespaces) { namespace in
+                            let colors = getFilteredColors(in: namespace)
+                            if colors.isEmpty && !searchText.isEmpty {
+                                EmptyView()
                             } else {
-                                ForEach(colors) { color in
-                                    Button {
-                                        self.colorSelectAction(color)
-                                    } label: {
-                                        TagPreView(name: .constant(color.name), colors: .constant(color))
-                                    }
+                                HStack {
+                                    Text(namespace.displayName)
+                                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                                        .foregroundStyle(.secondary)
+                                    namespaceActions(namespace)
                                 }
+                                HFlow {
+                                    if namespace.colors.isEmpty {
+                                        Text("No Colors")
+                                            .padding()
+                                            .frame(maxWidth: .infinity, alignment: .center)
+                                            .foregroundStyle(.secondary)
+                                            .font(.title3)
+                                    } else {
+                                        ForEach(colors) { color in
+                                            Button {
+                                                self.colorSelectAction(color)
+                                            } label: {
+                                                TagPreView(name: .constant(color.name), colors: .constant(color))
+                                            }
+                                        }
+                                    }
+                                }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             }
-                        }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(.horizontal)
                     }
                 }
-                .padding(.horizontal)
             }
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .searchPresentationToolbarBehavior(.avoidHidingContent)
-            
         }
     }
 }
