@@ -1,0 +1,65 @@
+import SwiftUI
+import Flow
+
+extension ColorSearch where NamespaceActions == EmptyView {
+    init(
+        tagColors: TagColorManager,
+        colorSelectAction: @escaping (TagColor) -> Void
+    ) {
+        self.init(tagColors: tagColors, colorSelectAction: colorSelectAction) { _ in
+            EmptyView()
+        }
+    }
+}
+
+struct ColorSearch<NamespaceActions: View>: View {
+    let tagColors: TagColorManager
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    let colorSelectAction: (_: TagColor) -> Void
+    @ViewBuilder var namespaceActions: (_ namespace: TagColorNamespace) -> NamespaceActions
+    
+    init(
+        tagColors: TagColorManager,
+        colorSelectAction: @escaping (_: TagColor) -> Void,
+        @ViewBuilder namespaceActions: @escaping (_ namespace: TagColorNamespace) -> NamespaceActions
+    ) {
+        self.tagColors = tagColors
+        self.colorSelectAction = colorSelectAction
+        self.namespaceActions = namespaceActions
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                ForEach(tagColors.namespaces) { namespace in
+                    HStack {
+                        Text(namespace.displayName)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(.secondary)
+                        namespaceActions(namespace)
+                    }
+                    HFlow {
+                        if namespace.colors.isEmpty {
+                            Text("No Colors")
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .foregroundStyle(.secondary)
+                                .font(.title3)
+                        } else {
+                            ForEach(namespace.colors) { color in
+                                Button {
+                                    self.colorSelectAction(color)
+                                } label: {
+                                    TagPreView(name: .constant(color.name), colors: .constant(color))
+                                }
+                            }
+                        }
+                    }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+}

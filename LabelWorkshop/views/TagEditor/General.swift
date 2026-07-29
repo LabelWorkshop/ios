@@ -4,7 +4,7 @@ struct TagEditorGeneral: View {
     @Binding var name: String
     @Binding var shorthand: String
     @Binding var colors: TagColor
-    @Binding var tagColors: [TagColor]
+    @Binding var tagColors: TagColorManager
     @Binding var isCategory: Bool
     @Binding var isHidden: Bool
     
@@ -25,19 +25,9 @@ struct TagEditorGeneral: View {
                     .multilineTextAlignment(.trailing)
             }
             NavigationLink {
-                ScrollView {
-                    VStack {
-                        ForEach($tagColors) { tagColor in
-                            Button(action: {
-                                colors = tagColor.wrappedValue
-                                dismiss()
-                            }) {
-                                TagPreView(name: tagColor.name, colors: tagColor, fullWidth: true)
-                            }
-                        }
-                    }
-                    .padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
-                }
+                ColorSearch(tagColors: tagColors, colorSelectAction: { color in
+                    colors = color
+                })
             } label: {
                 HStack {
                     Text("Color")

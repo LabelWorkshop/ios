@@ -21,68 +21,48 @@ struct ColorManager: View {
         self.tagColors = tagColors
     }
     
+    func editColor(_ color: TagColor) {
+        if !color.namespace.starts(with: "tagstudio") {
+            self.editingColor = color
+        }
+    }
+    
     var body: some View {
         NavigationStack {
-            ScrollView {
-                ForEach(tagColors.namespaces) { namespace in
-                    HStack {
-                        Text(namespace.displayName)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(.secondary)
-                        if !namespace.isReadOnly {
-                            Menu {
-                                Button {
-                                    newColorNamespace = namespace
-                                } label: {
-                                    Label("New Color", systemImage: "lightspectrum.horizontal")
-                                }
-                                Button {
-                                    renameNamespace = namespace
-                                } label: {
-                                    Label("Rename", systemImage: "pencil")
-                                }
-                                Button(role: .destructive) {
-                                    do {
-                                        try tagColors.deleteNamespace(namespace: namespace)
-                                    } catch {
-                                        print(error)
-                                        namespaceDeletionError = true
-                                    }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            } label: {
-                                Button {
-                                    
-                                } label: {
-                                    Image(systemName: "ellipsis.circle.fill")
-                                        .symbolRenderingMode(.hierarchical)
-                                        .font(.title)
-                                }
-                                .tint(.gray)
-                            }
+            ColorSearch(tagColors: tagColors, colorSelectAction: editColor) { namespace in
+                if !namespace.isReadOnly {
+                    Menu {
+                        Button {
+                            newColorNamespace = namespace
+                        } label: {
+                            Label("New Color", systemImage: "lightspectrum.horizontal")
                         }
+                        Button {
+                            renameNamespace = namespace
+                        } label: {
+                            Label("Rename", systemImage: "pencil")
+                        }
+                        Button(role: .destructive) {
+                            do {
+                                try tagColors.deleteNamespace(namespace: namespace)
+                            } catch {
+                                print(error)
+                                namespaceDeletionError = true
+                            }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    } label: {
+                        Button {
+                            
+                        } label: {
+                            Image(systemName: "ellipsis.circle.fill")
+                                .symbolRenderingMode(.hierarchical)
+                                .font(.title)
+                        }
+                        .tint(.gray)
                     }
-                    HFlow {
-                        if namespace.colors.isEmpty {
-                            Text("No Colors")
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .foregroundStyle(.secondary)
-                                .font(.title3)
-                        } else {
-                            ForEach(namespace.colors) { color in
-                                Button {
-                                    editingColor = color
-                                } label: {
-                                    TagPreView(name: .constant(color.name), colors: .constant(color))
-                                }
-                                .disabled(namespace.isReadOnly)
-                            }
-                        }
-                    }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.horizontal)
             }
             .navigationTitle("Color Manager")
             .toolbar {

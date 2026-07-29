@@ -18,7 +18,7 @@ struct TagDetailsView: View {
     @State private var showTagColorSelector: Bool = false
     @State private var tagDeleteConfirmation: Bool = false
     @Environment(\.dismiss) private var dismiss
-    @State private var tagColors: [TagColor]
+    @State private var tagColors: TagColorManager
     @State var tagDetailsTab = 0
     @State var usageCount: Int
     
@@ -30,7 +30,7 @@ struct TagDetailsView: View {
         self.colors = tag.colors
         self.isCategory = tag.isCategory
         self.isHidden = tag.isHidden ?? false
-        self.tagColors = tag.library?.tagColors?.colors ?? []
+        self.tagColors = library.tagColors
         self.aliases = tag.getAliases()
         self.parentTags = self.library.tags.getParentTags(of: tag)
         self.usageCount = self.library.tags.getUsageCount(of: tag)
