@@ -21,6 +21,7 @@ struct TagDetailsView: View {
     @State private var tagColors: TagColorManager
     @State var tagDetailsTab = 0
     @State var usageCount: Int
+    @State var editSaveFailed: Bool = false
     
     init(library: Library, tag: Tag) {
         self.tag = tag
@@ -37,7 +38,7 @@ struct TagDetailsView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 8) {
                 if #available(iOS 26.0, *) {
                     VisualTagEdit(displayName: $displayName, colors: $colors)
@@ -55,7 +56,7 @@ struct TagDetailsView: View {
                 if tagDetailsTab == 0 {
                     TagEditorGeneral(name: $name, shorthand: $shorthand, colors: $colors, tagColors: $tagColors, isCategory: $isCategory, isHidden: $isHidden)
                 } else if tagDetailsTab == 1 {
-                    TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.all)
+                    TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.tags)
                 } else if tagDetailsTab == 2 {
                     TagEditorAlias(aliases: $aliases, tagId: tag.id)
                 } else if tagDetailsTab == 3 {
@@ -65,19 +66,22 @@ struct TagDetailsView: View {
             .padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
             .navigationTitle(tag.name)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading){
-                    CloseButton(dismiss: dismiss)
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    ToolbarItem(placement: .navigationBarLeading){
+                        CloseButton(dismiss: dismiss)
+                    }
                 }
                 ToolbarItem(placement: .navigationBarTrailing){
-                    if #available(iOS 26.0, *) {
-                        Button(role: .confirm, action: confirmEdits) {
-                            Image(systemName: "checkmark")
+                    Button {
+                        do {
+                            try confirmEdits()
+                        } catch {
+                            editSaveFailed = true
                         }
-                    } else {
-                        Button(action: confirmEdits) {
-                            Image(systemName: "checkmark")
-                        }.tint(.blue)
+                    } label: {
+                        Label("Save", systemImage: "checkmark")
                     }
+                    .buttonStyle(ProminentButtonStyle())
                 }
                 ToolbarItem(placement: .bottomBar){
                     Button(role: .destructive, action: {
@@ -120,6 +124,9 @@ struct TagDetailsView: View {
             .onChange(of: name) {
                 updateName()
             }
+            .alert("Save Failed", isPresented: $editSaveFailed) {} message: {
+                Text("Failed to save changes.")
+            }
         }
     }
     
@@ -131,17 +138,19 @@ struct TagDetailsView: View {
         self.displayName = "\(name)\(suffix)"
     }
     
-    func confirmEdits() {
-        do {
-            try tag.setColumn(column: TagsTable.name, value: self.name)
-            try tag.setColumn(column: TagsTable.shorthand, value: self.shorthand)
-            try tag.setColumn(column: TagsTable.isCategory, value: self.isCategory)
-            try tag.setColumn(column: TagsTable.isHidden, value: self.isHidden)
-            try tag.setColumn(column: TagsTable.disambiguationId, value: self.disambiguationId)
-            tag.setAliases(self.aliases)
-            try tag.setColor(self.colors)
-            self.library.tags.setParentTags(tag: self.tag, parentTags: self.parentTags)
-        } catch {print(error)}
+    func confirmEdits() throws {
+        try library.tags.updateTag(
+            tag, options: .init(
+                name: self.name,
+                shorthand: self.shorthand,
+                isCategory: self.isCategory,
+                isHidden: self.isHidden,
+                disambiguationId: self.disambiguationId,
+                aliases: self.aliases,
+                color: self.colors,
+                parents: self.parentTags
+            )
+        )
         dismiss()
     }
 }

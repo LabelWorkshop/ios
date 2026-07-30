@@ -1,13 +1,21 @@
 import SQLite
+import Observation
 
+struct TagOptions {
+    let name: String?
+    let shorthand: String?
+    let isCategory: Bool?
+    let isHidden: Bool?
+    let disambiguationId: Int?
+    let aliases: [TagAlias]?
+    let color: TagColor?
+    let parents: [Tag]?
+}
+
+@Observable
 class LibraryTagManager {
     let library: Library
-    private var tags: [Tag] = []
-    var all: [Tag] {
-        get {
-            return self.tags
-        }
-    }
+    var tags: [Tag] = []
     
     init(library: Library) {
         self.library = library
@@ -100,7 +108,7 @@ class LibraryTagManager {
         }
     }
     
-    func setParentTags(tag: Tag, parentTags: [Tag]) {
+    func setParentTags(tag: Tag, parentTags: [Tag]) throws {
         let currentParentTags = self.getParentTags(of: tag)
         for parentTag in parentTags {
             // New Parent Tags
@@ -115,9 +123,7 @@ class LibraryTagManager {
                     TagParentsTable.parentId <- parentTag.id,
                     TagParentsTable.childId <- tag.id
                 )
-                do {
-                    try self.library.db?.run(query)
-                } catch {print(error)}
+                try self.library.db?.run(query)
                 continue
             }
         }
@@ -127,9 +133,7 @@ class LibraryTagManager {
                 let query = TagParentsTable.table
                     .filter(TagParentsTable.parentId == currentParentTag.id && TagParentsTable.childId == tag.id)
                     .delete()
-                do {
-                    try self.library.db?.run(query)
-                } catch {print(error)}
+                try self.library.db?.run(query)
             }
         }
     }
@@ -164,5 +168,111 @@ class LibraryTagManager {
     func getUsageCount (of: Tag) -> Int {
         return self.tags.filter({$0.id == of.id}).count
     }
+    
+    func getAliases(of tag: Tag) throws -> [TagAlias] {
+        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
+        let query = TagAliasesTable.table.select(*).filter(TagAliasesTable.tagId == tag.id)
+        var tagAliases: [TagAlias] = []
+        for rawAlias in try db.prepare(query) {
+            tagAliases.append(
+                TagAlias(
+                    id: rawAlias[TagAliasesTable.id],
+                    name: rawAlias[TagAliasesTable.name],
+                    tagId: rawAlias[TagAliasesTable.tagId],
+                    tag: tag
+                )
+            )
+        }
+        return tagAliases
+    }
+    
+    func newAlias(for tag: Tag, _ name: String) throws {
+        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
+        let query = TagAliasesTable.table.insert(
+            TagAliasesTable.name <- name,
+            TagAliasesTable.tagId <- tag.id
+        )
+        try db.run(query)
+    }
+    
+    func setAliases(for tag: Tag, _ aliases: [TagAlias]) throws {
+        let currentAliases = try self.getAliases(of: tag)
+        for alias in aliases {
+            // New Aliases
+            if alias.tag == nil {
+                try self.newAlias(for: tag, alias.name)
+                continue
+            }
+            // Updated Aliases
+            if var oldAlias = currentAliases.first(where: {$0.id == alias.id}) {
+                oldAlias.setName(alias.name)
+                continue
+            }
+        }
+        // Deleted Aliases
+        for alias in currentAliases {
+            aliases.filter({$0.id == alias.id}).count == 0 ? alias.delete() : ()
+        }
+    }
+    
+    func setColor(for tag: Tag, _ color: TagColor) throws {
+        try setColumn(for: tag, column: TagsTable.colorSlug, value: color.slug)
+        try setColumn(for: tag, column: TagsTable.colorNamespace, value: color.namespace)
+        tag.colors = color
+    }
+    
+    func setColumn<T: Value>(
+        for tag: Tag,
+        column: SQLite.Expression<T>,
+        value: T
+    ) throws {
+        let query = TagsTable.table.filter(TagsTable.id == tag.id)
+        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
+        try db.run(query.update(column <- value))
+    }
+    
+    func setColumn<T: Value>(
+        for tag: Tag,
+        column: SQLite.Expression<T?>,
+        value: T
+    ) throws {
+        let query = TagsTable.table.filter(TagsTable.id == tag.id)
+        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
+        try db.run(query.update(column <- value))
+    }
+    
+    func updateTag(_ tag: Tag, options: TagOptions) throws {
+        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
+        try db.transaction {
+            if let name = options.name {
+                try setColumn(for: tag, column: TagsTable.name, value: name)
+                tag.name = name
+            }
+            if let shorthand = options.shorthand {
+                try setColumn(for: tag, column: TagsTable.shorthand, value: shorthand)
+                tag.shorthand = shorthand
+            }
+            if let isCategory = options.isCategory {
+                try setColumn(for: tag, column: TagsTable.isCategory, value: isCategory)
+                tag.isCategory = isCategory
+            }
+            if let isHidden = options.isHidden {
+                try setColumn(for: tag, column: TagsTable.isHidden, value: isHidden)
+                tag.isHidden = isHidden
+            }
+            if let disambiguationId = options.disambiguationId {
+                try setColumn(for: tag, column: TagsTable.disambiguationId, value: disambiguationId)
+                tag.disambiguationId = disambiguationId
+            }
+            if let parents = options.parents {
+                try setParentTags(tag: tag, parentTags: parents)
+            }
+            if let aliases = options.aliases {
+                try self.setAliases(for: tag, aliases)
+            }
+            if let color = options.color {
+                try self.setColor(for: tag, color)
+            }
+        }
+    }
 }
-

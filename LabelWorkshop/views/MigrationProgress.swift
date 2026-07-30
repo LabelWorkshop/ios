@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MigrationProgress: View {
-    @StateObject var library: Library
+    @State var library: Library
     @Binding var closed: Bool
     @State var migrationText: String = "Checking for Migration"
     @State var migrationIcon: String = "questionmark.folder"

@@ -5,10 +5,11 @@ import TipKit
 struct ContentView: View {
     @State private var libraries: [Library]
     
-    @State private var selectedLibrary: Library?
     @State private var visibility: NavigationSplitViewVisibility = .all
     @State private var showFileImporter = false
     @State private var showAbout = false
+    
+    @Environment(AppState.self) private var appState
     
     init() {
         if UserDefaults.standard.bool(forKey: "reset_on_launch") {
@@ -44,8 +45,9 @@ struct ContentView: View {
     }
     
     var body: some View {
+        @Bindable var appState = appState
         NavigationSplitView(columnVisibility: $visibility) {
-            List(selection: $selectedLibrary) {
+            List(selection: $appState.selectedLibrary) {
                 ForEach(libraries){ library in
                     NavigationLink(value: library){
                         Text(library.getName())
@@ -74,8 +76,8 @@ struct ContentView: View {
             .navigationTitle("LabelWorkshop")
             .toolbarTitleDisplayMode(.large)
         } content: {
-            if let selectedLibrary {
-                LibraryView(library: selectedLibrary)
+            if let library = appState.selectedLibrary {
+                LibraryView(library: library)
             }
         } detail: {}
         .fileImporter(

@@ -1166,6 +1166,9 @@
         }
       }
     },
+    "Failed to save changes." : {
+
+    },
     "Failed to save color." : {
 
     },
@@ -1318,6 +1321,9 @@
     "No Colors" : {
 
     },
+    "No Library Selected" : {
+
+    },
     "No preview available" : {
       "localizations" : {
         "fr" : {
@@ -1365,6 +1371,9 @@
 
     },
     "Save Error" : {
+
+    },
+    "Save Failed" : {
 
     },
     "Secondary" : {

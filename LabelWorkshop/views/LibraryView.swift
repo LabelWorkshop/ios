@@ -21,13 +21,24 @@ enum LibraryViewType {
     case Masonry
 }
 
+func openTagManager(appState: AppState, openWindow: OpenWindowAction) {
+    if UIDevice.current.userInterfaceIdiom == .phone {
+        appState.showTagManager = true
+    } else {
+        if !appState.tagManagerWindowOpen {
+            openWindow(id: "tag-manager")
+        }
+    }
+}
+
 struct LibraryCommands: Commands {
     @Bindable var appState: AppState
+    @Environment(\.openWindow) private var openWindow
     
     var body: some Commands {
         CommandMenu("Library") {
             Button("Tag Manager", systemImage: "tag") {
-                appState.showTagManager = true
+                openTagManager(appState: appState, openWindow: openWindow)
             }
             .keyboardShortcut(KeyboardShortcut("M", modifiers: [.command, .shift]))
         }
@@ -55,6 +66,8 @@ struct LibraryView: View {
     @State var viewType: LibraryViewType = .Grid
     
     @Environment(AppState.self) private var appState
+    @Environment(\.openURL) private var openURL
+    @Environment(\.openWindow) private var openWindow
     
     let LIST_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 50, .Medium: 30]
     let GRID_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 120, .Medium: 70]
@@ -66,7 +79,7 @@ struct LibraryView: View {
     
     init(library: Library) {
         self.library = library
-        self.tags = self.library.tags.all
+        self.tags = self.library.tags.tags
     }
     
     func getZoomSize() -> CGFloat {
@@ -177,7 +190,7 @@ struct LibraryView: View {
             ToolbarItem( placement: .navigationBarTrailing){
                 Menu {
                     Button(action: {
-                        appState.showTagManager = true
+                        openTagManager(appState: appState, openWindow: openWindow)
                     }) {
                         Label("Tag Manager", systemImage: "tag")
                     }
@@ -235,13 +248,13 @@ struct LibraryView: View {
                     TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
                         .onAppear {
                             self.library.tags.refresh()
-                            self.tags = self.library.tags.all
+                            self.tags = self.library.tags.tags
                         }
                 }
             }
         }
         .sheet(isPresented: $appState.showTagManager) {
-            TagManagerView(library: library)
+            TagManagerView(appState)
         }
         .sheet(isPresented: $showColorManager) {
             ColorManager(tagColors: self.library.tagColors)
