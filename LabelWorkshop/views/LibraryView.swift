@@ -322,6 +322,7 @@ struct LibraryView: View {
                         LibraryHideNamesButton(namesShown: $namesShown)
                     }
                     LibraryViewPicker(viewType: $viewType)
+                        .fixedSize()
                 } label: {
                     Label("View Options", systemImage: viewType == .Grid ? "square.grid.2x2" : "list.bullet" )
                 }
