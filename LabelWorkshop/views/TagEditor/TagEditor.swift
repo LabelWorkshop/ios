@@ -32,7 +32,11 @@ struct TagDetailsView: View {
         self.isCategory = tag.isCategory
         self.isHidden = tag.isHidden ?? false
         self.tagColors = library.tagColors
-        self.aliases = tag.getAliases()
+        do {
+            self.aliases = try library.tags.getAliases(of: tag)
+        } catch {
+            self.aliases = []
+        }
         self.parentTags = self.library.tags.getParentTags(of: tag)
         self.usageCount = self.library.tags.getUsageCount(of: tag)
     }

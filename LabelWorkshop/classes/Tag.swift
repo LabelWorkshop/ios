@@ -105,6 +105,7 @@ class Tag: Identifiable, Equatable, Hashable {
         self.name = name
     }
     
+    @available(*, deprecated)
     func setColumn<T: Value>(column: SQLite.Expression<T>, value: T) throws {
         let query = TagsTable.table.filter(TagsTable.id == self.id)
         if let db = self.library!.db {
@@ -112,6 +113,7 @@ class Tag: Identifiable, Equatable, Hashable {
         }
     }
     
+    @available(*, deprecated)
     func setColumn<T: Value>(column: SQLite.Expression<T?>, value: T?) throws {
         let query = TagsTable.table.filter(TagsTable.id == self.id)
         if let db = self.library!.db {
@@ -119,12 +121,14 @@ class Tag: Identifiable, Equatable, Hashable {
         }
     }
     
+    @available(*, deprecated)
     func setColor(_ color: TagColor) throws {
         try setColumn(column: TagsTable.colorSlug, value: color.slug)
         try setColumn(column: TagsTable.colorNamespace, value: color.namespace)
         self.colors = color
     }
     
+    @available(*, deprecated)
     func getAliases() -> [TagAlias] {
         let query = TagAliasesTable.table.select(*).filter(TagAliasesTable.tagId == id)
         var tagAliases: [TagAlias] = []
@@ -143,6 +147,7 @@ class Tag: Identifiable, Equatable, Hashable {
         return tagAliases
     }
     
+    @available(*, deprecated)
     func newAlias(_ name: String) {
         let query = TagAliasesTable.table.insert(
             TagAliasesTable.name <- name,
@@ -153,6 +158,7 @@ class Tag: Identifiable, Equatable, Hashable {
         } catch {print(error)}
     }
     
+    @available(*, deprecated)
     func setAliases(_ aliases: [TagAlias]) {
         let currentAliases = self.getAliases()
         for alias in aliases {
