@@ -1,18 +1,11 @@
 import SwiftUI
 
-enum LibraryGridZoom: CGFloat {
-    case Large = 120
-    case Medium = 70
-}
-
-enum LibraryListZoom: CGFloat {
-    case Large = 50
-    case Medium = 30
-}
-
 enum LibraryZoom: CGFloat {
+    case XXLarge
+    case XLarge
     case Large
     case Medium
+    case Small
 }
 
 enum LibraryViewType {
@@ -69,8 +62,20 @@ struct LibraryView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.openWindow) private var openWindow
     
-    let LIST_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 50, .Medium: 30]
-    let GRID_VIEW_SIZES: [LibraryZoom: CGFloat] = [.Large: 120, .Medium: 70]
+    let LIST_VIEW_SIZES: [LibraryZoom: CGFloat] = [
+        .XXLarge: 120,
+        .XLarge: 100,
+        .Large: 50,
+        .Medium: 30,
+        .Small: 20
+    ]
+    let GRID_VIEW_SIZES: [LibraryZoom: CGFloat] = [
+        .XXLarge: 1000,
+        .XLarge: 200,
+        .Large: 120,
+        .Medium: 70,
+        .Small: 55
+    ]
     
     private let tagFilterTip = TagFilterTip()
     
@@ -96,7 +101,8 @@ struct LibraryView: View {
     }
     
     func getViewGrid(_ geometry: GeometryProxy) -> [GridItem] {
-        let entriesInRow = (geometry.size.width / getZoomSize()).rounded(.down)
+        var entriesInRow = (geometry.size.width / getZoomSize()).rounded(.down)
+        if entriesInRow < 1 { entriesInRow = 1 }
         return Array(repeating: GridItem(.flexible(), spacing: namesShown ? 8 : 1), count: Int(entriesInRow))
     }
     
@@ -141,6 +147,21 @@ struct LibraryView: View {
     
     func isEntryVisable(_ entry: Entry) -> Bool {
         !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry)
+    }
+    
+    func setZoomLevel(_ zoomIndex: Int) {
+        let zooms: [LibraryZoom] = [
+            .Small,
+            .Medium,
+            .Large,
+            .XLarge,
+            .XXLarge
+        ]
+        
+        let currentZoomIndex = zooms.firstIndex(of: zoom) ?? 0
+        let newZoomIndex = currentZoomIndex + zoomIndex
+        guard newZoomIndex >= 0 && newZoomIndex < zooms.count else {return}
+        zoom = zooms[newZoomIndex]
     }
     
     var body: some View {
@@ -201,14 +222,17 @@ struct LibraryView: View {
                     }
                     Section("View Options") {
                         Button(action: {
-                            if self.zoom == .Large {
-                                self.zoom = .Medium
-                            } else {
-                                self.zoom = .Large
-                            }
+                            setZoomLevel(+1)
                         }) {
-                            Label(self.zoom == .Large ? "Zoom Out" : "Zoom In", systemImage: self.zoom == .Large ? "minus.magnifyingglass" : "plus.magnifyingglass")
+                            Label("Zoom In", systemImage: "plus.magnifyingglass")
                         }
+                        .disabled(zoom == .XXLarge)
+                        Button(action: {
+                            setZoomLevel(-1)
+                        }) {
+                            Label("Zoom Out", systemImage: "minus.magnifyingglass")
+                        }
+                        .disabled(zoom == .Small)
                         if viewType == .Grid {
                             Button(action: {
                                 self.namesShown.toggle()
