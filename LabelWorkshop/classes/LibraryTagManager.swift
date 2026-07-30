@@ -1,5 +1,7 @@
 import SQLite
+import Observation
 
+@Observable
 class LibraryTagManager {
     let library: Library
     private var tags: [Tag] = []

@@ -45,7 +45,8 @@ extension Connection {
     }
 }
 
-class Library: Hashable, Identifiable, ObservableObject, Equatable {
+@Observable
+class Library: Hashable, Identifiable, Equatable {
     static func == (lhs: Library, rhs: Library) -> Bool {
         return lhs.bookmarkKey == rhs.bookmarkKey
     }
@@ -71,7 +72,7 @@ class Library: Hashable, Identifiable, ObservableObject, Equatable {
     
     init(bookmarkKey: String) {
         self.bookmarkKey = bookmarkKey
-        self.bookmark = loadBookmark(key: self.bookmarkKey)
+        self.bookmark = loadBookmark(key: bookmarkKey)
         self.isNew = false
         do {
             // Create TagStudio folder if not already created

@@ -4,12 +4,10 @@ struct TagManagerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openWindow) private var openWindow
     private var appState: AppState
-    @State var tags: [Tag]
     @State var editTag: Tag?
     
     init(_ appState: AppState) {
         self.appState = appState
-        _tags = State(initialValue: [])
     }
     
     func openEditor(_ tag: Tag) {
@@ -20,15 +18,10 @@ struct TagManagerView: View {
         }
     }
     
-    func refreshTags() {
-        appState.selectedLibrary?.tags.refresh()
-        self.tags = appState.selectedLibrary?.tags.all ?? []
-    }
-    
     var body: some View {
         NavigationStack {
             if let library = appState.selectedLibrary {
-                TagSearch(library: library, tags: $tags, selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
+                TagSearch(library: library, tags: .constant(library.tags.all), selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
                 .navigationTitle("Tag Manager")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing){
@@ -57,17 +50,8 @@ struct TagManagerView: View {
             view.sheet(item: $editTag) { editTag in
                 if let library = appState.selectedLibrary {
                     TagDetailsView(library: library, tag: editTag)
-                        .onDisappear {
-                            self.refreshTags()
-                        }
                 }
             }
-        }
-        .onAppear() {
-            refreshTags()
-        }
-        .onChange(of: appState.selectedLibrary) {
-            refreshTags()
         }
     }
 }
