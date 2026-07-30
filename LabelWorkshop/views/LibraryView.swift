@@ -38,6 +38,106 @@ struct LibraryCommands: Commands {
     }
 }
 
+struct LibraryZoomButtons: View {
+    @Binding var zoom: LibraryZoom
+    
+    func setZoomLevel(_ zoomIndex: Int) {
+        let zooms: [LibraryZoom] = [
+            .Small,
+            .Medium,
+            .Large,
+            .XLarge,
+            .XXLarge
+        ]
+        
+        let currentZoomIndex = zooms.firstIndex(of: zoom) ?? 0
+        let newZoomIndex = currentZoomIndex + zoomIndex
+        guard newZoomIndex >= 0 && newZoomIndex < zooms.count else {return}
+        zoom = zooms[newZoomIndex]
+    }
+    
+    var body: some View {
+        Button(action: {
+            setZoomLevel(+1)
+        }) {
+            Label("Zoom In", systemImage: "plus.magnifyingglass")
+        }
+        .disabled(zoom == .XXLarge)
+        Button(action: {
+            setZoomLevel(-1)
+        }) {
+            Label("Zoom Out", systemImage: "minus.magnifyingglass")
+        }
+        .disabled(zoom == .Small)
+    }
+}
+
+struct LibraryTagManagerButton: View {
+    @Environment(\.openWindow) private var openWindow
+    @Environment(AppState.self) private var appState
+    
+    var body: some View {
+        Button(action: {
+            openTagManager(appState: appState, openWindow: openWindow)
+        }) {
+            Label("Tag Manager", systemImage: "tag")
+        }
+    }
+}
+
+struct LibraryColorManagerButton: View {
+    @Binding var showColorManager: Bool
+    
+    var body: some View {
+        Button {
+            showColorManager = true
+        } label: {
+            Label("Color Manager", systemImage: "paintpalette")
+        }
+    }
+}
+
+struct LibraryFilterButton: View {
+    @Binding var filterUntagged: Bool
+    @Binding var hiddenShown: Bool
+    
+    var body: some View {
+        Menu {
+            Toggle(isOn: $filterUntagged) {
+                Label("Untagged Entries", systemImage: "tag.slash")
+            }
+            Toggle(isOn: $hiddenShown) {
+                Label("Hidden Entries", systemImage: "eye.slash")
+            }
+        } label: {
+            Label("Filter", systemImage: "line.3.horizontal.decrease")
+        }
+    }
+}
+
+struct LibraryViewPicker: View {
+    @Binding var viewType: LibraryViewType
+    
+    var body: some View {
+        Picker("", selection: $viewType) {
+            Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
+            Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
+        }
+    }
+}
+
+struct LibraryHideNamesButton: View {
+    @Binding var namesShown: Bool
+    
+    var body: some View {
+        Button(action: {
+            self.namesShown.toggle()
+        }) {
+            Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
+        }
+    }
+}
+
 struct LibraryView: View {
     let library: Library
     @State var tags: [Tag] = []
@@ -149,21 +249,6 @@ struct LibraryView: View {
         !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry)
     }
     
-    func setZoomLevel(_ zoomIndex: Int) {
-        let zooms: [LibraryZoom] = [
-            .Small,
-            .Medium,
-            .Large,
-            .XLarge,
-            .XXLarge
-        ]
-        
-        let currentZoomIndex = zooms.firstIndex(of: zoom) ?? 0
-        let newZoomIndex = currentZoomIndex + zoomIndex
-        guard newZoomIndex >= 0 && newZoomIndex < zooms.count else {return}
-        zoom = zooms[newZoomIndex]
-    }
-    
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
@@ -210,51 +295,16 @@ struct LibraryView: View {
         .toolbar {
             ToolbarItem( placement: .navigationBarTrailing){
                 Menu {
-                    Button(action: {
-                        openTagManager(appState: appState, openWindow: openWindow)
-                    }) {
-                        Label("Tag Manager", systemImage: "tag")
-                    }
-                    Button {
-                        showColorManager = true
-                    } label: {
-                        Label("Color Manager", systemImage: "paintpalette")
-                    }
+                    LibraryTagManagerButton()
+                    LibraryColorManagerButton(showColorManager: $showColorManager)
                     Section("View Options") {
-                        Button(action: {
-                            setZoomLevel(+1)
-                        }) {
-                            Label("Zoom In", systemImage: "plus.magnifyingglass")
-                        }
-                        .disabled(zoom == .XXLarge)
-                        Button(action: {
-                            setZoomLevel(-1)
-                        }) {
-                            Label("Zoom Out", systemImage: "minus.magnifyingglass")
-                        }
-                        .disabled(zoom == .Small)
+                        LibraryZoomButtons(zoom: $zoom)
                         if viewType == .Grid {
-                            Button(action: {
-                                self.namesShown.toggle()
-                            }) {
-                                Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
-                            }
+                            LibraryHideNamesButton(namesShown: $namesShown)
                         }
-                        Picker("", selection: $viewType) {
-                            Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
-                            Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
-                        }
+                        LibraryViewPicker(viewType: $viewType)
                     }
-                    Menu {
-                        Toggle(isOn: $filterUntagged) {
-                            Label("Untagged Entries", systemImage: "tag.slash")
-                        }
-                        Toggle(isOn: $hiddenShown) {
-                            Label("Hidden Entries", systemImage: "eye.slash")
-                        }
-                    } label: {
-                        Label("Filter", systemImage: "line.3.horizontal.decrease")
-                    }
+                    LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown)
                 } label: {
                     Image(systemName: "ellipsis")
                 }
