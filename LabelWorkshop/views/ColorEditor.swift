@@ -80,7 +80,7 @@ struct ColorEditor: View {
                                     secondaryAsBorder: secondaryAsBorder
                                 )
                             } else {
-                                try manager.newColor(
+                                _ = try manager.newColor(
                                     namespace: belongingNamespace ?? "",
                                     primary: primary,
                                     secondary: secondary,
