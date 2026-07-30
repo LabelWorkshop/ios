@@ -231,16 +231,6 @@ class LibraryTagManager {
         try db.run(query.update(column <- value))
     }
     
-    func setColumnIfNotNull<T: Value>(
-        for tag: Tag,
-        column: SQLite.Expression<T>,
-        value: T?
-    ) throws {
-        if let value = value {
-            try self.setColumn(for: tag, column: column, value: value)
-        }
-    }
-    
     func setColumn<T: Value>(
         for tag: Tag,
         column: SQLite.Expression<T?>,
@@ -250,25 +240,30 @@ class LibraryTagManager {
         guard let db = self.library.db else { throw LibraryError.databaseInvalid }
         try db.run(query.update(column <- value))
     }
-
-    func setColumnIfNotNull<T: Value>(
-        for tag: Tag,
-        column: SQLite.Expression<T?>,
-        value: T?
-    ) throws {
-        if let value = value {
-            try self.setColumn(for: tag, column: column, value: value)
-        }
-    }
     
     func updateTag(_ tag: Tag, options: TagOptions) throws {
         guard let db = self.library.db else { throw LibraryError.databaseInvalid }
         try db.transaction {
-            try setColumnIfNotNull(for: tag, column: TagsTable.name, value: options.name)
-            try setColumnIfNotNull(for: tag, column: TagsTable.shorthand, value: options.shorthand)
-            try setColumnIfNotNull(for: tag, column: TagsTable.isCategory, value: options.isCategory)
-            try setColumnIfNotNull(for: tag, column: TagsTable.isHidden, value: options.isHidden)
-            try setColumnIfNotNull(for: tag, column: TagsTable.disambiguationId, value: options.disambiguationId)
+            if let name = options.name {
+                try setColumn(for: tag, column: TagsTable.name, value: name)
+                tag.name = name
+            }
+            if let shorthand = options.shorthand {
+                try setColumn(for: tag, column: TagsTable.shorthand, value: shorthand)
+                tag.shorthand = shorthand
+            }
+            if let isCategory = options.isCategory {
+                try setColumn(for: tag, column: TagsTable.isCategory, value: isCategory)
+                tag.isCategory = isCategory
+            }
+            if let isHidden = options.isHidden {
+                try setColumn(for: tag, column: TagsTable.isHidden, value: isHidden)
+                tag.isHidden = isHidden
+            }
+            if let disambiguationId = options.disambiguationId {
+                try setColumn(for: tag, column: TagsTable.disambiguationId, value: disambiguationId)
+                tag.disambiguationId = disambiguationId
+            }
             if let parents = options.parents {
                 try setParentTags(tag: tag, parentTags: parents)
             }
@@ -278,8 +273,6 @@ class LibraryTagManager {
             if let color = options.color {
                 try self.setColor(for: tag, color)
             }
-            
-            self.library.tags.refresh()
         }
     }
 }

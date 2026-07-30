@@ -49,6 +49,7 @@ extension Color {
     }
 }
 
+@Observable
 class Tag: Identifiable, Equatable, Hashable {
     var library: Library?
     var realName: String
@@ -70,6 +71,10 @@ class Tag: Identifiable, Equatable, Hashable {
         disambiguationId: Int?,
         isHidden: Bool?
     ){
+        var computedName = name
+        if let disambiguationId = disambiguationId, let tag = Tag.fetch(library: library, id: disambiguationId) {
+            computedName = "\(name) (\(tag.name))"
+        }
         self.library = library
         self.realName = name
         self.id = id
@@ -78,12 +83,7 @@ class Tag: Identifiable, Equatable, Hashable {
         self.isCategory = isCategory
         self.disambiguationId = disambiguationId
         self.isHidden = isHidden
-        self.name = realName
-        if let disambiguationId = disambiguationId {
-            if let tag = Tag.fetch(library: library, id: disambiguationId) {
-                self.name = "\(self.realName) (\(tag.name))"
-            }
-        }
+        self.name = computedName
     }
     
     init(
@@ -102,7 +102,7 @@ class Tag: Identifiable, Equatable, Hashable {
         self.isCategory = isCategory
         self.disambiguationId = disambiguationId
         self.isHidden = isHidden
-        self.name = realName
+        self.name = name
     }
     
     func setColumn<T: Value>(column: SQLite.Expression<T>, value: T) throws {
@@ -260,3 +260,4 @@ class Tag: Identifiable, Equatable, Hashable {
         hasher.combine(id)
     }
 }
+
