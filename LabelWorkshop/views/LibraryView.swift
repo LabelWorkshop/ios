@@ -100,6 +100,10 @@ struct LibraryColorManagerButton: View {
 struct LibraryFilterButton: View {
     @Binding var filterUntagged: Bool
     @Binding var hiddenShown: Bool
+    @Binding var tagFilters: [Tag]
+    var library: Library
+    @Binding var tags: [Tag]
+    @Binding var showTagFilter: Bool
     
     var body: some View {
         Menu {
@@ -109,6 +113,7 @@ struct LibraryFilterButton: View {
             Toggle(isOn: $hiddenShown) {
                 Label("Hidden Entries", systemImage: "eye.slash")
             }
+            LibraryTagFilterButton(showTagFilter: $showTagFilter, tagFilters: $tagFilters, library: library, tags: $tags)
         } label: {
             Label("Filter", systemImage: "line.3.horizontal.decrease")
         }
@@ -135,6 +140,25 @@ struct LibraryHideNamesButton: View {
         }) {
             Label(self.namesShown ? "Hide Names" : "Show Names", systemImage: "textformat")
         }
+    }
+}
+
+struct LibraryTagFilterButton: View {
+    @Binding var showTagFilter: Bool
+    @Binding var tagFilters: [Tag]
+    var library: Library
+    @Binding var tags: [Tag]
+    private let tagFilterTip = TagFilterTip()
+    
+    var body: some View {
+        Button(action: {
+            showTagFilter = true
+            tagFilterTip.invalidate(reason: .actionPerformed)
+        }) {
+            Label("Tags", systemImage: tagFilters.isEmpty ? "tag" : "tag.fill")
+        }
+        .tint(tagFilters.isEmpty ? .primary : .blue)
+        .popoverTip(tagFilterTip, arrowEdge: .bottom)
     }
 }
 
@@ -176,8 +200,6 @@ struct LibraryView: View {
         .Medium: 70,
         .Small: 55
     ]
-    
-    private let tagFilterTip = TagFilterTip()
     
     private let namedPadding: EdgeInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
     private let unnamedPadding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
@@ -303,30 +325,12 @@ struct LibraryView: View {
                 } label: {
                     Label("View Options", systemImage: viewType == .Grid ? "square.grid.2x2" : "list.bullet" )
                 }
-                LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown)
+                LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown, tagFilters: $tagFilters, library: library, tags: $tags, showTagFilter: $showTagfilter)
             }
             
             ToolbarItemGroup(placement: .secondaryAction) {
                 LibraryTagManagerButton()
                 LibraryColorManagerButton(showColorManager: $showColorManager)
-            }
-            
-            ToolbarItem(placement: .bottomBar) {
-                Button(action: {
-                    showTagfilter = true
-                    tagFilterTip.invalidate(reason: .actionPerformed)
-                }) {
-                    Image(systemName: "tag")
-                }
-                .tint(tagFilters.isEmpty ? .primary : .blue)
-                .popoverTip(tagFilterTip, arrowEdge: .bottom)
-                .sheet(isPresented: $showTagfilter) {
-                    TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
-                        .onAppear {
-                            self.library.tags.refresh()
-                            self.tags = self.library.tags.tags
-                        }
-                }
             }
         }
         .sheet(isPresented: $appState.showTagManager) {
@@ -334,6 +338,13 @@ struct LibraryView: View {
         }
         .sheet(isPresented: $showColorManager) {
             ColorManager(tagColors: self.library.tagColors)
+        }
+        .sheet(isPresented: $showTagfilter) {
+            TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
+                .onAppear {
+                    self.library.tags.refresh()
+                    self.tags = self.library.tags.tags
+                }
         }
         .navigationTitle(library.getName())
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
