@@ -293,22 +293,24 @@ struct LibraryView: View {
             }
         }
         .toolbar {
-            ToolbarItem( placement: .navigationBarTrailing){
-                Menu {
-                    LibraryTagManagerButton()
-                    LibraryColorManagerButton(showColorManager: $showColorManager)
-                    Section("View Options") {
-                        LibraryZoomButtons(zoom: $zoom)
-                        if viewType == .Grid {
-                            LibraryHideNamesButton(namesShown: $namesShown)
-                        }
-                        LibraryViewPicker(viewType: $viewType)
+            ToolbarItemGroup(placement: .topBarTrailing){
+                ControlGroup {
+                    LibraryZoomButtons(zoom: $zoom)
+                    if viewType == .Grid {
+                        LibraryHideNamesButton(namesShown: $namesShown)
                     }
-                    LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown)
+                    LibraryViewPicker(viewType: $viewType)
                 } label: {
-                    Image(systemName: "ellipsis")
+                    Label("View Options", systemImage: viewType == .Grid ? "square.grid.2x2" : "list.bullet" )
                 }
+                LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown)
             }
+            
+            ToolbarItemGroup(placement: .secondaryAction) {
+                LibraryTagManagerButton()
+                LibraryColorManagerButton(showColorManager: $showColorManager)
+            }
+            
             ToolbarItem(placement: .bottomBar) {
                 Button(action: {
                     showTagfilter = true
