@@ -56,7 +56,7 @@ struct TagDetailsView: View {
                 if tagDetailsTab == 0 {
                     TagEditorGeneral(name: $name, shorthand: $shorthand, colors: $colors, tagColors: $tagColors, isCategory: $isCategory, isHidden: $isHidden)
                 } else if tagDetailsTab == 1 {
-                    TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.all)
+                    TagEditorParents(parentTags: $parentTags, disambiguationId: $disambiguationId, tagId: tag.id, tags: self.library.tags.tags)
                 } else if tagDetailsTab == 2 {
                     TagEditorAlias(aliases: $aliases, tagId: tag.id)
                 } else if tagDetailsTab == 3 {

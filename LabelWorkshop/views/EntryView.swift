@@ -9,7 +9,6 @@ struct TagBoxTag: View {
         Menu {
             Button(role: .destructive, action: {
                 self.entry.tags.remove(tag)
-                // self.tags = entry.tags.all
             }) {
                 Label("Remove", systemImage: "minus")
             }
@@ -239,7 +238,7 @@ struct EntryView: View {
                     .buttonStyle(ProminentButtonStyle())
                 }
                 .sheet(isPresented: $showTagSelector) {
-                    TagSearch(library: self.entry.library, tags: .constant(entry.library.tags.all), selectAction: addTag, multiSelect: false, selected: [], closeButton: true)
+                    TagSearch(library: self.entry.library, tags: .constant(entry.library.tags.tags), selectAction: addTag, multiSelect: false, selected: [], closeButton: true)
                 }
             }
             

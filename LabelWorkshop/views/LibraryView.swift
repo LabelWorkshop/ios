@@ -79,7 +79,7 @@ struct LibraryView: View {
     
     init(library: Library) {
         self.library = library
-        self.tags = self.library.tags.all
+        self.tags = self.library.tags.tags
     }
     
     func getZoomSize() -> CGFloat {
@@ -248,7 +248,7 @@ struct LibraryView: View {
                     TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
                         .onAppear {
                             self.library.tags.refresh()
-                            self.tags = self.library.tags.all
+                            self.tags = self.library.tags.tags
                         }
                 }
             }

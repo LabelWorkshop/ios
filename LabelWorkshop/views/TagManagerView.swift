@@ -21,7 +21,7 @@ struct TagManagerView: View {
     var body: some View {
         NavigationStack {
             if let library = appState.selectedLibrary {
-                TagSearch(library: library, tags: .constant(library.tags.all), selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
+                TagSearch(library: library, tags: .constant(library.tags.tags), selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
                 .navigationTitle("Tag Manager")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing){

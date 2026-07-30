@@ -15,12 +15,7 @@ struct TagOptions {
 @Observable
 class LibraryTagManager {
     let library: Library
-    private var tags: [Tag] = []
-    var all: [Tag] {
-        get {
-            return self.tags
-        }
-    }
+    var tags: [Tag] = []
     
     init(library: Library) {
         self.library = library
