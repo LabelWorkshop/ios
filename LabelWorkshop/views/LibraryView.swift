@@ -169,6 +169,7 @@ struct LibraryView: View {
     @State var filterUntagged: Bool = false
     @State var viewType: LibraryViewType = .Grid
     @State private var magnificationValue: CGFloat = 1.0
+    @State private var isPinching = false
     
     @Environment(AppState.self) private var appState
     @Environment(\.openURL) private var openURL
@@ -289,7 +290,7 @@ struct LibraryView: View {
                         ForEach(library.entries.all, id: \.path) { entry in
                             if isEntryVisable(entry) {
                                 GridRow {
-                                    EntryMiniView(entry: .constant(entry), namesShown: $namesShown)
+                                    EntryMiniView(entry: .constant(entry), namesShown: $namesShown, disabled: $isPinching)
                                 }
                             }
                         }
@@ -302,9 +303,11 @@ struct LibraryView: View {
                 .simultaneousGesture(
                     MagnifyGesture()
                         .onChanged { value in
+                            isPinching = true
                             magnificationValue = max(0.7, min(value.magnification, 1.3))
                         }
                         .onEnded { value in
+                            isPinching = false
                             guard appState.pinchZoom else {return}
                             
                             if value.magnification > 1.3 {

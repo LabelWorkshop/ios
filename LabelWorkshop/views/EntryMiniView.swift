@@ -18,11 +18,19 @@ struct EntryContextMenu: View {
 struct EntryMiniView: View {
     @Binding var entry: Entry
     @Binding var namesShown: Bool
+    @Binding var disabled: Bool
     @State var deletionError: Bool = false
     
     init(entry: Binding<Entry>, namesShown: Binding<Bool>) {
         self._entry = entry
         self._namesShown = namesShown
+        self._disabled = .constant(false)
+    }
+    
+    init(entry: Binding<Entry>, namesShown: Binding<Bool>, disabled: Binding<Bool>) {
+        self._entry = entry
+        self._namesShown = namesShown
+        self._disabled = disabled
     }
     
     var body: some View {
@@ -45,6 +53,7 @@ struct EntryMiniView: View {
                 }
             }
         }
+        .disabled(disabled)
         .contextMenu {
             EntryContextMenu(entry: $entry, deletionError: $deletionError)
         }
