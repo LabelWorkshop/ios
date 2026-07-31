@@ -294,7 +294,9 @@ struct LibraryView: View {
                             }
                         }
                     }.padding(namesShown ? namedPadding : unnamedPadding)
-                    .scaleEffect(magnificationValue, anchor: .top)
+                    .if(appState.pinchZoom) { view in
+                        view.scaleEffect(magnificationValue, anchor: .top)
+                    }
                     .animation(.interactiveSpring(), value: magnificationValue)
                 }
                 .simultaneousGesture(
@@ -303,6 +305,8 @@ struct LibraryView: View {
                             magnificationValue = max(0.7, min(value.magnification, 1.3))
                         }
                         .onEnded { value in
+                            guard appState.pinchZoom else {return}
+                            
                             if value.magnification > 1.3 {
                                 withAnimation(.spring()) {
                                     setZoomLevel(+1)
