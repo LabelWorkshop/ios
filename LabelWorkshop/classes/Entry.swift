@@ -7,7 +7,7 @@ class Entry {
     var path: String
     var id: Int
     var fullPath: URL?
-    var tags: EntryTagManager!
+    var tags: EntryTagManager?
     let library: Library
     
     init (library: Library, path: String, id: Int) {
@@ -15,7 +15,9 @@ class Entry {
         self.library = library
         self.id = id
         if library.bookmark != nil { self.fullPath = library.bookmark?.appendingPathComponent(path) }
-        self.tags = EntryTagManager(self)
+        do {
+            self.tags = try EntryTagManager(self)
+        } catch {print(error)}
     }
     
     func getFields() -> [Field] {

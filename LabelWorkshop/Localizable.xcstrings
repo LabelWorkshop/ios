@@ -85,6 +85,9 @@
     "An error occured while trying to delete this entry." : {
 
     },
+    "An error occured while trying to get the tags for this entry." : {
+
+    },
     "Archive" : {
       "extractionState" : "manual"
     },
@@ -1401,7 +1404,13 @@
     "Slug" : {
 
     },
+    "Something went wrong." : {
+
+    },
     "Tag" : {
+
+    },
+    "Tag Initialization Error" : {
 
     },
     "Tag Manager" : {
@@ -1455,6 +1464,9 @@
           }
         }
       }
+    },
+    "Unknown Error" : {
+
     },
     "Untagged Entries" : {
 

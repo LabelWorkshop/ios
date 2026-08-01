@@ -241,8 +241,9 @@ struct LibraryView: View {
     }
     
     func isEntryHidden(_ entry: Entry) -> Bool {
+        guard let tags = entry.tags else {return false}
         if hiddenShown {return false}
-        else if !entry.tags.isHidden {return false}
+        else if !tags.isHidden {return false}
         return true
     }
     
@@ -255,7 +256,8 @@ struct LibraryView: View {
         if searchQuery != "" {
             qualifiesSearch = entry.path.lowercased().contains(searchQuery.lowercased())
         }
-        if !entry.tags.containsAll(tagFilters)  {
+        guard let tags = entry.tags else {return qualifiesSearch}
+        if tags.containsAll(tagFilters)  {
             qualifiesSearch = false
         }
         
@@ -264,7 +266,7 @@ struct LibraryView: View {
     
     func isEntryUntagged(_ entry: Entry) -> Bool {
         if !filterUntagged {return true}
-        return filterUntagged && entry.tags.isEmpty
+        return filterUntagged && entry.tags?.isEmpty ?? true
     }
     
     func isEntryVisable(_ entry: Entry) -> Bool {

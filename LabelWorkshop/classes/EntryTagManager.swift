@@ -13,17 +13,18 @@ class EntryTagManager {
     var isHidden: Bool = false
     var isEmpty: Bool { self.tags.isEmpty }
     
-    init(_ entry: Entry) {
+    init(_ entry: Entry) throws {
         self.entry = entry
-        self.refresh()
+        try self.refresh()
     }
     
     /// Refresh the list of tags
-    func refresh() {
+    func refresh() throws {
         let query = TagEntriesTable.table.select(*).filter(TagEntriesTable.entryId == self.entry.id)
+        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
         var tags: [Tag] = []
         do {
-            for rawTag in try self.entry.library.db!.prepare(query) {
+            for rawTag in try db.prepare(query) {
                 let tag = self.entry.library.tags.getById(id: rawTag[TagEntriesTable.id])
                 if let tag = tag {
                     tags.append(tag)
@@ -54,28 +55,27 @@ class EntryTagManager {
     }
     
     /// Add a tag from the entry
-    func add(_ tag: Tag) {
+    func add(_ tag: Tag) throws {
         // Check if tag already exists on entry
         if self.containsAll([tag]) {
             return
         }
         
+        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
+        
         let query = TagEntriesTable.table.insert(TagEntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.entry.id)
-        do {
-            try self.entry.library.db!.run(query)
-        } catch {print(error)}
-        self.refresh()
+        try db.run(query)
+        try self.refresh()
     }
     
     /// Remove a tag from the entry
-    func remove(_ tag: Tag) {
+    func remove(_ tag: Tag) throws {
         let query = TagEntriesTable.table
             .filter(TagEntriesTable.id == tag.id)
             .filter(TagEntriesTable.entryId == self.entry.id)
             .delete()
-        do {
-            try self.entry.library.db!.run(query)
-        } catch {print(error)}
-        self.refresh()
+        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
+        try db.run(query)
+        try self.refresh()
     }
 }
