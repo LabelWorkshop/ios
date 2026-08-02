@@ -170,6 +170,7 @@ struct LibraryView: View {
     @State var showTagfilter: Bool = false
     @State var migrationClosed: Bool = false
     @State var showColorManager: Bool = false
+    @State var deletionError: Bool = false
     
     // Filtering
     @State var searchQuery: String = ""
@@ -305,6 +306,8 @@ struct LibraryView: View {
                                         Text(entry.path).lineLimit(2)
                                     }
                                 }
+                            }.contextMenu {
+                                EntryContextMenu(entry: .constant(entry), deletionError: $deletionError)
                             }
                         }
                     }
@@ -352,6 +355,10 @@ struct LibraryView: View {
         .navigationTitle(library.getName())
         .searchable(text: $searchQuery, placement: .navigationBarDrawer(displayMode: .always))
         .searchPresentationToolbarBehavior(.avoidHidingContent)
+        .alert("Delete Failed", isPresented: $deletionError) {
+        } message: {
+            Text("An error occured while trying to delete this entry.")
+        }
     }
 }
 

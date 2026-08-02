@@ -1,5 +1,20 @@
 import SwiftUI
 
+struct EntryContextMenu: View {
+    @Binding var entry: Entry
+    @Binding var deletionError: Bool
+    
+    var body: some View {
+        EntryFavoriteButton(entry: $entry)
+        EntryArchiveButton(entry: $entry)
+        
+        Divider()
+        
+        EntryShareButton(entry: $entry)
+        EntryDeleteButton(entry: $entry, deletionError: $deletionError)
+    }
+}
+
 struct EntryMiniView: View {
     @Binding var entry: Entry
     @Binding var namesShown: Bool
@@ -31,13 +46,7 @@ struct EntryMiniView: View {
             }
         }
         .contextMenu {
-            EntryFavoriteButton(entry: $entry)
-            EntryArchiveButton(entry: $entry)
-            
-            Divider()
-            
-            EntryShareButton(entry: $entry)
-            EntryDeleteButton(entry: $entry, deletionError: $deletionError)
+            EntryContextMenu(entry: $entry, deletionError: $deletionError)
         }
         .alert("Delete Failed", isPresented: $deletionError) {
         } message: {
