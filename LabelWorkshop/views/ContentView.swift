@@ -2,6 +2,30 @@ import SwiftUI
 import Foundation
 import TipKit
 
+struct LibraryList: View {
+    @Environment(AppState.self) private var appState
+    @Binding var libraries: [Library]
+    
+    var body: some View {
+        @Bindable var appState = appState
+        if libraries.isEmpty {
+            ContentUnavailableView {
+                Label("No Libraries", systemImage: "square.stack")
+            } description: {
+                Text("Start by pressing Add Library.")
+            }
+        } else {
+            List(selection: $appState.selectedLibrary) {
+                ForEach(libraries){ library in
+                    NavigationLink(value: library){
+                        Text(library.getName())
+                    }
+                }.onDelete(perform: ContentView.removeLibrary)
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     @State private var libraries: [Library]
     
@@ -47,13 +71,7 @@ struct ContentView: View {
     var body: some View {
         @Bindable var appState = appState
         NavigationSplitView(columnVisibility: $visibility) {
-            List(selection: $appState.selectedLibrary) {
-                ForEach(libraries){ library in
-                    NavigationLink(value: library){
-                        Text(library.getName())
-                    }
-                }.onDelete(perform: removeLibrary)
-            }
+            LibraryList(libraries: $libraries)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading){
                     Button(action: {
@@ -106,7 +124,7 @@ struct ContentView: View {
         }
     }
     
-    private func removeLibrary(at indexSet: IndexSet){
+    static func removeLibrary(at indexSet: IndexSet){
         var rawLibraries = ContentView.getRawLibraries()
         for index in indexSet {
             rawLibraries.remove(at: index)
