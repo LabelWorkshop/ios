@@ -39,6 +39,8 @@ struct ContentView: View {
         if UserDefaults.standard.bool(forKey: "reset_on_launch") {
             UserDefaults.standard.set(false, forKey: "reset_on_launch")
             ContentView.setRawLibraries([])
+            try? Tips.resetDatastore()
+            UserDefaults.standard.set("0", forKey: "lastOpenVersion")
         }
         
         let rawLibraries: [String] = ContentView.getRawLibraries()
@@ -49,7 +51,6 @@ struct ContentView: View {
             )
         }
         self.libraries = newLibraries
-        // try? Tips.resetDatastore()
         try? Tips.configure()
     }
     
@@ -124,6 +125,16 @@ struct ContentView: View {
             case .failure(let error):
                 print(error)
             }
+        }
+        .task {
+            if !(UserDefaults.standard.string(forKey: "lastOpenVersion")?.starts(with: LabelWorkshopApp.currentAppVersion) ?? true) {
+                appState.showWhatsNew = true
+            }
+            
+            UserDefaults.standard.set(LabelWorkshopApp.currentAppVersion, forKey: "lastOpenVersion")
+        }
+        .sheet(isPresented: $appState.showWhatsNew) {
+            Version030WhatsNew()
         }
     }
     

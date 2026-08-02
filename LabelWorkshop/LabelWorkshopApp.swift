@@ -6,11 +6,16 @@ final class AppState {
     var tagManagerWindowOpen = false
     var selectedLibrary: Library?
     var pinchZoom: Bool = false
+    var showWhatsNew: Bool = false
 }
 
 @main
 struct LabelWorkshopApp: App {
-    @State private var appState = AppState() 
+    @State private var appState = AppState()
+    
+    static var currentAppVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
+    }
     
     var body: some Scene {
         WindowGroup {

@@ -91,6 +91,12 @@
     "Archive" : {
       "extractionState" : "manual"
     },
+    "As well as more zoom sizes there is now a list view." : {
+
+    },
+    "Bug Squashing, Preformence Improvements, and Code Cleanup" : {
+
+    },
     "Checking for Migration" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1133,6 +1139,9 @@
         }
       }
     },
+    "Continue" : {
+
+    },
     "Contributors" : {
       "localizations" : {
         "fr" : {
@@ -1142,6 +1151,9 @@
           }
         }
       }
+    },
+    "Create & edit colors right in the app. Assign colors to tags with the updated color picker." : {
+
     },
     "Delete" : {
 
@@ -1168,6 +1180,9 @@
           }
         }
       }
+    },
+    "Entries now have full screen capabilities. Tap on the preview to expand into full screen." : {
+
     },
     "Failed to save changes." : {
 
@@ -1204,6 +1219,12 @@
         }
       }
     },
+    "Finding your entry is easier then ever with the untagged and hidden entries filter." : {
+
+    },
+    "Full Screen" : {
+
+    },
     "General" : {
       "localizations" : {
         "fr" : {
@@ -1213,6 +1234,15 @@
           }
         }
       }
+    },
+    "Get a preview focused grid by hiding the names." : {
+
+    },
+    "GIF Preview" : {
+
+    },
+    "GIFs will now animate when viewing." : {
+
     },
     "Github Repository" : {
       "localizations" : {
@@ -1234,6 +1264,9 @@
 
     },
     "ID" : {
+
+    },
+    "In 0.3.0 crashes will occur less often, and some bugs have been fixed. Some of the code has been changed to be more efficent and future proof. Future updates will expand on this by removing crashes all together." : {
 
     },
     "Info" : {
@@ -1259,6 +1292,9 @@
 
     },
     "List" : {
+
+    },
+    "List View" : {
 
     },
     "Migration Complete" : {
@@ -1293,6 +1329,9 @@
           }
         }
       }
+    },
+    "More Filters" : {
+
     },
     "Name" : {
 
@@ -1398,6 +1437,9 @@
     "Share" : {
 
     },
+    "Sheets have been replaced with windows on iPadOS." : {
+
+    },
     "Shorthand" : {
 
     },
@@ -1411,6 +1453,9 @@
 
     },
     "Start by pressing Add Library." : {
+        
+    },
+    "Support for preview text files is here." : {
 
     },
     "Tag" : {
@@ -1448,6 +1493,9 @@
           }
         }
       }
+    },
+    "Text Preview" : {
+
     },
     "There was an error while trying to create your namespace." : {
 
@@ -1500,6 +1548,12 @@
       }
     },
     "View Options" : {
+
+    },
+    "What's New in LabelWorkshop" : {
+
+    },
+    "Windows" : {
 
     },
     "Zoom In" : {
