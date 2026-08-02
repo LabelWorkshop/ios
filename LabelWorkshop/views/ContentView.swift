@@ -98,6 +98,9 @@ struct ContentView: View {
                 LibraryView(library: library)
             }
         } detail: {}
+        .task {
+            appState.pinchZoom = UserDefaults.standard.bool(forKey: "pinchZoom")
+        }
         .fileImporter(
             isPresented: $showFileImporter,
             allowedContentTypes: [.folder]

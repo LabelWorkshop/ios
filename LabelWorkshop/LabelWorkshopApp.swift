@@ -5,6 +5,7 @@ final class AppState {
     var showTagManager = false
     var tagManagerWindowOpen = false
     var selectedLibrary: Library?
+    var pinchZoom: Bool = false
 }
 
 @main

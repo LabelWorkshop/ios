@@ -40,21 +40,7 @@ struct LibraryCommands: Commands {
 
 struct LibraryZoomButtons: View {
     @Binding var zoom: LibraryZoom
-    
-    func setZoomLevel(_ zoomIndex: Int) {
-        let zooms: [LibraryZoom] = [
-            .Small,
-            .Medium,
-            .Large,
-            .XLarge,
-            .XXLarge
-        ]
-        
-        let currentZoomIndex = zooms.firstIndex(of: zoom) ?? 0
-        let newZoomIndex = currentZoomIndex + zoomIndex
-        guard newZoomIndex >= 0 && newZoomIndex < zooms.count else {return}
-        zoom = zooms[newZoomIndex]
-    }
+    var setZoomLevel: (Int) -> Void
     
     var body: some View {
         Button(action: {
@@ -182,6 +168,8 @@ struct LibraryView: View {
     @State var hiddenShown: Bool = false
     @State var filterUntagged: Bool = false
     @State var viewType: LibraryViewType = .Grid
+    @State private var magnificationValue: CGFloat = 1.0
+    @State private var isPinching = false
     
     @Environment(AppState.self) private var appState
     @Environment(\.openURL) private var openURL
@@ -208,6 +196,21 @@ struct LibraryView: View {
     init(library: Library) {
         self.library = library
         self.tags = self.library.tags.tags
+    }
+    
+    func setZoomLevel(_ zoomIndex: Int) {
+        let zooms: [LibraryZoom] = [
+            .Small,
+            .Medium,
+            .Large,
+            .XLarge,
+            .XXLarge
+        ]
+        
+        let currentZoomIndex = zooms.firstIndex(of: zoom) ?? 0
+        let newZoomIndex = currentZoomIndex + zoomIndex
+        guard newZoomIndex >= 0 && newZoomIndex < zooms.count else {return}
+        zoom = zooms[newZoomIndex]
     }
     
     func getZoomSize() -> CGFloat {
@@ -287,12 +290,42 @@ struct LibraryView: View {
                         ForEach(library.entries.all, id: \.path) { entry in
                             if isEntryVisable(entry) {
                                 GridRow {
-                                    EntryMiniView(entry: .constant(entry), namesShown: $namesShown)
+                                    EntryMiniView(entry: .constant(entry), namesShown: $namesShown, disabled: $isPinching)
                                 }
                             }
                         }
                     }.padding(namesShown ? namedPadding : unnamedPadding)
+                    .if(appState.pinchZoom) { view in
+                        view.scaleEffect(magnificationValue, anchor: .top)
+                    }
+                    .animation(.interactiveSpring(), value: magnificationValue)
                 }
+                .simultaneousGesture(
+                    MagnifyGesture()
+                        .onChanged { value in
+                            isPinching = true
+                            magnificationValue = max(0.7, min(value.magnification, 1.3))
+                        }
+                        .onEnded { value in
+                            isPinching = false
+                            guard appState.pinchZoom else {return}
+                            
+                            if value.magnification > 1.3 {
+                                withAnimation(.spring()) {
+                                    setZoomLevel(+1)
+                                }
+                            }
+                            if value.magnification < 0.7 {
+                                withAnimation(.spring()) {
+                                    setZoomLevel(-1)
+                                }
+                            }
+                            
+                            withAnimation(.spring()) {
+                                magnificationValue = 1.0
+                            }
+                        }
+                )
             case .List:
                 List {
                     ForEach(library.entries.all, id: \.path) { entry in
@@ -322,7 +355,7 @@ struct LibraryView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing){
                 ControlGroup {
-                    LibraryZoomButtons(zoom: $zoom)
+                    LibraryZoomButtons(zoom: $zoom, setZoomLevel: setZoomLevel)
                     if viewType == .Grid {
                         LibraryHideNamesButton(namesShown: $namesShown)
                     }
