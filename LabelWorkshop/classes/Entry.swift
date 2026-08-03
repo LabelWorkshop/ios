@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import Foundation
 import SQLite
 
@@ -9,12 +10,48 @@ class Entry {
     var fullPath: URL?
     var tags: EntryTagManager?
     let library: Library
+    var type: ExtensionTypes = .Unknown
     
     init (library: Library, path: String, id: Int) {
         self.path = path
         self.library = library
         self.id = id
         if library.bookmark != nil { self.fullPath = library.bookmark?.appendingPathComponent(path) }
+        
+        // Get Ext Type
+        let ext = path.split(separator: ".").last?.lowercased() ?? ""
+        let type = UTType(filenameExtension: ext)
+        if type?.conforms(to: .gif) ?? false {
+            self.type = .AnimatedImage
+        }
+        if type?.conforms(to: .movie) ?? false {
+            self.type = .Video
+        }
+        if type?.conforms(to: .image) ?? false || ext == "pxd" {
+            self.type = .Image
+        }
+        if type?.conforms(to: .audio) ?? false {
+            self.type = .Audio
+        }
+        if type?.conforms(to: .archive) ?? false {
+            self.type = .Archive
+        }
+        if ["txt",
+            "json",
+            "md",
+            "plist",
+            "strings",
+            "yml",
+            "yaml",
+            "toml",
+            "ini",
+            "gitignore",
+            "gitattributes",
+            "log"
+        ].contains(ext) {
+            self.type = .PlainText
+        }
+        
         do {
             self.tags = try EntryTagManager(self)
         } catch {print(error)}

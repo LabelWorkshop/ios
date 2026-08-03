@@ -29,8 +29,7 @@ actor ThumbnailLoader {
     
     func thumbnail(
         for entry: Entry,
-        square: Bool,
-        type: ExtensionTypes
+        square: Bool
     ) async -> UIImage? {
         let cacheName = "\(entry.id)-\(square)"
         if let cached = entry.library.thumbnailCache.image(for: cacheName) {
@@ -46,7 +45,7 @@ actor ThumbnailLoader {
         
         let task = Task<UIImage?, Never>(priority: priority) {
             var image: UIImage?
-            if type == .Video {
+            if entry.type == .Video {
                 if let fullPath = entry.fullPath {
                     image = await getVideoThumbnail(url: fullPath)
                 } else {
@@ -145,46 +144,10 @@ enum ExtensionTypes {
     case Unknown
 }
 
-func getExtensionType(for ext: String) -> ExtensionTypes {
-    let type = UTType(filenameExtension: ext)
-    if type?.conforms(to: .gif) ?? false {
-        return .AnimatedImage
-    }
-    if type?.conforms(to: .movie) ?? false {
-        return .Video
-    }
-    if type?.conforms(to: .image) ?? false || ext == "pxd" {
-        return .Image
-    }
-    if type?.conforms(to: .audio) ?? false {
-        return .Audio
-    }
-    if type?.conforms(to: .archive) ?? false {
-        return .Archive
-    }
-    if ["txt",
-        "json",
-        "md",
-        "plist",
-        "strings",
-        "yml",
-        "yaml",
-        "toml",
-        "ini",
-        "gitignore",
-        "gitattributes",
-        "log"
-    ].contains(ext) {
-        return .PlainText
-    }
-    return .Unknown
-}
-
 struct EntryPreView: View {
     public var entry: Entry
     public var square: Bool = false
     var ext: String
-    var type: ExtensionTypes
     @State var image: UIImage? = nil
     @State var text: String?
     
@@ -192,7 +155,6 @@ struct EntryPreView: View {
         self.entry = entry
         self.square = square
         self.ext = entry.path.split(separator: ".").last?.lowercased() ?? ""
-        self.type = getExtensionType(for: ext)
     }
     
     var body: some View {
@@ -210,11 +172,11 @@ struct EntryPreView: View {
                     .background(Color(UIColor.secondarySystemBackground))
                     .tint(.red)
             }
-            else if self.type == .Video && !square, let fullPath = entry.fullPath {
+            else if self.entry.type == .Video && !square, let fullPath = entry.fullPath {
                 VideoPlayerContainer(fullPath: fullPath)
                     .scaledToFill()
             }
-            else if self.type == .AnimatedImage && !square, let fullPath = entry.fullPath {
+            else if self.entry.type == .AnimatedImage && !square, let fullPath = entry.fullPath {
                 AnimatedImage(url: fullPath)
                     .resizable()
                     .scaledToFit()
@@ -240,7 +202,7 @@ struct EntryPreView: View {
             }
             else {
                 VStack {
-                    switch self.type {
+                    switch self.entry.type {
                     case .Audio:
                         Image(systemName: "waveform").font(.system(size: 32))
                     case .Image:
@@ -282,11 +244,11 @@ struct EntryPreView: View {
         .clipped()
         .cornerRadius(square ? 0 : 8)
         .task {
-            guard self.type == .Image || self.type == .Video || self.type == .AnimatedImage else {return}
-            self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square, type: type)
+            guard self.entry.type == .Image || self.entry.type == .Video || self.entry.type == .AnimatedImage else {return}
+            self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square)
         }
         .task {
-            guard self.type == .PlainText else {return}
+            guard self.entry.type == .PlainText else {return}
             self.text = await getTextContents(for: entry)
         }
         .onAppear {
