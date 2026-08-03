@@ -252,20 +252,10 @@ struct LibraryView: View {
     }
     
     func isEntryQualifyingSearch(_ entry: Entry) -> Bool {
-        if searchQuery == "" && self.tagFilters.isEmpty {
+        if searchQuery == "" {
             return true
         }
-        
-        var qualifiesSearch = true
-        if searchQuery != "" {
-            qualifiesSearch = entry.path.lowercased().contains(searchQuery.lowercased())
-        }
-        guard let tags = entry.tags else {return qualifiesSearch}
-        if tags.containsAll(tagFilters)  {
-            qualifiesSearch = false
-        }
-        
-        return qualifiesSearch
+        return entry.path.localizedCaseInsensitiveContains(searchQuery)
     }
     
     func isEntryUntagged(_ entry: Entry) -> Bool {
@@ -273,8 +263,20 @@ struct LibraryView: View {
         return filterUntagged && entry.tags?.isEmpty ?? true
     }
     
+    func isEntryHaveTags(_ entry: Entry) -> Bool {
+        guard let tags = entry.tags else {return true}
+        if tagFilters.isEmpty {
+            return true
+        }
+        
+        return tags.containsAll(tagFilters)
+    }
+    
     func isEntryVisable(_ entry: Entry) -> Bool {
-        !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry)
+        !isEntryHidden(entry) &&
+        isEntryQualifyingSearch(entry) &&
+        isEntryUntagged(entry) &&
+        isEntryHaveTags(entry)
     }
     
     func lookaheadRender(for entry: Entry) {
