@@ -7,6 +7,13 @@ struct TagEditorParents: View {
     var tagId: Int
     var tags: [Tag]
     
+    func addParent(_ tag: Tag) {
+        if parentTags.filter({$0.id == tagId}).isEmpty {
+            parentTags.append(tag)
+        }
+        showTagParentSelector = false
+    }
+    
     var body: some View {
         List {
             ForEach($parentTags){ $tag in
@@ -43,31 +50,7 @@ struct TagEditorParents: View {
                 Label("Add Parent Tag", systemImage: "plus")
             }
             .sheet(isPresented: $showTagParentSelector) {
-                NavigationView {
-                    ScrollView {
-                        VStack {
-                            ForEach(tags) { tag in
-                                Button(action: {
-                                    parentTags.filter({$0.id == tagId}).count == 0 ? parentTags.append(tag) : ()
-                                    showTagParentSelector = false
-                                }) {
-                                    TagView(tag: tag, fullWidth: true)
-                                }
-                            }
-                        }
-                        .padding(16)
-                    }
-                    .navigationTitle("Tags")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading){
-                            Button(action: {
-                                showTagParentSelector = false
-                            }) {
-                                Image(systemName: "chevron.backward")
-                            }
-                        }
-                    }
-                }
+                TagSearch(tags: .constant(tags), selectAction: addParent, multiSelect: false, selected: [], closeButton: true)
             }
         }
         .listStyle(.plain)
