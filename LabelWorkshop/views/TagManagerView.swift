@@ -20,31 +20,31 @@ struct TagManagerView: View {
     
     var body: some View {
         NavigationStack {
-            if let library = appState.selectedLibrary {
-                TagSearch(library: library, tags: .constant(library.tags.tags), selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
-                .navigationTitle("Tag Manager")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing){
-                        Button(action: {
-                            if let newTag = library.tags.new("New Tag") {
-                                openEditor(newTag)
+            Group {
+                if let library = appState.selectedLibrary {
+                    TagSearch(library: library, tags: .constant(library.tags.tags), selectAction: openEditor, multiSelect: false, selected: [], closeButton: false)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing){
+                                Button(action: {
+                                    if let newTag = library.tags.new("New Tag") {
+                                        openEditor(newTag)
+                                    }
+                                }) {
+                                    Image(systemName: "plus")
+                                }
+                                .buttonStyle(ProminentButtonStyle())
                             }
-                        }) {
-                            Image(systemName: "plus")
+                            if UIDevice.current.userInterfaceIdiom == .phone {
+                                ToolbarItem(placement: .navigationBarLeading){
+                                    CloseButton(dismiss: dismiss)
+                                }
+                            }
                         }
-                        .buttonStyle(ProminentButtonStyle())
-                    }
-                    if UIDevice.current.userInterfaceIdiom == .phone {
-                        ToolbarItem(placement: .navigationBarLeading){
-                            CloseButton(dismiss: dismiss)
-                        }
-                    }
+                } else {
+                    LibraryUnavailableView()
                 }
-            } else {
-                Text("No Library Selected")
-                    .foregroundStyle(.secondary)
-                    .navigationTitle("Tag Manager")
             }
+            .navigationTitle("Tag Manager")
         }
         .if(UIDevice.current.userInterfaceIdiom == .phone) { view in
             view.sheet(item: $editTag) { editTag in
