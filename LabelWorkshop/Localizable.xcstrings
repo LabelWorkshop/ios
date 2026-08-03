@@ -91,10 +91,7 @@
     "Archive" : {
       "extractionState" : "manual"
     },
-    "As well as more zoom sizes there is now a list view." : {
-
-    },
-    "Bug Squashing, Preformence Improvements, and Code Cleanup" : {
+    "Bug Fixes & Performance Improvements" : {
 
     },
     "Checking for Migration" : {
@@ -107,6 +104,9 @@
           }
         }
       }
+    },
+    "Choose from additional zoom levels or switch to the new list view." : {
+
     },
     "Color" : {
       "localizations" : {
@@ -1152,7 +1152,7 @@
         }
       }
     },
-    "Create & edit colors right in the app. Assign colors to tags with the updated color picker." : {
+    "Create and edit colors directly in the app, then assign them to tags using the redesigned color picker." : {
 
     },
     "Delete" : {
@@ -1180,9 +1180,6 @@
           }
         }
       }
-    },
-    "Entries now have full screen capabilities. Tap on the preview to expand into full screen." : {
-
     },
     "Failed to save changes." : {
 
@@ -1219,7 +1216,7 @@
         }
       }
     },
-    "Finding your entry is easier then ever with the untagged and hidden entries filter." : {
+    "Find entries more easily with new filters for untagged and hidden items." : {
 
     },
     "Full Screen" : {
@@ -1235,13 +1232,10 @@
         }
       }
     },
-    "Get a preview focused grid by hiding the names." : {
-
-    },
     "GIF Preview" : {
 
     },
-    "GIFs will now animate when viewing." : {
+    "GIFs now animate while you view them." : {
 
     },
     "Github Repository" : {
@@ -1260,13 +1254,13 @@
     "Hidden Entries" : {
 
     },
+    "Hide entry names for a cleaner, preview-focused grid." : {
+
+    },
     "Hide Names" : {
 
     },
     "ID" : {
-
-    },
-    "In 0.3.0 crashes will occur less often, and some bugs have been fixed. Some of the code has been changed to be more efficent and future proof. Future updates will expand on this by removing crashes all together." : {
 
     },
     "Info" : {
@@ -1379,6 +1373,12 @@
         }
       }
     },
+    "On iPadOS, some dialogs now open in their own window instead of as a sheet." : {
+
+    },
+    "Open an entry in full screen by tapping its preview." : {
+
+    },
     "Parent Tags" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1391,6 +1391,9 @@
       }
     },
     "Parents" : {
+
+    },
+    "Preview text files directly in the app." : {
 
     },
     "Primary" : {
@@ -1437,9 +1440,6 @@
     "Share" : {
 
     },
-    "Sheets have been replaced with windows on iPadOS." : {
-
-    },
     "Shorthand" : {
 
     },
@@ -1453,9 +1453,6 @@
 
     },
     "Start by pressing Add Library." : {
-        
-    },
-    "Support for preview text files is here." : {
 
     },
     "Tag" : {
@@ -1507,6 +1504,9 @@
 
     },
     "This name is reserved for TagStudio" : {
+
+    },
+    "This release includes stability fixes, performance improvements, and code cleanup to make the app more reliable now and easier to improve in future updates." : {
 
     },
     "This tag and all references of it will be deleted." : {

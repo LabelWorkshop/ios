@@ -32,54 +32,54 @@ struct Version030WhatsNew: View {
     var body: some View {
         WhatsNew {
             NewVersionTip(
-                icon: Image(systemName:"interface.window.stack").symbolRenderingMode(.multicolor),
+                icon: Image(systemName: "interface.window.stack").symbolRenderingMode(.multicolor),
                 title: "Windows",
-                description: "Sheets have been replaced with windows on iPadOS."
+                description: "On iPadOS, some dialogs now open in their own window instead of as a sheet."
             )
             NewVersionTip(
-                icon: Image(systemName:"paintpalette.fill").symbolRenderingMode(.multicolor),
+                icon: Image(systemName: "paintpalette.fill").symbolRenderingMode(.multicolor),
                 title: "Color Manager",
-                description: "Create & edit colors right in the app. Assign colors to tags with the updated color picker."
+                description: "Create and edit colors directly in the app, then assign them to tags using the redesigned color picker."
             )
             NewVersionTip(
-                icon: Image(systemName:"list.bullet"),
+                icon: Image(systemName: "list.bullet"),
                 title: "List View",
-                description: "As well as more zoom sizes there is now a list view.",
+                description: "Choose from additional zoom levels or switch to the new list view.",
                 iconTint: .purple
             )
             NewVersionTip(
-                icon: Image(systemName:"square.stack.3d.forward.dottedline"),
+                icon: Image(systemName: "square.stack.3d.forward.dottedline"),
                 title: "GIF Preview",
-                description: "GIFs will now animate when viewing.",
+                description: "GIFs now animate while you view them.",
                 iconTint: .blue
             )
             NewVersionTip(
-                icon: Image(systemName:"arrow.up.left.and.arrow.down.right"),
+                icon: Image(systemName: "arrow.up.left.and.arrow.down.right"),
                 title: "Full Screen",
-                description: "Entries now have full screen capabilities. Tap on the preview to expand into full screen.",
+                description: "Open an entry in full screen by tapping its preview.",
                 iconTint: .gray
             )
             NewVersionTip(
-                icon: Image(systemName:"line.3.horizontal.decrease"),
+                icon: Image(systemName: "line.3.horizontal.decrease"),
                 title: "More Filters",
-                description: "Finding your entry is easier then ever with the untagged and hidden entries filter."
+                description: "Find entries more easily with new filters for untagged and hidden items."
             )
             NewVersionTip(
-                icon: Image(systemName:"text.menu"),
+                icon: Image(systemName: "text.menu"),
                 title: "Text Preview",
-                description: "Support for preview text files is here.",
+                description: "Preview text files directly in the app.",
                 iconTint: .green
             )
             NewVersionTip(
                 icon: Image("textformat.slash"),
                 title: "Hide Names",
-                description: "Get a preview focused grid by hiding the names.",
+                description: "Hide entry names for a cleaner, preview-focused grid.",
                 iconTint: .pink
             )
             NewVersionTip(
                 icon: Image(systemName: "ant.fill"),
-                title: "Bug Squashing, Preformence Improvements, and Code Cleanup",
-                description: "In 0.3.0 crashes will occur less often, and some bugs have been fixed. Some of the code has been changed to be more efficent and future proof. Future updates will expand on this by removing crashes all together.",
+                title: "Bug Fixes & Performance Improvements",
+                description: "This release includes stability fixes, performance improvements, and code cleanup to make the app more reliable now and easier to improve in future updates.",
                 iconTint: .red
             )
         }
