@@ -277,6 +277,19 @@ struct LibraryView: View {
         !isEntryHidden(entry) && isEntryQualifyingSearch(entry) && isEntryUntagged(entry)
     }
     
+    func lookaheadRender(for entry: Entry) {
+        guard let idx = library.entries.getIndex(of: entry) else {return}
+        let lookahead = 20
+        for i in idx..<min(idx + lookahead, library.entries.all.count) {
+            Task(priority: .utility) {
+                await ThumbnailLoader.shared.thumbnail(
+                    for: library.entries.all[i],
+                    square: true
+                )
+            }
+        }
+    }
+    
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
@@ -291,6 +304,7 @@ struct LibraryView: View {
                             if isEntryVisable(entry) {
                                 GridRow {
                                     EntryMiniView(entry: .constant(entry), namesShown: $namesShown, disabled: $isPinching)
+                                        .onAppear {lookaheadRender(for: entry)}
                                 }
                             }
                         }
@@ -342,6 +356,7 @@ struct LibraryView: View {
                             }.contextMenu {
                                 EntryContextMenu(entry: .constant(entry), deletionError: $deletionError)
                             }
+                            .onAppear {lookaheadRender(for: entry)}
                         }
                     }
                 }

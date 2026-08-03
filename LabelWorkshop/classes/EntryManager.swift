@@ -76,4 +76,8 @@ class EntryManager {
             self.entries.removeAll(where: { $0.id == entry.id })
         }
     }
+    
+    func getIndex(of entry: Entry) -> Int? {
+        entries.firstIndex(where: {$0.id == entry.id})
+    }
 }
