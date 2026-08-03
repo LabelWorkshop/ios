@@ -23,7 +23,10 @@ func loadBookmark(key: String) -> URL? {
         )
         if isStale {return nil}
         return url
-    } catch {return nil}
+    } catch {
+        print(error)
+        return nil
+    }
 }
 
 extension Connection {
@@ -75,18 +78,19 @@ class Library: Hashable, Identifiable, Equatable {
         self.bookmark = loadBookmark(key: bookmarkKey)
         self.isNew = false
         do {
-            // Create TagStudio folder if not already created
             if let bookmark = bookmark {
+                // Create TagStudio folder if not already created
                 try FileManager.default.createDirectory(
                     at: bookmark.appendingPathComponent(".TagStudio"),
                     withIntermediateDirectories: true,
                     attributes: nil
                 )
                 self.isNew = !FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").path)
+                
+                // Inititalize Database
+                let dbFile = bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString
+                self.db = try Connection(dbFile)
             }
-            // Inititalize Database
-            let dbFile = self.bookmark?.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString ?? ""
-            self.db = try Connection(dbFile)
             
             // Get Tags & Tag Colors
             self.tagColors = TagColorManager(library: self)
