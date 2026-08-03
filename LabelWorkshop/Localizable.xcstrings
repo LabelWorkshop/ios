@@ -91,6 +91,9 @@
     "Archive" : {
       "extractionState" : "manual"
     },
+    "Bug Fixes & Performance Improvements" : {
+
+    },
     "Checking for Migration" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -101,6 +104,9 @@
           }
         }
       }
+    },
+    "Choose from additional zoom levels or switch to the new list view." : {
+
     },
     "Color" : {
       "localizations" : {
@@ -1133,6 +1139,9 @@
         }
       }
     },
+    "Continue" : {
+
+    },
     "Contributors" : {
       "localizations" : {
         "fr" : {
@@ -1142,6 +1151,9 @@
           }
         }
       }
+    },
+    "Create and edit colors directly in the app, then assign them to tags using the redesigned color picker." : {
+
     },
     "Delete" : {
 
@@ -1204,6 +1216,12 @@
         }
       }
     },
+    "Find entries more easily with new filters for untagged and hidden items." : {
+
+    },
+    "Full Screen" : {
+
+    },
     "General" : {
       "localizations" : {
         "fr" : {
@@ -1213,6 +1231,12 @@
           }
         }
       }
+    },
+    "GIF Preview" : {
+
+    },
+    "GIFs now animate while you view them." : {
+
     },
     "Github Repository" : {
       "localizations" : {
@@ -1228,6 +1252,9 @@
 
     },
     "Hidden Entries" : {
+
+    },
+    "Hide entry names for a cleaner, preview-focused grid." : {
 
     },
     "Hide Names" : {
@@ -1259,6 +1286,9 @@
 
     },
     "List" : {
+
+    },
+    "List View" : {
 
     },
     "Migration Complete" : {
@@ -1293,6 +1323,9 @@
           }
         }
       }
+    },
+    "More Filters" : {
+
     },
     "Name" : {
 
@@ -1340,6 +1373,12 @@
         }
       }
     },
+    "On iPadOS, some dialogs now open in their own window instead of as a sheet." : {
+
+    },
+    "Open an entry in full screen by tapping its preview." : {
+
+    },
     "Parent Tags" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1352,6 +1391,9 @@
       }
     },
     "Parents" : {
+
+    },
+    "Preview text files directly in the app." : {
 
     },
     "Primary" : {
@@ -1449,6 +1491,9 @@
         }
       }
     },
+    "Text Preview" : {
+
+    },
     "There was an error while trying to create your namespace." : {
 
     },
@@ -1459,6 +1504,9 @@
 
     },
     "This name is reserved for TagStudio" : {
+
+    },
+    "This release includes stability fixes, performance improvements, and code cleanup to make the app more reliable now and easier to improve in future updates." : {
 
     },
     "This tag and all references of it will be deleted." : {
@@ -1500,6 +1548,12 @@
       }
     },
     "View Options" : {
+
+    },
+    "What's New in LabelWorkshop" : {
+
+    },
+    "Windows" : {
 
     },
     "Zoom In" : {
