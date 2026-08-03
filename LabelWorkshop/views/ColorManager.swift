@@ -2,7 +2,7 @@ import SwiftUI
 import Flow
 
 struct ColorManager: View {
-    let tagColors: TagColorManager
+    let library: Library
     
     @State var editingColor: TagColor?
     @State var newNamespace: Bool = false
@@ -17,8 +17,8 @@ struct ColorManager: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    init(tagColors: TagColorManager) {
-        self.tagColors = tagColors
+    init(library: Library) {
+        self.library = library
     }
     
     func editColor(_ color: TagColor) {
@@ -28,7 +28,7 @@ struct ColorManager: View {
     
     var body: some View {
         NavigationStack {
-            ColorSearch(tagColors: tagColors, colorSelectAction: editColor) { namespace in
+            ColorSearch(tagColors: library.tagColors, colorSelectAction: editColor) { namespace in
                 if !namespace.isReadOnly {
                     Menu {
                         Button {
@@ -43,7 +43,7 @@ struct ColorManager: View {
                         }
                         Button(role: .destructive) {
                             do {
-                                try tagColors.deleteNamespace(namespace: namespace)
+                                try library.tagColors.deleteNamespace(namespace: namespace)
                             } catch {
                                 print(error)
                                 namespaceDeletionError = true
@@ -71,7 +71,7 @@ struct ColorManager: View {
                 ToolbarItem(placement: .bottomBar) {
                     Menu {
                         Menu {
-                            ForEach(tagColors.namespaces) { namespace in
+                            ForEach(library.tagColors.namespaces) { namespace in
                                 if !namespace.isReadOnly {
                                     Button {
                                         newColorNamespace = namespace
@@ -96,13 +96,13 @@ struct ColorManager: View {
         }
         .sheet(item: $editingColor) { editingColor in
             ColorEditor(
-                manager: self.tagColors,
+                manager: self.library.tagColors,
                 color: editingColor
             )
         }
         .sheet(item: $newColorNamespace) { newColorNamespace in
             ColorEditor(
-                manager: self.tagColors,
+                manager: self.library.tagColors,
                 belongingNamespace: newColorNamespace
             )
             .onDisappear {
@@ -149,7 +149,7 @@ struct ColorManager: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
                             do {
-                                try self.tagColors.newNamespace(name: newNamespaceName, namespace: newNamespaceSlug)
+                                try self.library.tagColors.newNamespace(name: newNamespaceName, namespace: newNamespaceSlug)
                             } catch {
                                 print(error)
                                 namespaceInsertionError = true

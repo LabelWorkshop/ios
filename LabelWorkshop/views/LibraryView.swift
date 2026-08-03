@@ -376,7 +376,7 @@ struct LibraryView: View {
             TagManagerView(appState)
         }
         .sheet(isPresented: $showColorManager) {
-            ColorManager(tagColors: self.library.tagColors)
+            ColorManager(library: self.library)
         }
         .sheet(isPresented: $showTagfilter) {
             TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)
