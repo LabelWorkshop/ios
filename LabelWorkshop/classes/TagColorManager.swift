@@ -32,7 +32,9 @@ class TagColorManager {
         
         var updatedColors = [TagColor.none]
         
-        for rawColor in try library.db!.prepare(query) {
+        guard let db = self.library.db else { return }
+        
+        for rawColor in try db.prepare(query) {
             let namespace = rawColor[TagColorsTable.namespace]
             let slug = rawColor[TagColorsTable.slug]
             updatedColors.append(
