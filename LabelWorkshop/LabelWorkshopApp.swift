@@ -34,5 +34,9 @@ struct LabelWorkshopApp: App {
             }
         }
         .defaultSize(width: 300, height: 600)
+        
+        WindowGroup("Color Manager", id:"color-manager") {
+            ColorManager(library: appState.selectedLibrary)
+        }
     }
 }

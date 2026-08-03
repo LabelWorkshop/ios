@@ -2,7 +2,7 @@ import SwiftUI
 import Flow
 
 struct ColorManager: View {
-    let library: Library
+    var library: Library?
     
     @State var editingColor: TagColor?
     @State var newNamespace: Bool = false
@@ -17,7 +17,7 @@ struct ColorManager: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    init(library: Library) {
+    init(library: Library?) {
         self.library = library
     }
     
@@ -27,162 +27,168 @@ struct ColorManager: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ColorSearch(tagColors: library.tagColors, colorSelectAction: editColor) { namespace in
-                if !namespace.isReadOnly {
-                    Menu {
-                        Button {
-                            newColorNamespace = namespace
-                        } label: {
-                            Label("New Color", systemImage: "lightspectrum.horizontal")
-                        }
-                        Button {
-                            renameNamespace = namespace
-                        } label: {
-                            Label("Rename", systemImage: "pencil")
-                        }
-                        Button(role: .destructive) {
-                            do {
-                                try library.tagColors.deleteNamespace(namespace: namespace)
-                            } catch {
-                                print(error)
-                                namespaceDeletionError = true
+        if let library = library {
+            NavigationStack {
+                ColorSearch(tagColors: library.tagColors, colorSelectAction: editColor) { namespace in
+                    if !namespace.isReadOnly {
+                        Menu {
+                            Button {
+                                newColorNamespace = namespace
+                            } label: {
+                                Label("New Color", systemImage: "lightspectrum.horizontal")
+                            }
+                            Button {
+                                renameNamespace = namespace
+                            } label: {
+                                Label("Rename", systemImage: "pencil")
+                            }
+                            Button(role: .destructive) {
+                                do {
+                                    try library.tagColors.deleteNamespace(namespace: namespace)
+                                } catch {
+                                    print(error)
+                                    namespaceDeletionError = true
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
                             }
                         } label: {
-                            Label("Delete", systemImage: "trash")
+                            Button {
+                                
+                            } label: {
+                                Image(systemName: "ellipsis.circle.fill")
+                                    .symbolRenderingMode(.hierarchical)
+                                    .font(.title)
+                            }
+                            .tint(.gray)
                         }
-                    } label: {
-                        Button {
-                            
-                        } label: {
-                            Image(systemName: "ellipsis.circle.fill")
-                                .symbolRenderingMode(.hierarchical)
-                                .font(.title)
-                        }
-                        .tint(.gray)
                     }
                 }
-            }
-            .navigationTitle("Color Manager")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    CloseButton(dismiss: dismiss)
-                }
-                ToolbarItem(placement: .bottomBar) {
-                    Menu {
+                .navigationTitle("Color Manager")
+                .toolbar {
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            CloseButton(dismiss: dismiss)
+                        }
+                    }
+                    ToolbarItem(placement: .bottomBar) {
                         Menu {
-                            ForEach(library.tagColors.namespaces) { namespace in
-                                if !namespace.isReadOnly {
-                                    Button {
-                                        newColorNamespace = namespace
-                                    } label: {
-                                        Text(namespace.namespace)
+                            Menu {
+                                ForEach(library.tagColors.namespaces) { namespace in
+                                    if !namespace.isReadOnly {
+                                        Button {
+                                            newColorNamespace = namespace
+                                        } label: {
+                                            Text(namespace.namespace)
+                                        }
                                     }
                                 }
+                            } label: {
+                                Label("Color", systemImage: "lightspectrum.horizontal")
+                            }
+                            Button {
+                                newNamespace = true
+                            } label: {
+                                Label("Namespace", systemImage: "paintpalette")
                             }
                         } label: {
-                            Label("Color", systemImage: "lightspectrum.horizontal")
+                            Label("New", systemImage: "plus")
                         }
-                        Button {
-                            newNamespace = true
-                        } label: {
-                            Label("Namespace", systemImage: "paintpalette")
-                        }
-                    } label: {
-                        Label("New", systemImage: "plus")
                     }
                 }
             }
-        }
-        .sheet(item: $editingColor) { editingColor in
-            ColorEditor(
-                manager: self.library.tagColors,
-                color: editingColor
-            )
-        }
-        .sheet(item: $newColorNamespace) { newColorNamespace in
-            ColorEditor(
-                manager: self.library.tagColors,
-                belongingNamespace: newColorNamespace
-            )
-            .onDisappear {
-                self.newColorNamespace = nil
+            .sheet(item: $editingColor) { editingColor in
+                ColorEditor(
+                    manager: library.tagColors,
+                    color: editingColor
+                )
             }
-        }
-        .sheet(isPresented: $newNamespace) {
-            NavigationStack {
-                List {
-                    if newNamespaceSlug.starts(with: "tagstudio") {
-                        Section {
-                            VStack {
-                                HStack {
-                                    Image(systemName: "exclamationmark.octagon.fill")
-                                        .tint(.red)
-                                        .symbolRenderingMode(.multicolor)
-                                    Text("Namespace can't be created")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("This name is reserved for TagStudio")
-                                    .foregroundStyle(.secondary)
+            .sheet(item: $newColorNamespace) { newColorNamespace in
+                ColorEditor(
+                    manager: library.tagColors,
+                    belongingNamespace: newColorNamespace
+                )
+                .onDisappear {
+                    self.newColorNamespace = nil
+                }
+            }
+            .sheet(isPresented: $newNamespace) {
+                NavigationStack {
+                    List {
+                        if newNamespaceSlug.starts(with: "tagstudio") {
+                            Section {
+                                VStack {
+                                    HStack {
+                                        Image(systemName: "exclamationmark.octagon.fill")
+                                            .tint(.red)
+                                            .symbolRenderingMode(.multicolor)
+                                        Text("Namespace can't be created")
+                                    }
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                            }.listRowBackground(Color.red.opacity(0.15))
-                        }
-                    }
-                    HStack {
-                        Text("Name")
-                        TextField("Name", text: $newNamespaceName)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    HStack {
-                        Text("Slug")
-                        TextField("Slug", text: $newNamespaceSlug)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.trailing)
-                            .disabled(true)
-                    }
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        CloseButton(dismiss: dismiss)
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            do {
-                                try self.library.tagColors.newNamespace(name: newNamespaceName, namespace: newNamespaceSlug)
-                            } catch {
-                                print(error)
-                                namespaceInsertionError = true
+                                    Text("This name is reserved for TagStudio")
+                                        .foregroundStyle(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }.listRowBackground(Color.red.opacity(0.15))
                             }
-                            newNamespace = false
-                        } label: {
-                            Label("Save", systemImage: "checkmark")
                         }
-                        .buttonStyle(ProminentButtonStyle())
-                        .disabled(newNamespaceSlug.starts(with: "tagstudio"))
+                        HStack {
+                            Text("Name")
+                            TextField("Name", text: $newNamespaceName)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.trailing)
+                        }
+                        HStack {
+                            Text("Slug")
+                            TextField("Slug", text: $newNamespaceSlug)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.trailing)
+                                .disabled(true)
+                        }
                     }
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            CloseButton(dismiss: dismiss)
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                do {
+                                    try library.tagColors.newNamespace(name: newNamespaceName, namespace: newNamespaceSlug)
+                                } catch {
+                                    print(error)
+                                    namespaceInsertionError = true
+                                }
+                                newNamespace = false
+                            } label: {
+                                Label("Save", systemImage: "checkmark")
+                            }
+                            .buttonStyle(ProminentButtonStyle())
+                            .disabled(newNamespaceSlug.starts(with: "tagstudio"))
+                        }
+                    }
+                    .navigationTitle("New Namespace")
                 }
-                .navigationTitle("New Namespace")
             }
-        }
-        .onChange(of: newNamespaceName){
-            let updatedSlug = newNamespaceName
-                .replacingOccurrences(of: " ", with: "-")
-                .lowercased()
-            newNamespaceSlug = updatedSlug
-        }
-        .alert("Namespace Creation Error", isPresented: $namespaceInsertionError) {
-            
-        } message: {
-            Text("There was an error while trying to create your namespace.")
-        }
-        .alert("Namespace Delete Error", isPresented: $namespaceDeletionError) {
-            
-        } message: {
-            Text("There was an error while trying to delete your namespace.")
-        }
-        .sheet(item: $renameNamespace) { renameNamespace in
-            RenameNamespace(renameNamespace)
+            .onChange(of: newNamespaceName){
+                let updatedSlug = newNamespaceName
+                    .replacingOccurrences(of: " ", with: "-")
+                    .lowercased()
+                newNamespaceSlug = updatedSlug
+            }
+            .alert("Namespace Creation Error", isPresented: $namespaceInsertionError) {
+                
+            } message: {
+                Text("There was an error while trying to create your namespace.")
+            }
+            .alert("Namespace Delete Error", isPresented: $namespaceDeletionError) {
+                
+            } message: {
+                Text("There was an error while trying to delete your namespace.")
+            }
+            .sheet(item: $renameNamespace) { renameNamespace in
+                RenameNamespace(renameNamespace)
+            }
+        } else {
+            LibraryUnavailableView()
         }
     }
 }

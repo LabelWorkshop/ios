@@ -14,13 +14,11 @@ enum LibraryViewType {
     case Masonry
 }
 
-func openTagManager(appState: AppState, openWindow: OpenWindowAction) {
+func openSheetWindow(_ windowName: String, sheetBinding: Binding<Bool>, openWindow: OpenWindowAction) {
     if UIDevice.current.userInterfaceIdiom == .phone {
-        appState.showTagManager = true
+        sheetBinding.wrappedValue = true
     } else {
-        if !appState.tagManagerWindowOpen {
-            openWindow(id: "tag-manager")
-        }
+        openWindow(id: windowName)
     }
 }
 
@@ -31,7 +29,7 @@ struct LibraryCommands: Commands {
     var body: some Commands {
         CommandMenu("Library") {
             Button("Tag Manager", systemImage: "tag") {
-                openTagManager(appState: appState, openWindow: openWindow)
+                openSheetWindow("tag-manager", sheetBinding: $appState.showTagManager, openWindow: openWindow)
             }
             .keyboardShortcut(KeyboardShortcut("M", modifiers: [.command, .shift]))
         }
@@ -63,8 +61,9 @@ struct LibraryTagManagerButton: View {
     @Environment(AppState.self) private var appState
     
     var body: some View {
+        @Bindable var appState = appState
         Button(action: {
-            openTagManager(appState: appState, openWindow: openWindow)
+            openSheetWindow("tag-manager", sheetBinding: $appState.showTagManager, openWindow: openWindow)
         }) {
             Label("Tag Manager", systemImage: "tag")
         }
@@ -72,11 +71,12 @@ struct LibraryTagManagerButton: View {
 }
 
 struct LibraryColorManagerButton: View {
+    @Environment(\.openWindow) private var openWindow
     @Binding var showColorManager: Bool
     
     var body: some View {
         Button {
-            showColorManager = true
+            openSheetWindow("color-manager", sheetBinding: $showColorManager, openWindow: openWindow)
         } label: {
             Label("Color Manager", systemImage: "paintpalette")
         }
