@@ -140,9 +140,11 @@ class Library: Hashable, Identifiable, Equatable {
             }
             
             // Find New Entries
-            do {
-                try self.addNewEntries()
-            } catch {print(error)}
+            Task(priority: .background) {
+                do {
+                    try self.addNewEntries()
+                } catch {print(error)}
+            }
         } catch {print(error)}
     }
     
