@@ -166,21 +166,47 @@ actor ThumbnailLoader {
     }
     
     func thumbnailifyUIImage(_ uiImage: UIImage) async -> UIImage? {
-        return await Task(priority: .userInitiated) {
-            uiImage.preparingThumbnail(of: CGSize(width: thumbnailSize, height: thumbnailSize))
-        }.value
+        return uiImage.preparingThumbnail(of: CGSize(width: thumbnailSize, height: thumbnailSize))
     }
     
-    func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
+    func loadThumbnailImage(for entry: Entry) async -> UIImage? {
+        guard let url = entry.fullPath else { return nil }
+        guard let bookmark = entry.library.bookmark else { return nil }
+        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
+        defer { bookmark.stopAccessingSecurityScopedResource() }
+        
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+            return nil
+        }
+
+        let options: [CFString: Any] = [
+            kCGImageSourceShouldCache: false,
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: thumbnailSize
+        ]
+
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+            return nil
+        }
+
+        return UIImage(cgImage: cgImage)
+    }
+    
+    func loadImageFull(for entry: Entry) async -> UIImage? {
         guard let path = entry.fullPath else { return nil }
         guard let bookmark = entry.library.bookmark else { return nil }
         guard bookmark.startAccessingSecurityScopedResource() else { return nil }
         defer { bookmark.stopAccessingSecurityScopedResource() }
-        guard let uiImage = UIImage(contentsOfFile: path.path) else {return nil}
-        if !thumbnail || Int(uiImage.size.largest) <= thumbnailSize {
-            return uiImage
+        return UIImage(contentsOfFile: path.path)
+    }
+    
+    func loadImage(for entry: Entry, thumbnail: Bool) async -> UIImage? {
+        if thumbnail {
+            return await loadThumbnailImage(for: entry)
+        } else {
+            return await loadImageFull(for: entry)
         }
-        return await self.thumbnailifyUIImage(uiImage)
     }
     
     func loadVideoThumbnail(for entry: Entry) async -> UIImage? {
