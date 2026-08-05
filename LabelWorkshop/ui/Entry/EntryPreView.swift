@@ -4,17 +4,6 @@ import AVKit
 import Foundation
 import SDWebImage
 
-extension CGSize {
-    /// Get the size of the largest side.
-    var largest: CGFloat {
-        if width > height {
-            return width
-        } else {
-            return height
-        }
-    }
-}
-
 /// An Icon Thumbnail
 struct IconThumbnail: View {
     var image: Image
