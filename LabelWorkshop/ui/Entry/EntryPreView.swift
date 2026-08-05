@@ -255,6 +255,15 @@ actor ThumbnailLoader {
 }
 
 enum ExtensionTypes {
+    var supportsStillFrame: Bool {
+        switch self {
+        case .AnimatedImage, .Image, .Video:
+            true
+        default :
+            false
+        }
+    }
+    
     case Image
     case Video
     case AnimatedImage
@@ -305,16 +314,13 @@ struct EntryPreView: View {
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(Color(UIColor.secondarySystemBackground))
         .task {
-            guard self.entry.type == .Image || self.entry.type == .Video || self.entry.type == .AnimatedImage else {return}
-            self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square)
-        }
-        .task {
-            guard self.entry.type == .Video && !square else {return}
-            self.video = await ThumbnailLoader.shared.loadVideoPlayer(for: entry)
-        }
-        .task {
-            guard self.entry.type == .PlainText else {return}
-            self.text = await ThumbnailLoader.shared.getTextContents(for: entry)
+            if self.entry.type == .Video && !square {
+                self.video = await ThumbnailLoader.shared.loadVideoPlayer(for: entry)
+            } else if self.entry.type.supportsStillFrame {
+                self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square)
+            } else if self.entry.type == .PlainText {
+                self.text = await ThumbnailLoader.shared.getTextContents(for: entry)
+            }
         }
         .onAppear {
             Task {
