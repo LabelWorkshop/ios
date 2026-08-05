@@ -28,22 +28,7 @@ struct BasicIconThumbnail: View {
     var entry: Entry
     
     var body: some View {
-        switch self.entry.type {
-        case .Audio:
-            IconThumbnail(image: Image(systemName: "waveform"))
-        case .Image:
-            IconThumbnail(image: Image(systemName: "photo"))
-        case .Video:
-            IconThumbnail(image: Image(systemName: "movieclapper"))
-        case .Archive:
-            IconThumbnail(image: Image(systemName: "zipper.page"))
-        case .PlainText:
-            IconThumbnail(image: Image(systemName: "text.document"))
-        case .AnimatedImage:
-            IconThumbnail(image: Image(systemName: "square.3.layers.3d.down.forward"))
-        case .Unknown:
-            IconThumbnail(image: Image(systemName: "exclamationmark.triangle.fill"))
-        }
+        IconThumbnail(image: Image(systemName: entry.type.systemImage))
     }
 }
 
@@ -240,6 +225,25 @@ enum ExtensionTypes {
             true
         default :
             false
+        }
+    }
+    
+    var systemImage: String {
+        switch self {
+        case .Audio:
+            "waveform"
+        case .Image:
+            "photo"
+        case .Video:
+            "movieclapper"
+        case .Archive:
+            "zipper.page"
+        case .PlainText:
+            "text.document"
+        case .AnimatedImage:
+            "square.3.layers.3d.down.forward"
+        default:
+            "questionmark.folder"
         }
     }
     
