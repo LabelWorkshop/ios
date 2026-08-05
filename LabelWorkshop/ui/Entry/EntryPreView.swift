@@ -38,22 +38,15 @@ struct ImageThumbnail: View {
     var square: Bool
     
     var body: some View {
-        if square {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(
-                    minWidth: 0,
-                    maxWidth: .infinity,
-                    minHeight: 0,
-                    maxHeight: .infinity
-                )
-            
-        } else {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFit()
-        }
+        Image(uiImage: image)
+            .resizable()
+            .aspectRatio(contentMode: square ? .fill : .fit)
+            .frame(
+                minWidth: 0,
+                maxWidth: .infinity,
+                minHeight: 0,
+                maxHeight: .infinity
+            )
     }
 }
 
