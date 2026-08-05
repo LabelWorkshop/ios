@@ -1364,6 +1364,7 @@
 
     },
     "No preview available" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

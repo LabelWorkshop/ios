@@ -5,6 +5,7 @@ import Foundation
 import SDWebImage
 
 extension CGSize {
+    /// Get the size of the largest side.
     var largest: CGFloat {
         if width > height {
             return width
@@ -14,10 +15,114 @@ extension CGSize {
     }
 }
 
+/// An Icon Thumbnail
+struct IconThumbnail: View {
+    var image: Image
+    var tint: Color = .secondary
+    
+    var body: some View {
+        image
+            .font(.system(size: 32))
+            .frame(
+                minWidth: 0,
+                maxWidth: .infinity,
+                minHeight: 0,
+                maxHeight: .infinity
+            )
+            .aspectRatio(1 / 1, contentMode: .fit)
+            .tint(tint)
+    }
+}
+
+/// An Icon Thumbnail
+struct BasicIconThumbnail: View {
+    var entry: Entry
+    
+    var body: some View {
+        switch self.entry.type {
+        case .Audio:
+            IconThumbnail(image: Image(systemName: "waveform"))
+        case .Image:
+            IconThumbnail(image: Image(systemName: "photo"))
+        case .Video:
+            IconThumbnail(image: Image(systemName: "movieclapper"))
+        case .Archive:
+            IconThumbnail(image: Image(systemName: "zipper.page"))
+        case .PlainText:
+            IconThumbnail(image: Image(systemName: "text.document"))
+        case .AnimatedImage:
+            IconThumbnail(image: Image(systemName: "square.3.layers.3d.down.forward"))
+        case .Unknown:
+            IconThumbnail(image: Image(systemName: "exclamationmark.triangle.fill"))
+        }
+    }
+}
+
+/// Displays an Image Thumbnail
+struct ImageThumbnail: View {
+    var image: UIImage
+    var square: Bool
+    
+    var body: some View {
+        if square {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(
+                    minWidth: 0,
+                    maxWidth: .infinity,
+                    minHeight: 0,
+                    maxHeight: .infinity
+                )
+            
+        } else {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+        }
+    }
+}
+
+/// Displays a Text Thumbnail
+struct TextThumbnail: View {
+    var text: String
+    
+    var body: some View {
+        Text(text)
+            .font(.callout)
+            .foregroundStyle(Color(UIColor.label))
+            .multilineTextAlignment(.leading)
+            .frame(maxHeight: .infinity, alignment: .top)
+    }
+}
+
+struct LWVideoPlayerWrapper: UIViewControllerRepresentable {
+    var player: AVPlayer
+    
+    func makeUIViewController(context: Context) -> AVPlayerViewController {
+        let controller = AVPlayerViewController()
+        controller.player = player
+        
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {}
+}
+
+struct LWVideoPlayer: View {
+    var player: AVPlayer
+    
+    var body: some View {
+        LWVideoPlayerWrapper(player: player)
+            .scaledToFit()
+    }
+}
+
 actor ThumbnailLoader {
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
     static let shared = ThumbnailLoader()
     private var priorityEntryIds: Set<Int> = []
+    let thumbnailSize = 300
     
     func priorityUp(for entry: Entry) {
         priorityEntryIds.insert(entry.id)
@@ -46,11 +151,7 @@ actor ThumbnailLoader {
         let task = Task<UIImage?, Never>(priority: priority) {
             var image: UIImage?
             if entry.type == .Video {
-                if let fullPath = entry.fullPath {
-                    image = await getVideoThumbnail(url: fullPath)
-                } else {
-                    return nil
-                }
+                image = await loadVideoThumbnail(for: entry)
             } else {
                 image = await loadImage(for: entry, thumbnail: square)
             }
@@ -63,75 +164,68 @@ actor ThumbnailLoader {
         inFlight[cacheName] = nil
         return result
     }
-}
-
-func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
-    guard let path = entry.fullPath else { return nil }
-    guard let bookmark = entry.library.bookmark else { return nil }
-    guard bookmark.startAccessingSecurityScopedResource() else { return nil }
-    defer { bookmark.stopAccessingSecurityScopedResource() }
-    if let data = try? Data(contentsOf: path) {
-        guard let uiImage = UIImage(data: data) else {return nil}
-        if thumbnail {
-            if uiImage.size.largest > 300 {
-                return await Task(priority: .userInitiated) {
-                    uiImage.preparingThumbnail(of: CGSize(width: 300, height: 300))
-                }.value
-            }
+    
+    func thumbnailifyUIImage(_ uiImage: UIImage) async -> UIImage? {
+        return await Task(priority: .userInitiated) {
+            uiImage.preparingThumbnail(of: CGSize(width: thumbnailSize, height: thumbnailSize))
+        }.value
+    }
+    
+    func loadImage(for entry: Entry, thumbnail: Bool = false) async -> UIImage? {
+        guard let path = entry.fullPath else { return nil }
+        guard let bookmark = entry.library.bookmark else { return nil }
+        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
+        defer { bookmark.stopAccessingSecurityScopedResource() }
+        guard let uiImage = UIImage(contentsOfFile: path.path) else {return nil}
+        if !thumbnail || Int(uiImage.size.largest) <= thumbnailSize {
             return uiImage
         }
-        return uiImage
+        return await self.thumbnailifyUIImage(uiImage)
     }
-    return nil
-}
-
-func getVideoThumbnail(url: URL) async -> UIImage? {
-    let asset = AVURLAsset(url: url)
-
-    let assetIG = AVAssetImageGenerator(asset: asset)
-    assetIG.appliesPreferredTrackTransform = true
-    assetIG.apertureMode = AVAssetImageGenerator.ApertureMode.encodedPixels
-    assetIG.maximumSize = CGSize(width: 300, height: 300)
-
-    let cmTime = CMTime(seconds: 0, preferredTimescale: 60)
-    let thumbnailImageRef: CGImage
-    do {
-        thumbnailImageRef = try assetIG.copyCGImage(at: cmTime, actualTime: nil)
-    } catch {
+    
+    func loadVideoThumbnail(for entry: Entry) async -> UIImage? {
+        guard let url = entry.fullPath else { return nil }
+        guard let bookmark = entry.library.bookmark else { return nil }
+        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
+        defer { bookmark.stopAccessingSecurityScopedResource() }
+        
+        let asset = AVURLAsset(url: url)
+        let assetIG = AVAssetImageGenerator(asset: asset)
+        
+        let timestamp = CMTime(seconds: 0, preferredTimescale: 60)
+        do {
+            let CGThumbnail = try assetIG.copyCGImage(at: timestamp, actualTime: nil)
+            let fullUIThumbnail = UIImage(cgImage: CGThumbnail)
+            return await self.thumbnailifyUIImage(fullUIThumbnail)
+        } catch {
+            print(error)
+        }
         return nil
     }
-
-    return UIImage(cgImage: thumbnailImageRef)
-}
-
-func getTextContents(for entry: Entry) async -> String? {
-    guard let bookmark = entry.library.bookmark else {return nil}
-    guard bookmark.startAccessingSecurityScopedResource() == true else {return nil}
-    defer { bookmark.stopAccessingSecurityScopedResource() }
-    if let file = entry.fullPath {
+    
+    func loadVideoPlayer(for entry: Entry) async -> AVPlayer? {
+        guard let url = entry.fullPath else { return nil }
+        guard let bookmark = entry.library.bookmark else { return nil }
+        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
+        defer { bookmark.stopAccessingSecurityScopedResource() }
+        let player = AVPlayer(url: url)
+        player.isMuted = true
+        player.play()
+        
+        return player
+    }
+    
+    func getTextContents(for entry: Entry) async -> String? {
+        guard let bookmark = entry.library.bookmark else {return nil}
+        guard bookmark.startAccessingSecurityScopedResource() == true else {return nil}
+        defer { bookmark.stopAccessingSecurityScopedResource() }
+        guard let file = entry.fullPath else {return nil}
         do {
             let fileData = try Data(contentsOf: file)
             return String(data: fileData, encoding: .utf8) ?? ""
         } catch {print(error)}
+        return nil
     }
-    return nil
-}
-
-struct VideoPlayerContainer: UIViewControllerRepresentable {
-    let fullPath: URL
-    
-    func makeUIViewController(context: Context) -> AVPlayerViewController {
-        let player = AVPlayer(url: fullPath)
-        let controller = AVPlayerViewController()
-        controller.player = player
-        player.isMuted = true
-        player.play()
-        controller.videoGravity = .resizeAspectFill
-        
-        return controller
-    }
-    
-    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {}
 }
 
 enum ExtensionTypes {
@@ -147,34 +241,22 @@ enum ExtensionTypes {
 struct EntryPreView: View {
     public var entry: Entry
     public var square: Bool = false
-    var ext: String
     @State var image: UIImage? = nil
     @State var text: String?
+    @State var video: AVPlayer?
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
         self.square = square
-        self.ext = entry.path.split(separator: ".").last?.lowercased() ?? ""
     }
     
     var body: some View {
         Group {
             if !FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "") {
-                Image(systemName: "link")
-                    .font(.system(size: 32))
-                    .frame(
-                        minWidth: 0,
-                        maxWidth: .infinity,
-                        minHeight: 0,
-                        maxHeight: .infinity
-                    )
-                    .aspectRatio(1/1, contentMode: .fill)
-                    .background(Color(UIColor.secondarySystemBackground))
-                    .tint(.red)
+                IconThumbnail(image: Image(systemName: "link"), tint: .red)
             }
-            else if self.entry.type == .Video && !square, let fullPath = entry.fullPath {
-                VideoPlayerContainer(fullPath: fullPath)
-                    .scaledToFill()
+            else if let video {
+                LWVideoPlayer(player: video)
             }
             else if self.entry.type == .AnimatedImage && !square, let fullPath = entry.fullPath {
                 AnimatedImage(url: fullPath)
@@ -182,74 +264,31 @@ struct EntryPreView: View {
                     .scaledToFit()
             }
             else if let image {
-                if square {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(
-                            minWidth: 0,
-                            maxWidth: .infinity,
-                            minHeight: 0,
-                            maxHeight: .infinity
-                        )
-                        .aspectRatio(1 / 1, contentMode: .fit)
-                    
-                } else {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                }
+                ImageThumbnail(image: image, square: square)
+            }
+            else if let text, !text.isEmpty {
+                TextThumbnail(text: text)
             }
             else {
-                VStack {
-                    switch self.entry.type {
-                    case .Audio:
-                        Image(systemName: "waveform").font(.system(size: 32))
-                    case .Image:
-                        Image(systemName: "photo").font(.system(size: 32))
-                    case .Video:
-                        Image(systemName: "movieclapper").font(.system(size: 32))
-                    case .Archive:
-                        Image(systemName: "zipper.page").font(.system(size: 32))
-                    case .PlainText:
-                        if let text = text  {
-                            Text(text)
-                                .font(.callout)
-                                .foregroundStyle(Color(UIColor.label))
-                                .multilineTextAlignment(.leading)
-                                .frame(maxHeight: .infinity, alignment: .top)
-                        } else {
-                            Image(systemName: "text.document").font(.system(size: 32))
-                        }
-                    case .AnimatedImage:
-                        Image(systemName: "square.3.layers.3d.down.forward").font(.system(size: 32))
-                    case .Unknown:
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 32))
-                        Text("No preview available")
-                            .foregroundStyle(Color(UIColor.label))
-                    }
-                }
-                .symbolRenderingMode(.multicolor)
-                .frame(
-                    minWidth: 0,
-                    maxWidth: .infinity,
-                    minHeight: 0,
-                    maxHeight: .infinity
-                )
-                .aspectRatio(1/1, contentMode: .fit)
-                .background(Color(UIColor.secondarySystemBackground))
+                BasicIconThumbnail(entry: entry)
             }
         }
-        .clipped()
-        .cornerRadius(square ? 0 : 8)
+        .if(square) { view in
+            view.aspectRatio(1 / 1, contentMode: .fit)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
+        .background(Color(UIColor.secondarySystemBackground))
         .task {
             guard self.entry.type == .Image || self.entry.type == .Video || self.entry.type == .AnimatedImage else {return}
             self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square)
         }
         .task {
+            guard self.entry.type == .Video && !square else {return}
+            self.video = await ThumbnailLoader.shared.loadVideoPlayer(for: entry)
+        }
+        .task {
             guard self.entry.type == .PlainText else {return}
-            self.text = await getTextContents(for: entry)
+            self.text = await ThumbnailLoader.shared.getTextContents(for: entry)
         }
         .onAppear {
             Task {
