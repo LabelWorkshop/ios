@@ -262,6 +262,7 @@ struct EntryPreView: View {
     @State var image: UIImage? = nil
     @State var text: String?
     @State var video: AVPlayer?
+    @State var isUnlinked: Bool = false
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
@@ -270,7 +271,7 @@ struct EntryPreView: View {
     
     var body: some View {
         Group {
-            if !FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "") {
+            if isUnlinked {
                 IconThumbnail(image: Image(systemName: "link"), tint: .red)
             }
             else if let video {
@@ -297,7 +298,9 @@ struct EntryPreView: View {
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(Color(UIColor.secondarySystemBackground))
         .task {
-            if self.entry.type == .Video && !square {
+            if !FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "") {
+                isUnlinked = true
+            } else if self.entry.type == .Video && !square {
                 self.video = await ThumbnailLoader.shared.loadVideoPlayer(for: entry)
             } else if self.entry.type.supportsStillFrame {
                 self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square)
