@@ -155,35 +155,30 @@ actor ThumbnailLoader {
     }
     
     func loadThumbnailImage(for entry: Entry) async -> UIImage? {
-        guard let url = entry.fullPath else { return nil }
-        guard let bookmark = entry.library.bookmark else { return nil }
-        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
-        defer { bookmark.stopAccessingSecurityScopedResource() }
-        
-        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-            return nil
+        entry.withScopedURL { url in
+            guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+                return nil
+            }
+
+            let options: [CFString: Any] = [
+                kCGImageSourceShouldCache: false,
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: thumbnailSize
+            ]
+
+            guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+                return nil
+            }
+
+            return UIImage(cgImage: cgImage)
         }
-
-        let options: [CFString: Any] = [
-            kCGImageSourceShouldCache: false,
-            kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: thumbnailSize
-        ]
-
-        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
-            return nil
-        }
-
-        return UIImage(cgImage: cgImage)
     }
     
     func loadImageFull(for entry: Entry) async -> UIImage? {
-        guard let path = entry.fullPath else { return nil }
-        guard let bookmark = entry.library.bookmark else { return nil }
-        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
-        defer { bookmark.stopAccessingSecurityScopedResource() }
-        return UIImage(contentsOfFile: path.path)
+        entry.withScopedURL { url in
+            return UIImage(contentsOfFile: url.path)
+        }
     }
     
     func loadImage(for entry: Entry, thumbnail: Bool) async -> UIImage? {
@@ -195,51 +190,46 @@ actor ThumbnailLoader {
     }
     
     func loadVideoThumbnail(for entry: Entry) async -> UIImage? {
-        guard let url = entry.fullPath else { return nil }
-        guard let bookmark = entry.library.bookmark else { return nil }
-        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
-        defer { bookmark.stopAccessingSecurityScopedResource() }
-        
-        let asset = AVURLAsset(url: url)
-        let generator = AVAssetImageGenerator(asset: asset)
-        generator.maximumSize = CGSize(width: thumbnailSize, height: thumbnailSize)
-        generator.appliesPreferredTrackTransform = true
-        // Stops forcing usage of first frame
-        // which can speed up generation
-        generator.requestedTimeToleranceBefore = .positiveInfinity
-        generator.requestedTimeToleranceAfter = .positiveInfinity
-        
-        do {
-            let CGThumbnail = try generator.copyCGImage(at: CMTime.zero, actualTime: nil)
-            return UIImage(cgImage: CGThumbnail)
-        } catch {
-            print(error)
+        entry.withScopedURL { url in
+            
+            let asset = AVURLAsset(url: url)
+            let generator = AVAssetImageGenerator(asset: asset)
+            generator.maximumSize = CGSize(width: thumbnailSize, height: thumbnailSize)
+            generator.appliesPreferredTrackTransform = true
+            // Stops forcing usage of first frame
+            // which can speed up generation
+            generator.requestedTimeToleranceBefore = .positiveInfinity
+            generator.requestedTimeToleranceAfter = .positiveInfinity
+            
+            do {
+                let CGThumbnail = try generator.copyCGImage(at: CMTime.zero, actualTime: nil)
+                return UIImage(cgImage: CGThumbnail)
+            } catch {
+                print(error)
+            }
+            return nil
         }
-        return nil
     }
     
     func loadVideoPlayer(for entry: Entry) async -> AVPlayer? {
-        guard let url = entry.fullPath else { return nil }
-        guard let bookmark = entry.library.bookmark else { return nil }
-        guard bookmark.startAccessingSecurityScopedResource() else { return nil }
-        defer { bookmark.stopAccessingSecurityScopedResource() }
-        let player = AVPlayer(url: url)
-        player.isMuted = true
-        player.play()
-        
-        return player
+        entry.withScopedURL { url in
+            let player = AVPlayer(url: url)
+            player.isMuted = true
+            player.play()
+            
+            return player
+        }
     }
     
     func getTextContents(for entry: Entry) async -> String? {
-        guard let bookmark = entry.library.bookmark else {return nil}
-        guard bookmark.startAccessingSecurityScopedResource() == true else {return nil}
-        defer { bookmark.stopAccessingSecurityScopedResource() }
-        guard let file = entry.fullPath else {return nil}
-        do {
-            let fileData = try Data(contentsOf: file)
-            return String(data: fileData, encoding: .utf8) ?? ""
-        } catch {print(error)}
-        return nil
+        entry.withScopedURL { url in
+            guard let file = entry.fullPath else {return nil}
+            do {
+                let fileData = try Data(contentsOf: file)
+                return String(data: fileData, encoding: .utf8) ?? ""
+            } catch {print(error)}
+            return nil
+        }
     }
 }
 

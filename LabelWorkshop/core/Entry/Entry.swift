@@ -127,4 +127,21 @@ class Entry {
             }
         } catch {print(error)}
     }
+    
+    func withScopedURL<T>(
+        _ body: (URL) throws -> T?
+    ) rethrows -> T? {
+        guard let url = self.fullPath,
+              let bookmark = self.library.bookmark,
+              bookmark.startAccessingSecurityScopedResource()
+        else {
+            return nil
+        }
+
+        defer {
+            bookmark.stopAccessingSecurityScopedResource()
+        }
+
+        return try body(url)
+    }
 }
