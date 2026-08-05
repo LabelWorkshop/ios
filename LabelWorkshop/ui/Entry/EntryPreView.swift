@@ -23,7 +23,7 @@ struct IconThumbnail: View {
     }
 }
 
-/// An Icon Thumbnail
+/// An Icon Thumbnail based on the type of the file
 struct BasicIconThumbnail: View {
     var entry: Entry
     
