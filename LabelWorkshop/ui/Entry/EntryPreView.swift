@@ -120,7 +120,7 @@ actor ThumbnailLoader {
         }
         
         // Set the priority depending on if the entry is visiable or not
-        let priority: TaskPriority = priorityEntryIds.contains(entry.id) ? .high : .userInitiated
+        let priority: TaskPriority = priorityEntryIds.contains(entry.id) ? .high : .background
         
         let task = Task<UIImage?, Never>(priority: priority) {
             var image: UIImage?
