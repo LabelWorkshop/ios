@@ -165,10 +165,6 @@ actor ThumbnailLoader {
         return result
     }
     
-    func thumbnailifyUIImage(_ uiImage: UIImage) async -> UIImage? {
-        return uiImage.preparingThumbnail(of: CGSize(width: thumbnailSize, height: thumbnailSize))
-    }
-    
     func loadThumbnailImage(for entry: Entry) async -> UIImage? {
         guard let url = entry.fullPath else { return nil }
         guard let bookmark = entry.library.bookmark else { return nil }
@@ -216,13 +212,17 @@ actor ThumbnailLoader {
         defer { bookmark.stopAccessingSecurityScopedResource() }
         
         let asset = AVURLAsset(url: url)
-        let assetIG = AVAssetImageGenerator(asset: asset)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.maximumSize = CGSize(width: thumbnailSize, height: thumbnailSize)
+        generator.appliesPreferredTrackTransform = true
+        // Stops forcing usage of first frame
+        // which can speed up generation
+        generator.requestedTimeToleranceBefore = .positiveInfinity
+        generator.requestedTimeToleranceAfter = .positiveInfinity
         
-        let timestamp = CMTime(seconds: 0, preferredTimescale: 60)
         do {
-            let CGThumbnail = try assetIG.copyCGImage(at: timestamp, actualTime: nil)
-            let fullUIThumbnail = UIImage(cgImage: CGThumbnail)
-            return await self.thumbnailifyUIImage(fullUIThumbnail)
+            let CGThumbnail = try generator.copyCGImage(at: CMTime.zero, actualTime: nil)
+            return UIImage(cgImage: CGThumbnail)
         } catch {
             print(error)
         }
