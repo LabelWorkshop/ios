@@ -201,9 +201,8 @@ actor ThumbnailLoader {
     
     func getTextContents(for entry: Entry) async -> String? {
         entry.withScopedURL { url in
-            guard let file = entry.fullPath else {return nil}
             do {
-                let fileData = try Data(contentsOf: file)
+                let fileData = try Data(contentsOf: url)
                 return String(data: fileData, encoding: .utf8) ?? ""
             } catch {print(error)}
             return nil
