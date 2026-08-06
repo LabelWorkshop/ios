@@ -1,7 +1,7 @@
 import SQLite
 import struct Foundation.Date
 
-class FieldType: Identifiable {
+class FieldTemplate: Identifiable {
     let id: Int
     let name: String
     
@@ -28,7 +28,7 @@ class Field: Identifiable, Hashable {
     var name: String
     var value: String?
     var entry: Entry
-    var type: FieldType?
+    var type: FieldTemplate?
     var text: String {
         get {
             value ?? ""
@@ -56,7 +56,7 @@ class Field: Identifiable, Hashable {
         self.name = name
         self.value = value
         self.entry = entry
-        self.type = entry.library.fieldTypes?.fieldTypes.first(where: {$0.id == id})
+        self.type = entry.library.fieldTemplates?.fieldTemplates.first(where: {$0.id == id})
     }
 }
 

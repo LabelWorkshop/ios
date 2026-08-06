@@ -241,21 +241,21 @@ struct EntryView: View {
             ToolbarItem(placement: .bottomBar) {
                 Menu {
                     Menu {
-                        if let fieldTypes = entry.library.fieldTypes {
-                            ForEach(fieldTypes.fieldTypes) { fieldType in
+                        if let fieldTemplates = entry.library.fieldTemplates {
+                            ForEach(fieldTemplates.fieldTemplates) { fieldTemplate in
                                 Button(action: {
-                                    if let field = entry.addField(fieldType) {
+                                    if let field = entry.addField(fieldTemplate) {
                                         fields.append(field)
                                     }
                                 }) {
-                                    Text(fieldType.name)
+                                    Text(fieldTemplate.name)
                                 }
                             }
                         }
                     } label: {
                         Label("Field", systemImage: "character.textbox")
                     }
-                    .disabled(entry.library.fieldTypes == nil)
+                    .disabled(entry.library.fieldTemplates == nil)
                     Button {
                         showTagSelector = true
                     } label: {

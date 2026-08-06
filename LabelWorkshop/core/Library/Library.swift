@@ -62,7 +62,7 @@ class Library: Hashable, Identifiable, Equatable {
     var bookmark: URL?
     var db: Connection?
     var tagColors: TagColorManager!
-    var fieldTypes: FieldTypeManager?
+    var fieldTemplates: FieldTemplateManager?
     var ignoreList: String = "\n.TagStudio\n.DS_Store"
     var matcher: TSIgnoreMatcher?
     var isNew: Bool
@@ -97,7 +97,7 @@ class Library: Hashable, Identifiable, Equatable {
             self.tags = LibraryTagManager(library: self)
             
             // Get Field Types
-            self.fieldTypes = try FieldTypeManager(library: self)
+            self.fieldTemplates = try FieldTemplateManager(library: self)
             
             // Get Entries
             self.entries = EntryManager(library: self)

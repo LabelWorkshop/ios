@@ -76,7 +76,7 @@ class Entry {
         return fields
     }
     
-    func addField(_ type: FieldType) -> Field? {
+    func addField(_ type: FieldTemplate) -> Field? {
         let query = TextFieldsTable.table.insert(
             TextFieldsTable.isMultiline <- false,
             TextFieldsTable.entryId <- self.id,
