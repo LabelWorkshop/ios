@@ -1155,6 +1155,9 @@
     "Create and edit colors directly in the app, then assign them to tags using the redesigned color picker." : {
 
     },
+    "Database Version" : {
+
+    },
     "Delete" : {
 
     },
@@ -1180,6 +1183,9 @@
           }
         }
       }
+    },
+    "Entries" : {
+
     },
     "Failed to save changes." : {
 
@@ -1283,6 +1289,9 @@
       "shouldTranslate" : false
     },
     "Library" : {
+
+    },
+    "Library Info" : {
 
     },
     "List" : {
@@ -1454,6 +1463,9 @@
 
     },
     "Start by pressing Add Library." : {
+
+    },
+    "Statistics" : {
 
     },
     "Tag" : {
