@@ -204,7 +204,7 @@ struct EntryView: View {
                 
                 if let fields = entry.fields {
                     Text("Fields").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                    ForEach(fields.fields) { field in
+                    ForEach(fields.textFields) { field in
                         HStack {
                             Text(field.name)
                             TextField(field.name, text: Binding<String>(

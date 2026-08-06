@@ -6,6 +6,7 @@ import PathKit
 enum LibraryError: Error {
     case databaseInvalid
     case databaseUnmigrateable
+    case fieldTemplateInvalid
 }
 
 func loadBookmark(key: String) -> URL? {

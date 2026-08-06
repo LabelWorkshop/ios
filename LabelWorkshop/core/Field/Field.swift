@@ -37,41 +37,45 @@ class FieldTemplate: Identifiable {
     }
 }
 
-/*class FieldEntry: Identifiable {
+class FieldEntry: Identifiable {
     var id: Int
     var name: String
     var entry: Entry
-    var template: FieldTemplate
+    var type: FieldTemplateType
     
     static func == (lhs: FieldEntry, rhs: FieldEntry) -> Bool {
-        return lhs.template.type == rhs.template.type && lhs.id == rhs.id
+        return lhs.type == rhs.type && lhs.id == rhs.id
     }
     
-    init(id: Int, name: String, entry: Entry, template: FieldTemplate) {
+    init(id: Int, name: String, entry: Entry, type: FieldTemplateType) {
         self.id = id
         self.name = name
         self.entry = entry
-        self.template = template
+        self.type = type
+        do {
+            try self.refresh()
+        } catch {print(error)}
     }
-}*/
+    
+    static func get(
+        id: Int,
+        name: String,
+        entry: Entry,
+        type: FieldTemplateType
+    ) -> FieldEntry {
+        switch type {
+        case .text:
+            return TextFieldEntry(id: id, name: name, entry: entry, type: type)
+        case .date:
+            return FieldEntry(id: id, name: name, entry: entry, type: type)
+        }
+    }
+    
+    func refresh() throws {}
+}
 
-// @available(*, deprecated)
-@Observable
-class Field: Identifiable, Hashable {
-    static func == (lhs: Field, rhs: Field) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    var id: Int
-    var entryId: Int
-    var name: String
+class TextFieldEntry: FieldEntry {
     var value: String?
-    var entry: Entry
-    var type: FieldTemplate?
     var text: String {
         get {
             value ?? ""
@@ -87,19 +91,13 @@ class Field: Identifiable, Hashable {
         }
     }
     
-    init(
-        id: Int,
-        entryId: Int,
-        name: String,
-        entry: Entry,
-        value: String?
-    ) {
-        self.id = id
-        self.entryId = entryId
-        self.name = name
-        self.value = value
-        self.entry = entry
-        self.type = entry.library.fieldTemplates?.fieldTemplates.first(where: {$0.id == id})
+    override func refresh() throws {
+        if let db = self.entry.library.db {
+            if let row = try db.pluck(TextFieldsTable.table
+                .filter(TextFieldsTable.id == self.id)) {
+                self.value = row[TextFieldsTable.value]
+            }
+        }
     }
 }
 

@@ -59,57 +59,6 @@ class Entry {
         } catch {print(error)}
     }
     
-    @available(*, deprecated)
-    func getFields() -> [Field] {
-        var fields: [Field] = []
-        let query = TextFieldsTable.table
-            .select(*).filter(TextFieldsTable.entryId == self.id)
-        do {
-            for rawField in try self.library.db!.prepare(query) {
-                let field = Field(
-                    id: rawField[TextFieldsTable.id],
-                    entryId: self.id,
-                    name: rawField[TextFieldsTable.name],
-                    entry: self,
-                    value: rawField[TextFieldsTable.value],
-                )
-                fields.append(field)
-            }
-        } catch {print(error)}
-        return fields
-    }
-    
-    @available(*, deprecated)
-    func addField(_ type: FieldTemplate) -> Field? {
-        let query = TextFieldsTable.table.insert(
-            TextFieldsTable.isMultiline <- false,
-            TextFieldsTable.entryId <- self.id,
-            TextFieldsTable.name <- type.name,
-            TextFieldsTable.value <- ""
-        )
-        do {
-            let id: Int64? = try self.library.db!.run(query)
-            if let id = id {
-                return Field(
-                    id: Int(id),
-                    entryId: self.id,
-                    name: type.name,
-                    entry: self,
-                    value: ""
-                )
-            }
-        } catch {print(error)}
-        return nil
-    }
-    
-    @available(*, deprecated)
-    func deleteField(_ id: Int) throws {
-        let query = TextFieldsTable.table
-            .filter(TextFieldsTable.id == id)
-            .delete()
-        try self.library.db!.run(query)
-    }
-    
     @available(*, deprecated, message: "Use EntryManager.delete instead.")
     func delete() {
         let queries = [

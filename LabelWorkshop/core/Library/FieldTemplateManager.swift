@@ -42,4 +42,10 @@ class FieldTemplateManager {
         }
         self.fieldTemplates = newFieldTemplates
     }
+    
+    func getTemplateByTitle(title: String, type: FieldTemplateType) -> FieldTemplate? {
+        self.fieldTemplates.filter{ field in
+            field.name == title && field.type == type
+        }.first
+    }
 }
