@@ -20,7 +20,8 @@ class FieldTemplateManager {
             newFieldTemplates.append(
                 FieldTemplate(
                     id: rawFieldTemplates[TextFieldTemplatesTable.id],
-                    name: rawFieldTemplates[TextFieldTemplatesTable.name]
+                    name: rawFieldTemplates[TextFieldTemplatesTable.name],
+                    type: .text
                 )
             )
         }
@@ -28,7 +29,8 @@ class FieldTemplateManager {
             newFieldTemplates.append(
                 FieldTemplate(
                     id: rawFieldTemplates[DateFieldTemplatesTable.id],
-                    name: rawFieldTemplates[DateFieldTemplatesTable.name]
+                    name: rawFieldTemplates[DateFieldTemplatesTable.name],
+                    type: .date
                 )
             )
         }

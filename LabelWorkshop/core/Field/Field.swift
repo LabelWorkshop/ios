@@ -1,16 +1,24 @@
 import SQLite
 import struct Foundation.Date
 
+enum FieldTemplateType {
+    case text
+    case date
+}
+
 class FieldTemplate: Identifiable {
     let id: Int
     let name: String
+    let type: FieldTemplateType
     
     init(
         id: Int,
-        name: String
+        name: String,
+        type: FieldTemplateType
     ) {
         self.id = id
         self.name = name
+        self.type = type
     }
 }
 
