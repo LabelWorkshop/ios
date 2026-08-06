@@ -61,7 +61,7 @@ class EntryFieldManager {
     
     func remove(field: FieldEntry) throws {
         guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
-        try db.run(field.type.table
+        try db.run(field.type.entriesTable
             .filter(TextFieldsTable.id == field.id)
             .delete())
         self.fields.remove(at:
