@@ -56,7 +56,7 @@ class Field: Identifiable, Hashable {
         self.name = name
         self.value = value
         self.entry = entry
-        self.type = entry.library.fieldTypes.first(where: {$0.id == id})
+        self.type = entry.library.fieldTypes?.fieldTypes.first(where: {$0.id == id})
     }
 }
 
