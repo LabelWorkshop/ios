@@ -153,7 +153,6 @@ struct EntryShareButton: View {
 
 struct EntryView: View {
     @State var entry: Entry
-    @State var fields: [Field] = []
     @State var showTagSelector: Bool = false
     @State var showFieldTypeSelector: Bool = false
     @State var fullScreen: Bool = false
@@ -202,26 +201,29 @@ struct EntryView: View {
                         }
                     }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 }
-                Text("Fields").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                ForEach($fields) { $field in
-                    HStack {
-                        Text(field.name)
-                        TextField(field.name, text: $field.text)
+                
+                if let fields = entry.fields {
+                    Text("Fields").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(fields.fields) { field in
+                        HStack {
+                            Text(field.name)
+                            TextField(field.name, text: Binding<String>(
+                                get: { field.text },
+                                set: { newValue in field.text = newValue }
+                            ))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.trailing)
-                        Button(role: .destructive, action: {
-                            do {
-                                try entry.deleteField($field.id)
-                                if let index = fields.firstIndex(where: { $0.id == $field.id }) {
-                                    fields.remove(at: index)
-                                }
-                            } catch {print(error)}
-                        }) {
-                            Image(systemName: "minus.circle.fill")
-                                .symbolRenderingMode(.hierarchical)
-                                .font(.title)
+                            Button(role: .destructive) {
+                                do {
+                                    try fields.remove(field: field)
+                                } catch { print(error) }
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .symbolRenderingMode(.hierarchical)
+                                    .font(.title)
+                            }
+                            .tint(.red)
                         }
-                        .tint(.red)
                     }
                 }
             }
@@ -246,9 +248,11 @@ struct EntryView: View {
                             Section("Text Fields") {
                                 ForEach(fieldTemplates.texts) { fieldTemplate in
                                     Button(action: {
-                                        if let field = entry.addField(fieldTemplate) {
-                                            fields.append(field)
-                                        }
+                                        do {
+                                            if let fields = entry.fields {
+                                                _ = try fields.add(fieldTemplate)
+                                            }
+                                        } catch {print(error)}
                                     }) {
                                         Text(fieldTemplate.name)
                                     }
@@ -257,9 +261,11 @@ struct EntryView: View {
                             Section("Date Fields") {
                                 ForEach(fieldTemplates.dates) { fieldTemplate in
                                     Button(action: {
-                                        if let field = entry.addField(fieldTemplate) {
-                                            fields.append(field)
-                                        }
+                                        do {
+                                            if let fields = entry.fields {
+                                                _ = try fields.add(fieldTemplate)
+                                            }
+                                        } catch {print(error)}
                                     }) {
                                         Text(fieldTemplate.name)
                                     }
@@ -301,7 +307,6 @@ struct EntryView: View {
             }
         }
         .onAppear {
-            self.fields = entry.getFields()
             if entry.tags == nil {
                 self.tagInitError = true
                 self.tagInitErrorDisable = true
@@ -327,3 +332,4 @@ struct EntryView: View {
         }
     }
 }
+

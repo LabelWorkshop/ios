@@ -9,6 +9,7 @@ class Entry {
     var id: Int
     var fullPath: URL?
     var tags: EntryTagManager?
+    var fields: EntryFieldManager?
     let library: Library
     var type: ExtensionTypes = .Unknown
     
@@ -54,9 +55,11 @@ class Entry {
         
         do {
             self.tags = try EntryTagManager(self)
+            self.fields = try EntryFieldManager(self)
         } catch {print(error)}
     }
     
+    @available(*, deprecated)
     func getFields() -> [Field] {
         var fields: [Field] = []
         let query = TextFieldsTable.table
@@ -76,6 +79,7 @@ class Entry {
         return fields
     }
     
+    @available(*, deprecated)
     func addField(_ type: FieldTemplate) -> Field? {
         let query = TextFieldsTable.table.insert(
             TextFieldsTable.isMultiline <- false,
@@ -98,6 +102,7 @@ class Entry {
         return nil
     }
     
+    @available(*, deprecated)
     func deleteField(_ id: Int) throws {
         let query = TextFieldsTable.table
             .filter(TextFieldsTable.id == id)

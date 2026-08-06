@@ -1,7 +1,22 @@
 import SQLite
+import Observation
 import struct Foundation.Date
 
 enum FieldTemplateType {
+    var table: Table {
+        switch self {
+        case .text: TextFieldTemplatesTable.table
+        case .date: DateFieldTemplatesTable.table
+        }
+    }
+    
+    var entriesTable: Table {
+        switch self {
+        case .text: TextFieldsTable.table
+        case .date: DateFieldsTable.table
+        }
+    }
+    
     case text
     case date
 }
@@ -22,6 +37,26 @@ class FieldTemplate: Identifiable {
     }
 }
 
+/*class FieldEntry: Identifiable {
+    var id: Int
+    var name: String
+    var entry: Entry
+    var template: FieldTemplate
+    
+    static func == (lhs: FieldEntry, rhs: FieldEntry) -> Bool {
+        return lhs.template.type == rhs.template.type && lhs.id == rhs.id
+    }
+    
+    init(id: Int, name: String, entry: Entry, template: FieldTemplate) {
+        self.id = id
+        self.name = name
+        self.entry = entry
+        self.template = template
+    }
+}*/
+
+// @available(*, deprecated)
+@Observable
 class Field: Identifiable, Hashable {
     static func == (lhs: Field, rhs: Field) -> Bool {
         return lhs.id == rhs.id
