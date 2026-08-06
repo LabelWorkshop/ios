@@ -252,7 +252,10 @@ struct EntryPreView: View {
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(Color(UIColor.secondarySystemBackground))
         .task {
-            if !FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "") {
+            let exists = await Task.detached(priority: .utility) {
+                FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
+            }.value
+            if !exists {
                 isUnlinked = true
             } else if self.entry.type == .Video && !square {
                 self.video = await ThumbnailLoader.shared.loadVideoPlayer(for: entry)
