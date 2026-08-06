@@ -253,7 +253,7 @@ struct EntryPreView: View {
         .background(Color(UIColor.secondarySystemBackground))
         .task {
             let exists = await Task.detached(priority: .utility) {
-                FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
+                await FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
             }.value
             if !exists {
                 isUnlinked = true
