@@ -43,19 +43,17 @@ class EntryFieldManager {
             setters.append(TextFieldsTable.isMultiline <- false)
         }
         let query = template.type.entriesTable.insert(setters)
-        do {
-            let id: Int64? = try db.run(query)
-            if let id = id {
-                let fieldEntry = FieldEntry.get(
-                    id: Int(id),
-                    name: template.name,
-                    entry: self.entry,
-                    type: template.type
-                )
-                fields.append(fieldEntry)
-                return fieldEntry
-            }
-        } catch {print(error)}
+        let id: Int64? = try db.run(query)
+        if let id = id {
+            let fieldEntry = FieldEntry.get(
+                id: Int(id),
+                name: template.name,
+                entry: self.entry,
+                type: template.type
+            )
+            fields.append(fieldEntry)
+            return fieldEntry
+        }
         return nil
     }
     
