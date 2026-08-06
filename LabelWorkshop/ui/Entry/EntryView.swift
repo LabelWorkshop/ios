@@ -242,13 +242,27 @@ struct EntryView: View {
                 Menu {
                     Menu {
                         if let fieldTemplates = entry.library.fieldTemplates {
-                            ForEach(fieldTemplates.fieldTemplates) { fieldTemplate in
-                                Button(action: {
-                                    if let field = entry.addField(fieldTemplate) {
-                                        fields.append(field)
+                            // TODO: Move the button code into a view
+                            Section("Text Fields") {
+                                ForEach(fieldTemplates.texts) { fieldTemplate in
+                                    Button(action: {
+                                        if let field = entry.addField(fieldTemplate) {
+                                            fields.append(field)
+                                        }
+                                    }) {
+                                        Text(fieldTemplate.name)
                                     }
-                                }) {
-                                    Text(fieldTemplate.name)
+                                }
+                            }
+                            Section("Date Fields") {
+                                ForEach(fieldTemplates.dates) { fieldTemplate in
+                                    Button(action: {
+                                        if let field = entry.addField(fieldTemplate) {
+                                            fields.append(field)
+                                        }
+                                    }) {
+                                        Text(fieldTemplate.name)
+                                    }
                                 }
                             }
                         }

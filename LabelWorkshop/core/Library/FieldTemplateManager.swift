@@ -5,6 +5,12 @@ import Observation
 class FieldTemplateManager {
     var library: Library
     var fieldTemplates: [FieldTemplate] = []
+    var dates: [FieldTemplate] {
+        self.fieldTemplates.filter { $0.type == .date }
+    }
+    var texts: [FieldTemplate] {
+        self.fieldTemplates.filter { $0.type == .text }
+    }
     
     init(library: Library) throws {
         self.library = library
