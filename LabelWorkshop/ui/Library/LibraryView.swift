@@ -83,6 +83,19 @@ struct LibraryColorManagerButton: View {
     }
 }
 
+struct LibraryInfoButton: View {
+    @Environment(\.openWindow) private var openWindow
+    @Binding var showLibraryInfo: Bool
+    
+    var body: some View {
+        Button {
+            openSheetWindow("color-manager", sheetBinding: $showLibraryInfo, openWindow: openWindow)
+        } label: {
+            Label("Library Info", systemImage: "info")
+        }
+    }
+}
+
 struct LibraryFilterButton: View {
     @Binding var filterUntagged: Bool
     @Binding var hiddenShown: Bool
@@ -157,6 +170,7 @@ struct LibraryView: View {
     @State var migrationClosed: Bool = false
     @State var showColorManager: Bool = false
     @State var deletionError: Bool = false
+    @State var showLibraryInfo: Bool = false
     
     // Filtering
     @State var searchQuery: String = ""
@@ -387,6 +401,7 @@ struct LibraryView: View {
             ToolbarItemGroup(placement: .secondaryAction) {
                 LibraryTagManagerButton()
                 LibraryColorManagerButton(showColorManager: $showColorManager)
+                LibraryInfoButton(showLibraryInfo: $showLibraryInfo)
             }
         }
         .sheet(isPresented: $appState.showTagManager) {
@@ -394,6 +409,9 @@ struct LibraryView: View {
         }
         .sheet(isPresented: $showColorManager) {
             ColorManager(library: self.library)
+        }
+        .sheet(isPresented: $showLibraryInfo) {
+            LibraryInfoPanel(library: library)
         }
         .sheet(isPresented: $showTagfilter) {
             TagSearch(library: self.library, tags: $tags, selectAction: addTagToFilter, multiSelect: true, selected: self.tagFilters, closeButton: true)

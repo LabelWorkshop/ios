@@ -1156,6 +1156,9 @@
 
     },
     "Date Fields" : {
+        
+    },
+    "Database Version" : {
 
     },
     "Delete" : {
@@ -1183,6 +1186,9 @@
           }
         }
       }
+    },
+    "Entries" : {
+
     },
     "Failed to save changes." : {
 
@@ -1286,6 +1292,9 @@
       "shouldTranslate" : false
     },
     "Library" : {
+
+    },
+    "Library Info" : {
 
     },
     "List" : {
@@ -1457,6 +1466,9 @@
 
     },
     "Start by pressing Add Library." : {
+
+    },
+    "Statistics" : {
 
     },
     "Tag" : {

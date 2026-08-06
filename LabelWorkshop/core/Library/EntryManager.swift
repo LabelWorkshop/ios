@@ -10,6 +10,7 @@ class EntryManager {
     let library: Library
     private var entries: [Entry] = []
     var all: [Entry] { entries }
+    var count: Int {entries.count}
     
     init(library: Library) {
         self.library = library

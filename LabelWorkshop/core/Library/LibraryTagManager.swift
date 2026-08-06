@@ -16,6 +16,7 @@ struct TagOptions {
 class LibraryTagManager {
     let library: Library
     var tags: [Tag] = []
+    var count: Int {tags.count}
     
     init(library: Library) {
         self.library = library
