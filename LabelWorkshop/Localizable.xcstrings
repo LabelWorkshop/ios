@@ -121,6 +121,9 @@
     "Color Manager" : {
 
     },
+    "Colors" : {
+
+    },
     "colors.none.none" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1358,6 +1361,9 @@
 
     },
     "Namespace Rename Error" : {
+
+    },
+    "Namespaces" : {
 
     },
     "New" : {
