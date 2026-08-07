@@ -35,27 +35,29 @@ class LibraryTagManager {
             TagsTable.isHidden
         )
         do {
-            for rawTag in try library.db!.prepare(query) {
-                let name = rawTag[TagsTable.name]
-                let namespace = rawTag[TagsTable.colorNamespace] ?? ""
-                let slug = rawTag[TagsTable.colorSlug] ?? ""
-                let colors = library.tagColors?.find(namespace: namespace, slug: slug) ?? TagColor.none
-                let shorthand = rawTag[TagsTable.shorthand]
-                let isCategory = rawTag[TagsTable.isCategory]
-                let disambiguationId = rawTag[TagsTable.disambiguationId]
-                let isHidden = rawTag[TagsTable.isHidden]
-                let id = rawTag[TagsTable.id]
-                let tag = Tag(
-                    library: self.library,
-                    name: name,
-                    id: id,
-                    colors: colors,
-                    shorthand: shorthand,
-                    isCategory: isCategory,
-                    disambiguationId: disambiguationId,
-                    isHidden: isHidden
-                )
-                newTags.append(tag)
+            try library.withDatabase { db in
+                for rawTag in try db.prepare(query) {
+                    let name = rawTag[TagsTable.name]
+                    let namespace = rawTag[TagsTable.colorNamespace] ?? ""
+                    let slug = rawTag[TagsTable.colorSlug] ?? ""
+                    let colors = library.tagColors?.find(namespace: namespace, slug: slug) ?? TagColor.none
+                    let shorthand = rawTag[TagsTable.shorthand]
+                    let isCategory = rawTag[TagsTable.isCategory]
+                    let disambiguationId = rawTag[TagsTable.disambiguationId]
+                    let isHidden = rawTag[TagsTable.isHidden]
+                    let id = rawTag[TagsTable.id]
+                    let tag = Tag(
+                        library: self.library,
+                        name: name,
+                        id: id,
+                        colors: colors,
+                        shorthand: shorthand,
+                        isCategory: isCategory,
+                        disambiguationId: disambiguationId,
+                        isHidden: isHidden
+                    )
+                    newTags.append(tag)
+                }
             }
         } catch {print(error)}
         self.tags = newTags

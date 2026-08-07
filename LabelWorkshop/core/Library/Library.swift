@@ -183,5 +183,15 @@ class Library: Hashable, Identifiable, Equatable {
             try self.entries.add(path: file.url)
         }
     }
+    
+    func withDatabase<T>(
+        _ body: (Connection) throws -> T?
+    ) rethrows -> T? {
+        guard let db = self.db else {
+            return nil
+        }
+
+        return try body(db)
+    }
 }
 
