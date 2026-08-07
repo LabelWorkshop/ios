@@ -215,7 +215,9 @@ struct EntryView: View {
                             .multilineTextAlignment(.trailing)
                             Button(role: .destructive) {
                                 do {
-                                    try fields.remove(field: field)
+                                    try withAnimation(.easeInOut(duration: 0.25)) {
+                                        try fields.remove(field: field)
+                                    }
                                 } catch { print(error) }
                             } label: {
                                 Image(systemName: "minus.circle.fill")
@@ -224,7 +226,11 @@ struct EntryView: View {
                             }
                             .tint(.red)
                         }
-                    }
+                        .transition(.asymmetric(
+                            insertion: .opacity,
+                            removal: .move(edge: .leading)
+                        ))
+                    }.animation(.easeInOut(duration: 0.25), value: fields.fields.map(\.id))
                 }
             }
             .padding(.horizontal)
