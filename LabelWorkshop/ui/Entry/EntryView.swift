@@ -151,6 +151,27 @@ struct EntryShareButton: View {
     }
 }
 
+struct FieldAddSection: View {
+    var entry: Entry
+    var fieldTemplates: [FieldTemplate]
+    
+    var body: some View {
+        ForEach(fieldTemplates) { fieldTemplate in
+            Button(action: {
+                do {
+                    try withAnimation(.easeInOut(duration: 0.25)) {
+                        if let fields = entry.fields {
+                            _ = try fields.add(fieldTemplate)
+                        }
+                    }
+                } catch {print(error)}
+            }) {
+                Text(fieldTemplate.name)
+            }
+        }
+    }
+}
+
 struct EntryView: View {
     @State var entry: Entry
     @State var showTagSelector: Bool = false
@@ -252,30 +273,10 @@ struct EntryView: View {
                         if let fieldTemplates = entry.library.fieldTemplates {
                             // TODO: Move the button code into a view
                             Section("Text Fields") {
-                                ForEach(fieldTemplates.texts) { fieldTemplate in
-                                    Button(action: {
-                                        do {
-                                            if let fields = entry.fields {
-                                                _ = try fields.add(fieldTemplate)
-                                            }
-                                        } catch {print(error)}
-                                    }) {
-                                        Text(fieldTemplate.name)
-                                    }
-                                }
+                                FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.texts)
                             }
                             Section("Date Fields") {
-                                ForEach(fieldTemplates.dates) { fieldTemplate in
-                                    Button(action: {
-                                        do {
-                                            if let fields = entry.fields {
-                                                _ = try fields.add(fieldTemplate)
-                                            }
-                                        } catch {print(error)}
-                                    }) {
-                                        Text(fieldTemplate.name)
-                                    }
-                                }
+                                FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.dates)
                             }
                         }
                     } label: {
