@@ -27,6 +27,9 @@ struct LibraryInfoPanel: View {
                     }
                     LibraryInfoItem(title: "Entries", info: String(library.entries.count))
                     LibraryInfoItem(title: "Tags", info: String(library.tags.count))
+                    if let fieldTemplates = library.fieldTemplates {
+                        LibraryInfoItem(title: "Field Templates", info: String(fieldTemplates.count))
+                    }
                 }
             }
             .navigationTitle("Library Info")

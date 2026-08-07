@@ -1158,6 +1158,9 @@
     "Database Version" : {
 
     },
+    "Date Fields" : {
+
+    },
     "Delete" : {
 
     },
@@ -1197,6 +1200,9 @@
       "extractionState" : "manual"
     },
     "Field" : {
+
+    },
+    "Field Templates" : {
 
     },
     "Fields" : {
