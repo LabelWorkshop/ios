@@ -30,6 +30,8 @@ struct LibraryInfoPanel: View {
                     if let fieldTemplates = library.fieldTemplates {
                         LibraryInfoItem(title: "Field Templates", info: String(fieldTemplates.count))
                     }
+                    LibraryInfoItem(title: "Colors", info: String(library.tagColors.colors.count))
+                    LibraryInfoItem(title: "Namespaces", info: String(library.tagColors.namespaces.count))
                 }
             }
             .navigationTitle("Library Info")
