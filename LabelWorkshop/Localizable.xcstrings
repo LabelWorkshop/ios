@@ -1155,10 +1155,10 @@
     "Create and edit colors directly in the app, then assign them to tags using the redesigned color picker." : {
 
     },
-    "Date Fields" : {
-        
-    },
     "Database Version" : {
+
+    },
+    "Date Fields" : {
 
     },
     "Delete" : {
@@ -1200,6 +1200,9 @@
       "extractionState" : "manual"
     },
     "Field" : {
+
+    },
+    "Field Templates" : {
 
     },
     "Fields" : {
