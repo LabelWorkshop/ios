@@ -105,80 +105,6 @@ class Tag: Identifiable, Equatable, Hashable {
         self.name = name
     }
     
-    @available(*, deprecated)
-    func setColumn<T: Value>(column: SQLite.Expression<T>, value: T) throws {
-        let query = TagsTable.table.filter(TagsTable.id == self.id)
-        if let db = self.library!.db {
-            try db.run(query.update(column <- value))
-        }
-    }
-    
-    @available(*, deprecated)
-    func setColumn<T: Value>(column: SQLite.Expression<T?>, value: T?) throws {
-        let query = TagsTable.table.filter(TagsTable.id == self.id)
-        if let db = self.library!.db {
-            try db.run(query.update(column <- value))
-        }
-    }
-    
-    @available(*, deprecated)
-    func setColor(_ color: TagColor) throws {
-        try setColumn(column: TagsTable.colorSlug, value: color.slug)
-        try setColumn(column: TagsTable.colorNamespace, value: color.namespace)
-        self.colors = color
-    }
-    
-    @available(*, deprecated)
-    func getAliases() -> [TagAlias] {
-        let query = TagAliasesTable.table.select(*).filter(TagAliasesTable.tagId == id)
-        var tagAliases: [TagAlias] = []
-        do {
-            for rawAlias in try self.library!.db!.prepare(query) {
-                tagAliases.append(
-                    TagAlias(
-                        id: rawAlias[TagAliasesTable.id],
-                        name: rawAlias[TagAliasesTable.name],
-                        tagId: rawAlias[TagAliasesTable.tagId],
-                        tag: self
-                    )
-                )
-            }
-        } catch {print(error)}
-        return tagAliases
-    }
-    
-    @available(*, deprecated)
-    func newAlias(_ name: String) {
-        let query = TagAliasesTable.table.insert(
-            TagAliasesTable.name <- name,
-            TagAliasesTable.tagId <- self.id
-        )
-        do {
-            try library!.db?.run(query)
-        } catch {print(error)}
-    }
-    
-    @available(*, deprecated)
-    func setAliases(_ aliases: [TagAlias]) {
-        let currentAliases = self.getAliases()
-        for alias in aliases {
-            // New Aliases
-            if alias.tag == nil {
-                self.newAlias(alias.name)
-                continue
-            }
-            // Updated Aliases
-            if var oldAlias = currentAliases.first(where: {$0.id == alias.id}) {
-                oldAlias.setName(alias.name)
-                continue
-            }
-        }
-        // Deleted Aliases
-        for alias in currentAliases {
-            aliases.filter({$0.id == alias.id}).count == 0 ? alias.delete() : ()
-        }
-    }
-    
     static func getNoCategoryTags(library: Library, tags: [Tag]) -> [Tag] {
         var noCategoryTags: [Tag] = []
         for tag in tags {
@@ -240,22 +166,6 @@ class Tag: Identifiable, Equatable, Hashable {
             }
         } catch {print(error)}
         return nil
-    }
-    
-    @available(*, deprecated)
-    static func fetchAll(library: Library) -> [Tag] {
-        var tags: [Tag] = []
-        let query = TagsTable.table.select(TagsTable.id)
-        do {
-            for rawPartialTag in try library.db!.prepare(query) {
-                let tag = Tag.fetch(
-                    library: library,
-                    id: rawPartialTag[TagsTable.id]
-                )
-                if let tag = tag { tags.append(tag) }
-            }
-        } catch {print(error)}
-        return tags
     }
     
     static func == (lhs: Tag, rhs: Tag) -> Bool {

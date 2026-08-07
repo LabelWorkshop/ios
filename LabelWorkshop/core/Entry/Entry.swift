@@ -59,29 +59,6 @@ class Entry {
         } catch {print(error)}
     }
     
-    @available(*, deprecated, message: "Use EntryManager.delete instead.")
-    func delete() {
-        let queries = [
-            DateFieldsTable.table
-                .filter(EntriesTable.id == self.id)
-                .delete(),
-            TextFieldsTable.table
-                .filter(EntriesTable.id == self.id)
-                .delete(),
-            TagEntriesTable.table
-                .filter(EntriesTable.id == self.id)
-                .delete(),
-            EntriesTable.table
-                .filter(EntriesTable.id == self.id)
-                .delete()
-        ]
-        do {
-            for query in queries {
-                try self.library.db!.run(query)
-            }
-        } catch {print(error)}
-    }
-    
     func withScopedURL<T>(
         _ body: (URL) throws -> T?
     ) rethrows -> T? {
