@@ -9,6 +9,7 @@ class EntryFieldManager {
         // This will not fail.
         fields.filter { $0.type == .text } as! [TextFieldEntry]
     }
+    var count: Int {fields.count}
     
     init(_ entry: Entry) throws {
         self.entry = entry
