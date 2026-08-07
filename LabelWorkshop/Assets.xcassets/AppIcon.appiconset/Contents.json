@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "LabelWorkshop-Light-512x512@2x.png",
+      "filename" : "LabelWorkshop-Light-512x512.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "LabelWorkshop-Dark-512x512@2x.png",
+      "filename" : "LabelWorkshop-Dark-512x512.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "LabelWorkshop-Tinted-512x512@2x.png",
+      "filename" : "LabelWorkshop-Tinted-512x512.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
