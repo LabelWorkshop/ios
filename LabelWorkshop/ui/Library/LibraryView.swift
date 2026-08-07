@@ -298,8 +298,8 @@ struct LibraryView: View {
             switch self.viewType {
             case .Grid:
                 ScrollView {
-                    if self.library.migrator.state != .MigrationNotRequired && !self.migrationClosed {
-                        MigrationProgress(library: library, closed: $migrationClosed)
+                    if let migrator = library.migrator, !self.migrationClosed {
+                        MigrationProgress(migrator: migrator, closed: $migrationClosed)
                     }
                     LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
                         ForEach(library.entries.all, id: \.path) { entry in

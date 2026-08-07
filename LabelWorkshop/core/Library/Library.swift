@@ -68,7 +68,7 @@ class Library: Hashable, Identifiable, Equatable {
     var matcher: TSIgnoreMatcher?
     var isNew: Bool
     var entries: EntryManager!
-    var migrator: LibraryMigrator!
+    var migrator: LibraryMigrator?
     
     var tags: LibraryTagManager!
     
@@ -78,6 +78,9 @@ class Library: Hashable, Identifiable, Equatable {
         self.bookmarkKey = bookmarkKey
         self.bookmark = loadBookmark(key: bookmarkKey)
         self.isNew = false
+        
+        self.migrator = LibraryMigrator(library: self)
+        
         do {
             if let bookmark = bookmark {
                 // Create TagStudio folder if not already created
@@ -103,12 +106,10 @@ class Library: Hashable, Identifiable, Equatable {
             // Get Entries
             self.entries = EntryManager(library: self)
             
-            self.migrator = LibraryMigrator(library: self)
-            
             // Check for migrations asynchronously
             Task { [weak self] in
                 do {
-                    try await self?.migrator.migrate()
+                    try await self?.migrator?.migrate()
                     self?.refresh()
                 } catch {
                     print(error)
