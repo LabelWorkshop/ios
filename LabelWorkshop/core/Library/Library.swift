@@ -6,6 +6,7 @@ import PathKit
 enum LibraryError: Error {
     case databaseInvalid
     case databaseUnmigrateable
+    case fieldTemplateInvalid
 }
 
 func loadBookmark(key: String) -> URL? {
@@ -62,7 +63,7 @@ class Library: Hashable, Identifiable, Equatable {
     var bookmark: URL?
     var db: Connection?
     var tagColors: TagColorManager!
-    var fieldTypes: [FieldType] = []
+    var fieldTemplates: FieldTemplateManager?
     var ignoreList: String = "\n.TagStudio\n.DS_Store"
     var matcher: TSIgnoreMatcher?
     var isNew: Bool
@@ -96,6 +97,9 @@ class Library: Hashable, Identifiable, Equatable {
             self.tagColors = TagColorManager(library: self)
             self.tags = LibraryTagManager(library: self)
             
+            // Get Field Types
+            self.fieldTemplates = try FieldTemplateManager(library: self)
+            
             // Get Entries
             self.entries = EntryManager(library: self)
             
@@ -115,16 +119,6 @@ class Library: Hashable, Identifiable, Equatable {
     
     func refresh() {
         do {
-            // Get Field Types
-            for rawFieldType in try self.db!.prepare(TextFieldTemplatesTable.table) {
-                self.fieldTypes.append(
-                    FieldType(
-                        id: rawFieldType[TextFieldTemplatesTable.id],
-                        name: rawFieldType[TextFieldTemplatesTable.name]
-                    )
-                )
-            }
-            
             // Get .ts_ignore file
             let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore")
             guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }

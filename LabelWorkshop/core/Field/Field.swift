@@ -1,34 +1,81 @@
 import SQLite
+import Observation
 import struct Foundation.Date
 
-class FieldType: Identifiable {
+enum FieldTemplateType {
+    var table: Table {
+        switch self {
+        case .text: TextFieldTemplatesTable.table
+        case .date: DateFieldTemplatesTable.table
+        }
+    }
+    
+    var entriesTable: Table {
+        switch self {
+        case .text: TextFieldsTable.table
+        case .date: DateFieldsTable.table
+        }
+    }
+    
+    case text
+    case date
+}
+
+class FieldTemplate: Identifiable {
     let id: Int
     let name: String
+    let type: FieldTemplateType
     
     init(
         id: Int,
-        name: String
+        name: String,
+        type: FieldTemplateType
     ) {
         self.id = id
         self.name = name
+        self.type = type
     }
 }
 
-class Field: Identifiable, Hashable {
-    static func == (lhs: Field, rhs: Field) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
+class FieldEntry: Identifiable {
     var id: Int
-    var entryId: Int
     var name: String
-    var value: String?
     var entry: Entry
-    var type: FieldType?
+    var type: FieldTemplateType
+    
+    static func == (lhs: FieldEntry, rhs: FieldEntry) -> Bool {
+        return lhs.type == rhs.type && lhs.id == rhs.id
+    }
+    
+    init(id: Int, name: String, entry: Entry, type: FieldTemplateType) {
+        self.id = id
+        self.name = name
+        self.entry = entry
+        self.type = type
+        do {
+            try self.refresh()
+        } catch {print(error)}
+    }
+    
+    static func get(
+        id: Int,
+        name: String,
+        entry: Entry,
+        type: FieldTemplateType
+    ) -> FieldEntry {
+        switch type {
+        case .text:
+            return TextFieldEntry(id: id, name: name, entry: entry, type: type)
+        case .date:
+            return FieldEntry(id: id, name: name, entry: entry, type: type)
+        }
+    }
+    
+    func refresh() throws {}
+}
+
+class TextFieldEntry: FieldEntry {
+    var value: String?
     var text: String {
         get {
             value ?? ""
@@ -44,19 +91,13 @@ class Field: Identifiable, Hashable {
         }
     }
     
-    init(
-        id: Int,
-        entryId: Int,
-        name: String,
-        entry: Entry,
-        value: String?
-    ) {
-        self.id = id
-        self.entryId = entryId
-        self.name = name
-        self.value = value
-        self.entry = entry
-        self.type = entry.library.fieldTypes.first(where: {$0.id == id})
+    override func refresh() throws {
+        if let db = self.entry.library.db {
+            if let row = try db.pluck(TextFieldsTable.table
+                .filter(TextFieldsTable.id == self.id)) {
+                self.value = row[TextFieldsTable.value]
+            }
+        }
     }
 }
 

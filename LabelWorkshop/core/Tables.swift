@@ -100,6 +100,12 @@ struct TextFieldTemplatesTable {
     static let isMultiline = Expression<Bool>("is_multiline")
 }
 
+struct DateFieldTemplatesTable {
+    static let table: Table = Table("datetime_field_templates")
+    static let id = Expression<Int>("id")
+    static let name = Expression<String>("name")
+}
+
 struct NamespacesTable {
     static let table = Table("namespaces")
     static let namespace = Expression<String>("namespace")
