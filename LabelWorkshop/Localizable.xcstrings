@@ -1312,6 +1312,9 @@
     "LabelWorkshop" : {
       "shouldTranslate" : false
     },
+    "Legacy Library Available" : {
+
+    },
     "Library" : {
 
     },
@@ -1414,6 +1417,9 @@
 
     },
     "Open an entry in full screen by tapping its preview." : {
+
+    },
+    "Other" : {
 
     },
     "Parent Tags" : {

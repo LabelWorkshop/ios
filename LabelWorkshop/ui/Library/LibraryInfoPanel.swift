@@ -1,22 +1,30 @@
 import SwiftUI
 
-struct LibraryInfoItem<LabelContents: View>: View {
-    let label: LabelContents
-    var info: String
+struct LibraryInfoItem<Label: View, Info: View>: View {
+    let label: Label
+    var info: Info
+    
+    init(
+        @ViewBuilder info: @escaping () -> Info,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
+        self.info = info()
+        self.label = label()
+    }
     
     init(
         info: String,
-        @ViewBuilder label: @escaping () -> LabelContents
-    ) {
-        self.info = info
+        @ViewBuilder label: @escaping () -> Label
+    ) where Info == Text {
+        self.info = Text(info)
         self.label = label()
     }
     
     init(
         info: Int,
-        @ViewBuilder label: @escaping () -> LabelContents
-    ) {
-        self.info = String(info)
+        @ViewBuilder label: @escaping () -> Label
+    ) where Info == Text {
+        self.info = Text(String(info))
         self.label = label()
     }
     
@@ -26,8 +34,7 @@ struct LibraryInfoItem<LabelContents: View>: View {
             label
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .labelStyle(.uniformIconWidth)
-            Text(info)
-                .foregroundStyle(.secondary)
+            info
         }
     }
 }
@@ -128,12 +135,6 @@ struct LibraryInfoPanel: View {
                 VStack {
                     ListLikeSection("Statistics")
                     VStack {
-                        if let db = library.db {
-                            LibraryInfoItem(info: db.databaseVersion) {
-                                Label("Database Version", systemImage: "cylinder.split.1x2")
-                            }
-                            Divider()
-                        }
                         LibraryInfoItem(info: library.entries.count) {
                             Label("Entries", systemImage: "photo.fill")
                         }
@@ -166,6 +167,23 @@ struct LibraryInfoPanel: View {
                         LibraryFixDuplicateButton()
                         LibraryFixAllButton()
                     }
+                    ListLikeSection("Other")
+                    VStack {
+                        if let db = library.db {
+                            LibraryInfoItem(info: db.databaseVersion) {
+                                Label("Database Version", systemImage: "cylinder.split.1x2")
+                            }
+                            Divider()
+                        }
+                        LibraryInfoItem {
+                            Image(systemName: library.legacyLibraryAvailable ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundStyle(library.legacyLibraryAvailable ? .green : .red)
+                        } label: {
+                            Label("Legacy Library Available", systemImage: "ellipsis.curlybraces")
+                        }
+                    }
+                    .padding()
+                    .background(.background.quaternary, in: LWConcentricRectangle())
                 }
                 .padding()
             }
