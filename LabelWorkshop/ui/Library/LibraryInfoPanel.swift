@@ -1,18 +1,61 @@
 import SwiftUI
 
-struct LibraryInfoItem: View {
-    var title: LocalizedStringKey
+struct LibraryInfoItem<LabelContents: View>: View {
+    let label: LabelContents
     var info: String
     
+    init(
+        info: String,
+        @ViewBuilder label: @escaping () -> LabelContents
+    ) {
+        self.info = info
+        self.label = label()
+    }
+    
+    init(
+        info: Int,
+        @ViewBuilder label: @escaping () -> LabelContents
+    ) {
+        self.info = String(info)
+        self.label = label()
+    }
+    
     var body: some View {
+        
         HStack {
-            Text(title)
+            label
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .labelStyle(.uniformIconWidth)
             Text(info)
                 .foregroundStyle(.secondary)
         }
     }
 }
+
+struct UniformIconLabelStyle: LabelStyle {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    var iconWidth: CGFloat = 24
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 12) {
+            if dynamicTypeSize < .xxxLarge {
+                configuration.icon
+                    .frame(width: iconWidth, alignment: .center)
+            }
+            
+            configuration.title
+        }
+    }
+}
+
+extension LabelStyle where Self == UniformIconLabelStyle {
+    static var uniformIconWidth: UniformIconLabelStyle { UniformIconLabelStyle() }
+    
+    static func uniformIconWidth(_ width: CGFloat) -> UniformIconLabelStyle {
+        UniformIconLabelStyle(iconWidth: width)
+    }
+}
+
 
 struct LibraryFixIgnoredButton: View {
     var body: some View {
@@ -86,20 +129,32 @@ struct LibraryInfoPanel: View {
                     ListLikeSection("Statistics")
                     VStack {
                         if let db = library.db {
-                            LibraryInfoItem(title: "Database Version", info: String(db.databaseVersion))
+                            LibraryInfoItem(info: db.databaseVersion) {
+                                Label("Database Version", systemImage: "cylinder.split.1x2")
+                            }
                             Divider()
                         }
-                        LibraryInfoItem(title: "Entries", info: String(library.entries.count))
+                        LibraryInfoItem(info: library.entries.count) {
+                            Label("Entries", systemImage: "photo.fill")
+                        }
                         Divider()
-                        LibraryInfoItem(title: "Tags", info: String(library.tags.count))
+                        LibraryInfoItem(info: library.tags.count) {
+                            Label("Tags", systemImage: "tag")
+                        }
                         Divider()
                         if let fieldTemplates = library.fieldTemplates {
-                            LibraryInfoItem(title: "Field Templates", info: String(fieldTemplates.count))
+                            LibraryInfoItem(info: fieldTemplates.count) {
+                                Label("Field Templates", systemImage: "character.textbox")
+                            }
                             Divider()
                         }
-                        LibraryInfoItem(title: "Colors", info: String(library.tagColors.colors.count))
+                        LibraryInfoItem(info: library.tagColors.colors.count) {
+                            Label("Colors", systemImage: "paintpalette")
+                        }
                         Divider()
-                        LibraryInfoItem(title: "Namespaces", info: String(library.tagColors.namespaces.count))
+                        LibraryInfoItem(info: library.tagColors.namespaces.count) {
+                            Label("Namespaces", systemImage: "rainbow")
+                        }
                     }
                     .padding()
                     .background(.background.quaternary, in: LWConcentricRectangle())
