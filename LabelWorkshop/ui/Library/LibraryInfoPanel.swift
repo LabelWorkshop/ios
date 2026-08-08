@@ -14,6 +14,62 @@ struct LibraryInfoItem: View {
     }
 }
 
+struct LibraryFixIgnoredButton: View {
+    var body: some View {
+        Button {
+            
+        } label: {
+            Label("Fix Ignored", systemImage: "minus.circle.fill")
+                .frame(maxWidth: .infinity)
+
+        }
+        .buttonStyle(.bordered)
+        .tint(.orange)
+    }
+}
+
+struct LibraryFixUnlinkedButton: View {
+    var body: some View {
+        Button {
+            
+        } label: {
+            Label("Fix Unlinked", systemImage: "link")
+                .frame(maxWidth: .infinity)
+
+        }
+        .buttonStyle(.bordered)
+        .tint(.red)
+    }
+}
+
+struct LibraryFixDuplicateButton: View {
+    var body: some View {
+        Button {
+            
+        } label: {
+            Label("Fix Duplicates", systemImage: "document.on.document")
+                .frame(maxWidth: .infinity)
+
+        }
+        .buttonStyle(.bordered)
+        .tint(.blue)
+    }
+}
+
+struct LibraryFixAllButton: View {
+    var body: some View {
+        Button {
+            
+        } label: {
+            Label("Fix All", systemImage: "ellipsis")
+                .frame(maxWidth: .infinity)
+            
+        }
+        .buttonStyle(.bordered)
+        .tint(.gray)
+    }
+}
+
 struct LibraryInfoPanel: View {
     @Environment(\.dismiss) var dismiss
     var library: Library
@@ -22,11 +78,7 @@ struct LibraryInfoPanel: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    Text("Statistics")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
+                    ListLikeSection("Statistics")
                     VStack {
                         if let db = library.db {
                             LibraryInfoItem(title: "Database Version", info: String(db.databaseVersion))
@@ -46,6 +98,17 @@ struct LibraryInfoPanel: View {
                     }
                     .padding()
                     .background(.background.quaternary, in: LWConcentricRectangle())
+                    ListLikeSection("Clean Up")
+                    // TODO: CHANGE THIS TO BETTER ADAPT TO SPACE AND TYPE SIZE
+                    LazyVGrid(columns: Array(
+                        repeating: GridItem(.flexible()),
+                        count: 2)
+                    ) {
+                        LibraryFixIgnoredButton()
+                        LibraryFixUnlinkedButton()
+                        LibraryFixDuplicateButton()
+                        LibraryFixAllButton()
+                    }
                 }
                 .padding()
             }

@@ -108,6 +108,9 @@
     "Choose from additional zoom levels or switch to the new list view." : {
 
     },
+    "Clean Up" : {
+
+    },
     "Color" : {
       "localizations" : {
         "fr" : {
@@ -1232,6 +1235,18 @@
       }
     },
     "Find entries more easily with new filters for untagged and hidden items." : {
+
+    },
+    "Fix All" : {
+
+    },
+    "Fix Duplicates" : {
+
+    },
+    "Fix Ignored" : {
+
+    },
+    "Fix Unlinked" : {
 
     },
     "Full Screen" : {
