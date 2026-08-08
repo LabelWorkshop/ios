@@ -20,29 +20,46 @@ struct LibraryInfoPanel: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                Section("Statistics") {
-                    if let db = library.db {
-                        LibraryInfoItem(title: "Database Version", info: String(db.databaseVersion))
+            ScrollView {
+                VStack {
+                    Text("Statistics")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 16)
+                    VStack {
+                        if let db = library.db {
+                            LibraryInfoItem(title: "Database Version", info: String(db.databaseVersion))
+                            Divider()
+                        }
+                        LibraryInfoItem(title: "Entries", info: String(library.entries.count))
+                        Divider()
+                        LibraryInfoItem(title: "Tags", info: String(library.tags.count))
+                        Divider()
+                        if let fieldTemplates = library.fieldTemplates {
+                            LibraryInfoItem(title: "Field Templates", info: String(fieldTemplates.count))
+                            Divider()
+                        }
+                        LibraryInfoItem(title: "Colors", info: String(library.tagColors.colors.count))
+                        Divider()
+                        LibraryInfoItem(title: "Namespaces", info: String(library.tagColors.namespaces.count))
                     }
-                    LibraryInfoItem(title: "Entries", info: String(library.entries.count))
-                    LibraryInfoItem(title: "Tags", info: String(library.tags.count))
-                    if let fieldTemplates = library.fieldTemplates {
-                        LibraryInfoItem(title: "Field Templates", info: String(fieldTemplates.count))
-                    }
-                    LibraryInfoItem(title: "Colors", info: String(library.tagColors.colors.count))
-                    LibraryInfoItem(title: "Namespaces", info: String(library.tagColors.namespaces.count))
+                    .padding()
+                    .background(.background.quaternary, in: LWConcentricRectangle())
                 }
+                .padding()
             }
             .navigationTitle("Library Info")
             .modifier(NavigationSubtitleCompat(subtitle: "for \(library.getName())"))
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .topBarTrailing) {
                     CloseButton(dismiss: dismiss)
                 }
             }
+            .containerShape(.rect(cornerRadius: 40))
         }
+        .background(.background.secondary)
     }
 }
 
