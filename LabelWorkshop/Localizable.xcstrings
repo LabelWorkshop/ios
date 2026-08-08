@@ -108,6 +108,9 @@
     "Choose from additional zoom levels or switch to the new list view." : {
 
     },
+    "Clean Up" : {
+
+    },
     "Color" : {
       "localizations" : {
         "fr" : {
@@ -119,6 +122,9 @@
       }
     },
     "Color Manager" : {
+
+    },
+    "Colors" : {
 
     },
     "colors.none.none" : {
@@ -1155,6 +1161,9 @@
     "Create and edit colors directly in the app, then assign them to tags using the redesigned color picker." : {
 
     },
+    "Database Version" : {
+
+    },
     "Date Fields" : {
 
     },
@@ -1184,6 +1193,9 @@
         }
       }
     },
+    "Entries" : {
+
+    },
     "Failed to save changes." : {
 
     },
@@ -1194,6 +1206,9 @@
       "extractionState" : "manual"
     },
     "Field" : {
+
+    },
+    "Field Templates" : {
 
     },
     "Fields" : {
@@ -1220,6 +1235,18 @@
       }
     },
     "Find entries more easily with new filters for untagged and hidden items." : {
+
+    },
+    "Fix All" : {
+
+    },
+    "Fix Duplicates" : {
+
+    },
+    "Fix Ignored" : {
+
+    },
+    "Fix Unlinked" : {
 
     },
     "Full Screen" : {
@@ -1288,6 +1315,9 @@
     "Library" : {
 
     },
+    "Library Info" : {
+
+    },
     "List" : {
 
     },
@@ -1346,6 +1376,9 @@
 
     },
     "Namespace Rename Error" : {
+
+    },
+    "Namespaces" : {
 
     },
     "New" : {
@@ -1457,6 +1490,9 @@
 
     },
     "Start by pressing Add Library." : {
+
+    },
+    "Statistics" : {
 
     },
     "Tag" : {

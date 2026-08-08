@@ -11,6 +11,7 @@ class FieldTemplateManager {
     var texts: [FieldTemplate] {
         self.fieldTemplates.filter { $0.type == .text }
     }
+    var count: Int {fieldTemplates.count}
     
     init(library: Library) throws {
         self.library = library
