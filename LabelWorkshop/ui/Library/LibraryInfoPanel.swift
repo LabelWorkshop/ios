@@ -21,7 +21,8 @@ struct LibraryFixIgnoredButton: View {
         } label: {
             Label("Fix Ignored", systemImage: "minus.circle.fill")
                 .frame(maxWidth: .infinity)
-
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .buttonStyle(.bordered)
         .tint(.orange)
@@ -35,7 +36,8 @@ struct LibraryFixUnlinkedButton: View {
         } label: {
             Label("Fix Unlinked", systemImage: "link")
                 .frame(maxWidth: .infinity)
-
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .buttonStyle(.bordered)
         .tint(.red)
@@ -49,7 +51,8 @@ struct LibraryFixDuplicateButton: View {
         } label: {
             Label("Fix Duplicates", systemImage: "document.on.document")
                 .frame(maxWidth: .infinity)
-
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .buttonStyle(.bordered)
         .tint(.blue)
@@ -63,7 +66,8 @@ struct LibraryFixAllButton: View {
         } label: {
             Label("Fix All", systemImage: "ellipsis")
                 .frame(maxWidth: .infinity)
-            
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .buttonStyle(.bordered)
         .tint(.gray)
@@ -72,6 +76,7 @@ struct LibraryFixAllButton: View {
 
 struct LibraryInfoPanel: View {
     @Environment(\.dismiss) var dismiss
+    @ScaledMetric(relativeTo: .body) private var minColumnWidth: CGFloat = 150
     var library: Library
     
     var body: some View {
@@ -99,10 +104,7 @@ struct LibraryInfoPanel: View {
                     .padding()
                     .background(.background.quaternary, in: LWConcentricRectangle())
                     ListLikeSection("Clean Up")
-                    // TODO: CHANGE THIS TO BETTER ADAPT TO SPACE AND TYPE SIZE
-                    LazyVGrid(columns: Array(
-                        repeating: GridItem(.flexible()),
-                        count: 2)
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: minColumnWidth))]
                     ) {
                         LibraryFixIgnoredButton()
                         LibraryFixUnlinkedButton()
