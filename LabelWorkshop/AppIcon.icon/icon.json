@@ -1,15 +1,49 @@
 {
   "fill" : {
-    "solid" : "gray:1.00000,1.00000"
+    "linear-gradient" : [
+      "display-p3:0.94902,0.95000,0.95000,1.00000",
+      "gray:1.00000,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 1
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0
+      }
+    }
   },
   "groups" : [
     {
       "layers" : [
         {
+          "fill" : "automatic",
+          "hidden-specializations" : [
+            {
+              "appearance" : "light",
+              "value" : true
+            }
+          ],
           "image-name" : "LogoIcon_Flat.png",
           "name" : "LogoIcon_Flat",
           "position" : {
-            "scale" : 0.5,
+            "scale" : 0.49,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+          },
+          "image-name" : "LogoIcon_Flat.png",
+          "name" : "LogoIcon_Flat",
+          "position" : {
+            "scale" : 0.49,
             "translation-in-points" : [
               0,
               0
@@ -17,6 +51,12 @@
           }
         }
       ],
+      "name" : "Logo",
+      "refractivity" : {
+        "depth" : 0.2859765625,
+        "enabled" : false,
+        "strength" : 0.3007421875
+      },
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5
@@ -30,41 +70,27 @@
       "layers" : [
         {
           "glass" : false,
-          "hidden" : false,
-          "image-name" : "Colour_Flat.png",
-          "name" : "Colour_Flat"
-        },
-        {
-          "blend-mode" : "normal",
-          "fill" : "none",
-          "glass" : false,
           "hidden-specializations" : [
             {
               "value" : true
             },
             {
               "appearance" : "light",
-              "value" : true
+              "value" : false
             }
           ],
-          "image-name" : "Colour.png",
-          "name" : "Colour",
-          "position" : {
-            "scale" : 1,
-            "translation-in-points" : [
-              0,
-              0
-            ]
-          }
+          "image-name" : "Colour Bright Flat.png",
+          "name" : "Colour Bright Flat"
         }
       ],
+      "name" : "Background",
       "shadow" : {
         "kind" : "neutral",
-        "opacity" : 0.5
+        "opacity" : 0.6
       },
       "translucency" : {
         "enabled" : true,
-        "value" : 0.5
+        "value" : 0.2
       }
     }
   ],
