@@ -88,16 +88,7 @@ struct LWVideoPlayer: View {
 actor ThumbnailLoader {
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
     static let shared = ThumbnailLoader()
-    private var priorityEntryIds: Set<Int> = []
     let thumbnailSize = 300
-    
-    func priorityUp(for entry: Entry) {
-        priorityEntryIds.insert(entry.id)
-    }
-    
-    func priorityDown(for entry: Entry) {
-        priorityEntryIds.remove(entry.id)
-    }
     
     func thumbnail(
         for entry: Entry,
@@ -112,10 +103,7 @@ actor ThumbnailLoader {
             return await existing.value
         }
         
-        // Set the priority depending on if the entry is visiable or not
-        let priority: TaskPriority = priorityEntryIds.contains(entry.id) ? .high : .background
-        
-        let task = Task<UIImage?, Never>(priority: priority) {
+        let task = Task<UIImage?, Never>(priority: .userInitiated) {
             var image: UIImage?
             if entry.type == .Video {
                 image = await loadVideoThumbnail(for: entry)
@@ -263,16 +251,6 @@ struct EntryPreView: View {
                 self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square)
             } else if self.entry.type == .PlainText {
                 self.text = await ThumbnailLoader.shared.getTextContents(for: entry)
-            }
-        }
-        .onAppear {
-            Task {
-                await ThumbnailLoader.shared.priorityUp(for: entry)
-            }
-        }
-        .onDisappear {
-            Task {
-                await ThumbnailLoader.shared.priorityDown(for: entry)
             }
         }
     }
