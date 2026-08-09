@@ -27,17 +27,6 @@
         }
       }
     },
-    "Add Field" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajouter un Champ"
-          }
-        }
-      }
-    },
     "Add Library" : {
 
     },
@@ -47,17 +36,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ajouter un Tag Parent"
-          }
-        }
-      }
-    },
-    "Add Tags" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajouter un Tag"
           }
         }
       }
@@ -1396,17 +1374,6 @@
     "No Library Selected" : {
 
     },
-    "No preview available" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucun aperçu disponible"
-          }
-        }
-      }
-    },
     "On iPadOS, some dialogs now open in their own window instead of as a sheet." : {
 
     },
@@ -1415,17 +1382,6 @@
     },
     "Other" : {
 
-    },
-    "Parent Tags" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tags Parents"
-          }
-        }
-      }
     },
     "Parents" : {
 
