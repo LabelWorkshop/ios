@@ -12,7 +12,7 @@ struct VisualTagEdit: View {
         .shadow(color: colors.border, radius: 16)
         .padding(50)
         .frame(maxWidth: .infinity)
-        .background(Color(UIColor.tertiarySystemFill))
+        .background(.fill.secondary)
         .background(
             Image("dots")
                 .opacity(0.3)

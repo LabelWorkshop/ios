@@ -57,7 +57,7 @@ struct TextThumbnail: View {
     var body: some View {
         Text(text)
             .font(.callout)
-            .foregroundStyle(Color(UIColor.label))
+            .tint(.primary)
             .multilineTextAlignment(.leading)
             .frame(maxHeight: .infinity, alignment: .top)
     }
@@ -257,7 +257,7 @@ struct EntryPreView: View {
             view.aspectRatio(1 / 1, contentMode: .fit)
         }
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
-        .background(Color(UIColor.secondarySystemBackground))
+        .background(.background.secondary)
         .task {
             let exists = await Task.detached(priority: .utility) {
                 await FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
