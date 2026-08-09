@@ -121,6 +121,9 @@
     "Color Manager" : {
 
     },
+    "Colors" : {
+
+    },
     "colors.none.none" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1155,6 +1158,9 @@
     "Create and edit colors directly in the app, then assign them to tags using the redesigned color picker." : {
 
     },
+    "Database Version" : {
+
+    },
     "Delete" : {
 
     },
@@ -1181,6 +1187,9 @@
         }
       }
     },
+    "Entries" : {
+
+    },
     "Failed to save changes." : {
 
     },
@@ -1191,6 +1200,9 @@
       "extractionState" : "manual"
     },
     "Field" : {
+
+    },
+    "Field Templates" : {
 
     },
     "Fields" : {
@@ -1217,6 +1229,18 @@
       }
     },
     "Find entries more easily with new filters for untagged and hidden items." : {
+
+    },
+    "Fix All" : {
+
+    },
+    "Fix Duplicates" : {
+
+    },
+    "Fix Ignored" : {
+
+    },
+    "Fix Unlinked" : {
 
     },
     "Full Screen" : {
@@ -1282,7 +1306,13 @@
     "LabelWorkshop" : {
       "shouldTranslate" : false
     },
+    "Legacy Library Available" : {
+
+    },
     "Library" : {
+
+    },
+    "Library Info" : {
 
     },
     "List" : {
@@ -1345,6 +1375,9 @@
     "Namespace Rename Error" : {
 
     },
+    "Namespaces" : {
+
+    },
     "New" : {
 
     },
@@ -1378,6 +1411,9 @@
 
     },
     "Open an entry in full screen by tapping its preview." : {
+
+    },
+    "Other" : {
 
     },
     "Parent Tags" : {
@@ -1454,6 +1490,9 @@
 
     },
     "Start by pressing Add Library." : {
+
+    },
+    "Statistics" : {
 
     },
     "Tag" : {
