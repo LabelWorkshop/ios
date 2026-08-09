@@ -258,13 +258,9 @@ struct EntryView: View {
         }
         .navigationTitle(entry.path)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    EntryShareButton(entry: $entry)
-                    EntryDeleteButton(entry: $entry, deletionError: $deletionError)
-                } label: {
-                    Image(systemName: "ellipsis")
-                }
+            ToolbarItemGroup(placement: .secondaryAction) {
+                EntryShareButton(entry: $entry)
+                EntryDeleteButton(entry: $entry, deletionError: $deletionError)
             }
             
             ToolbarItem(placement: .bottomBar) {

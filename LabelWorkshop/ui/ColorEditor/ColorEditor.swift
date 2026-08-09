@@ -64,10 +64,10 @@ struct ColorEditor: View {
                 Toggle("Use secondary as border", isOn: $secondaryAsBorder)
             }.navigationTitle($name)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     CloseButton(dismiss: dismiss)
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         do {
                             if let color = color{

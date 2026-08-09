@@ -42,7 +42,7 @@ struct AboutView: View {
             .navigationTitle("About")
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing){
+                ToolbarItem(placement: .primaryAction){
                     CloseButton(dismiss: dismiss)
                 }
             }.preferredColorScheme(.dark)

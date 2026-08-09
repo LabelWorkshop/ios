@@ -67,7 +67,7 @@ struct ColorManager: View {
                 .navigationTitle("Color Manager")
                 .toolbar {
                     if UIDevice.current.userInterfaceIdiom == .phone {
-                        ToolbarItem(placement: .navigationBarLeading) {
+                        ToolbarItem(placement: .cancellationAction) {
                             CloseButton(dismiss: dismiss)
                         }
                     }
@@ -146,10 +146,10 @@ struct ColorManager: View {
                         }
                     }
                     .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
+                        ToolbarItem(placement: .cancellationAction) {
                             CloseButton(dismiss: dismiss)
                         }
-                        ToolbarItem(placement: .navigationBarTrailing) {
+                        ToolbarItem(placement: .primaryAction) {
                             Button {
                                 do {
                                     try library.tagColors.newNamespace(name: newNamespaceName, namespace: newNamespaceSlug)
@@ -211,11 +211,11 @@ struct RenameNamespace: View {
             }
             .presentationDetents([.fraction(0.2), .medium])
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     CloseButton(dismiss: dismiss)
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         do {
                             try renameNamespace.manager.renameNamespace(namespace: renameNamespace, to: name)

@@ -74,7 +74,7 @@ struct ContentView: View {
         NavigationSplitView(columnVisibility: $visibility) {
             LibraryList(libraries: $libraries)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading){
+                ToolbarItem(placement: .topBarTrailing){
                     Button(action: {
                         showAbout = true
                     }) {
@@ -93,7 +93,7 @@ struct ContentView: View {
                 .buttonStyle(ProminentButtonStyle())
             }
             .navigationTitle("LabelWorkshop")
-            .toolbarTitleDisplayMode(.large)
+            .toolbarTitleDisplayMode(.large) // TODO: CHANGE TO INLINE LARGE
         } content: {
             if let library = appState.selectedLibrary {
                 LibraryView(library: library)
