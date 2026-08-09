@@ -241,10 +241,16 @@ struct EntryPreView: View {
     @State var text: String?
     @State var video: AVPlayer?
     @State var isUnlinked: Bool = false
+    @State var blurImage: Bool = false
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
         self.square = square
+    }
+    
+    func doesThumbnailExist(for entry: Entry) -> Bool {
+        let cacheName = "\(entry.id)-\(true)"
+        return entry.library.thumbnailCache.image(for: cacheName) != nil
     }
     
     var body: some View {
@@ -262,6 +268,9 @@ struct EntryPreView: View {
             }
             else if let image {
                 ImageThumbnail(image: image, square: square)
+                    .if(blurImage) { view in
+                        view.blur(radius: 10, opaque: true)
+                    }
             }
             else if let text, !text.isEmpty {
                 TextThumbnail(text: text)
@@ -276,6 +285,10 @@ struct EntryPreView: View {
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(.background.secondary)
         .task {
+            if !square && self.doesThumbnailExist(for: entry) {
+                self.image = entry.library.thumbnailCache.image(for: "\(entry.id)-\(true)")
+                self.blurImage = true
+            }
             let exists = await Task.detached(priority: .utility) {
                 await FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
             }.value
@@ -288,6 +301,7 @@ struct EntryPreView: View {
             } else if self.entry.type == .PlainText {
                 self.text = await ThumbnailLoader.shared.getTextContents(for: entry)
             }
+            self.blurImage = false
         }
     }
 }
