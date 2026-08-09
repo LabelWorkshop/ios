@@ -275,9 +275,9 @@ struct EntryView: View {
                             Section("Text Fields") {
                                 FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.texts)
                             }
-                            Section("Date Fields") {
+                            /*Section("Date Fields") {
                                 FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.dates)
-                            }
+                            }*/
                         }
                     } label: {
                         Label("Field", systemImage: "character.textbox")
