@@ -89,6 +89,21 @@ actor ThumbnailLoader {
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
     static let shared = ThumbnailLoader()
     let thumbnailSize = 300
+    private var access: [Library] = []
+    
+    func startAccess(for library: Library) {
+        print("ACCESS STARTED")
+        guard let bookmark = library.bookmark else { return }
+        access.append(library)
+        _ = bookmark.startAccessingSecurityScopedResource()
+    }
+    
+    func stopAccess(for library: Library) {
+        print("ACCESS ENDED")
+        guard let bookmark = library.bookmark else { return }
+        access.removeAll(where: { $0 == library})
+        bookmark.stopAccessingSecurityScopedResource()
+    }
     
     func thumbnail(
         for entry: Entry,
@@ -103,12 +118,18 @@ actor ThumbnailLoader {
             return await existing.value
         }
         
+        if !access.contains(entry.library) {
+            startAccess(for: entry.library)
+        }
+        
         let task = Task<UIImage?, Never>(priority: .userInitiated) {
+            guard let url = entry.fullPath else { return nil }
+            
             var image: UIImage?
             if entry.type == .Video {
-                image = await loadVideoThumbnail(for: entry)
+                image = await loadVideoThumbnail(for: url)
             } else {
-                image = await loadImage(for: entry, thumbnail: square)
+                image = await loadImage(for: url, thumbnail: square)
             }
             guard let image = image else { return nil }
             entry.library.thumbnailCache.set(image, for: cacheName)
@@ -116,65 +137,63 @@ actor ThumbnailLoader {
         }
         inFlight[cacheName] = task
         let result = await task.value
-        inFlight[cacheName] = nil
+        inFlight.removeValue(forKey: cacheName)
+        
+        if inFlight.isEmpty, access.contains(entry.library) {
+            stopAccess(for: entry.library)
+        }
+        
         return result
     }
     
-    func loadThumbnailImage(for entry: Entry) async -> UIImage? {
-        entry.withScopedURL { url in
-            guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-                return nil
-            }
-
-            let options: [CFString: Any] = [
-                kCGImageSourceShouldCache: false,
-                kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceThumbnailMaxPixelSize: thumbnailSize
-            ]
-
-            guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
-                return nil
-            }
-
-            return UIImage(cgImage: cgImage)
-        }
-    }
-    
-    func loadImageFull(for entry: Entry) async -> UIImage? {
-        entry.withScopedURL { url in
-            return UIImage(contentsOfFile: url.path)
-        }
-    }
-    
-    func loadImage(for entry: Entry, thumbnail: Bool) async -> UIImage? {
-        if thumbnail {
-            return await loadThumbnailImage(for: entry)
-        } else {
-            return await loadImageFull(for: entry)
-        }
-    }
-    
-    func loadVideoThumbnail(for entry: Entry) async -> UIImage? {
-        entry.withScopedURL { url in
-            
-            let asset = AVURLAsset(url: url)
-            let generator = AVAssetImageGenerator(asset: asset)
-            generator.maximumSize = CGSize(width: thumbnailSize, height: thumbnailSize)
-            generator.appliesPreferredTrackTransform = true
-            // Stops forcing usage of first frame
-            // which can speed up generation
-            generator.requestedTimeToleranceBefore = .positiveInfinity
-            generator.requestedTimeToleranceAfter = .positiveInfinity
-            
-            do {
-                let CGThumbnail = try generator.copyCGImage(at: CMTime.zero, actualTime: nil)
-                return UIImage(cgImage: CGThumbnail)
-            } catch {
-                print(error)
-            }
+    func loadThumbnailImage(for url: URL) async -> UIImage? {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
             return nil
         }
+
+        let options: [CFString: Any] = [
+            kCGImageSourceShouldCache: false,
+            kCGImageSourceCreateThumbnailFromImageIfAbsent: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: thumbnailSize
+        ]
+
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+            return nil
+        }
+
+        return UIImage(cgImage: cgImage)
+    }
+    
+    func loadImageFull(for url: URL) async -> UIImage? {
+        return UIImage(contentsOfFile: url.path)
+    }
+    
+    func loadImage(for url: URL, thumbnail: Bool) async -> UIImage? {
+        if thumbnail {
+            return await loadThumbnailImage(for: url)
+        } else {
+            return await loadImageFull(for: url)
+        }
+    }
+    
+    func loadVideoThumbnail(for url: URL) async -> UIImage? {
+        let asset = AVURLAsset(url: url)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.maximumSize = CGSize(width: thumbnailSize, height: thumbnailSize)
+        generator.appliesPreferredTrackTransform = true
+        // Stops forcing usage of first frame
+        // which can speed up generation
+        generator.requestedTimeToleranceBefore = .positiveInfinity
+        generator.requestedTimeToleranceAfter = .positiveInfinity
+        
+        do {
+            let CGThumbnail = try generator.copyCGImage(at: CMTime.zero, actualTime: nil)
+            return UIImage(cgImage: CGThumbnail)
+        } catch {
+            print(error)
+        }
+        return nil
     }
     
     func loadVideoPlayer(for entry: Entry) async -> AVPlayer? {
