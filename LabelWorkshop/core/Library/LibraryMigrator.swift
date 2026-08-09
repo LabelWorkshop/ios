@@ -1,5 +1,6 @@
 import SQLite
-import UIKit
+import Foundation
+import UIKit // Required for NSDataAsset
 import Observation
 
 enum MigrationState {
