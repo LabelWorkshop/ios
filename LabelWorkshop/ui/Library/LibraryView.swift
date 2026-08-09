@@ -224,7 +224,9 @@ struct LibraryView: View {
         let currentZoomIndex = zooms.firstIndex(of: zoom) ?? 0
         let newZoomIndex = currentZoomIndex + zoomIndex
         guard newZoomIndex >= 0 && newZoomIndex < zooms.count else {return}
-        zoom = zooms[newZoomIndex]
+        withAnimation(.spring()) {
+            zoom = zooms[newZoomIndex]
+        }
     }
     
     func getZoomSize() -> CGFloat {
@@ -341,14 +343,10 @@ struct LibraryView: View {
                             guard appState.pinchZoom else {return}
                             
                             if value.magnification > 1.3 {
-                                withAnimation(.spring()) {
-                                    setZoomLevel(+1)
-                                }
+                                setZoomLevel(+1)
                             }
                             if value.magnification < 0.7 {
-                                withAnimation(.spring()) {
-                                    setZoomLevel(-1)
-                                }
+                                setZoomLevel(-1)
                             }
                             
                             withAnimation(.spring()) {
