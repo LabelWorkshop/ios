@@ -159,14 +159,14 @@ struct LibraryInfoPanel: View {
                     }
                     .padding()
                     .background(.background.quaternary, in: LWConcentricRectangle())
-                    ListLikeSection("Clean Up")
+                    /*ListLikeSection("Clean Up")
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: minColumnWidth))]
                     ) {
                         LibraryFixIgnoredButton()
                         LibraryFixUnlinkedButton()
                         LibraryFixDuplicateButton()
                         LibraryFixAllButton()
-                    }
+                    }*/
                     ListLikeSection("Other")
                     VStack {
                         if let db = library.db {
