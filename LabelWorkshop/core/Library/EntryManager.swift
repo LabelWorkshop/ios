@@ -44,8 +44,7 @@ class EntryManager {
             EntriesTable.path <- filepath,
             EntriesTable.filename <- filename,
             EntriesTable.dateCreated <- Date(),
-            EntriesTable.suffix <- path.pathExtension,
-            EntriesTable.folderId <- 0
+            EntriesTable.suffix <- path.pathExtension
         )
         
         guard let id = try self.library.db?.run(insertEntry) else {throw EntryManagerError.insertionFailed}

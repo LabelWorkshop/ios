@@ -64,7 +64,8 @@ class LibraryMigrator {
             Migration(version: 104, legacyVersioning: false, run: migrateDB104),
             Migration(version: 200, legacyVersioning: false, run: migrateDB200),
             Migration(version: 201, legacyVersioning: false, run: migrateDB201),
-            Migration(version: 202, legacyVersioning: false, run: migrateDB202)
+            Migration(version: 202, legacyVersioning: false, run: migrateDB202),
+            Migration(version: 300, legacyVersioning: false, run: migrateDB300)
         ]
         var requiedMigrations: [Migration] = []
         
@@ -643,5 +644,37 @@ class LibraryMigrator {
     private func migrateDB202(db: Connection) throws {
         // Delete TagParents with no existing child
         try removeTagParentsOrphans(TagParentsTable.childId, db: db)
+    }
+    
+    /// Migrate to database version 300
+    private func migrateDB300(db: Connection) throws {
+        // Remove folder_id
+        try db.execute("""
+           CREATE TABLE entries_new (
+               id INTEGER NOT NULL,
+               path VARCHAR NOT NULL,
+               suffix VARCHAR NOT NULL,
+               date_created DATETIME,
+               date_modified DATETIME,
+               date_added DATETIME,
+               filename TEXT NOT NULL DEFAULT '',
+               PRIMARY KEY (id),
+               UNIQUE (path)
+           )
+        """)
+        
+        // Transfer data into new table
+        try db.execute("""
+            INSERT INTO entries_new (id, path, suffix, date_created, date_modified, date_added, filename)
+            SELECT id, path, suffix, date_created, date_modified, date_added, filename
+            FROM entries
+        """)
+        
+        // Delete old table and rename new table in place
+        try db.execute("DROP TABLE entries")
+        try db.execute("ALTER TABLE entries_new RENAME TO entries")
+        
+        // Delete unused folders table
+        try db.execute("DROP TABLE folders")
     }
 }
