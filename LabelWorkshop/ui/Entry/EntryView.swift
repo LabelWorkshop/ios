@@ -206,6 +206,7 @@ struct EntryView: View {
                 } label: {
                     EntryPreView(entry: entry)
                 }
+                .buttonStyle(.plain)
                 Text(entry.path).font(.caption).frame(maxWidth: .infinity, alignment: .leading)
                 Text("Tags").font(.headline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                 HFlow {
@@ -323,6 +324,7 @@ struct EntryView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .ignoresSafeArea()
             }
+            .buttonStyle(.plain)
         }
         .alert("Delete Failed", isPresented: $deletionError) {} message: {
             Text("An error occured while trying to delete this entry.")

@@ -61,6 +61,7 @@ struct ColorManager: View {
                                     .font(.title)
                             }
                             .tint(.gray)
+                            .buttonStyle(.plain)
                         }
                     }
                 }
