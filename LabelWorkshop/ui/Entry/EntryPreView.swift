@@ -109,7 +109,7 @@ actor ThumbnailLoader {
         for entry: Entry,
         square: Bool
     ) async -> UIImage? {
-        let cacheName = "\(entry.id)-\(square)"
+        let cacheName = getCacheName(for: entry, square: square)
         if let cached = entry.library.thumbnailCache.image(for: cacheName) {
             return cached
         }
@@ -214,6 +214,10 @@ actor ThumbnailLoader {
             } catch {print(error)}
             return nil
         }
+    }
+    
+    func getCacheName(for entry: Entry, square: Bool) -> String {
+        "\(entry.library.bookmarkKey)-\(entry.id)-\(square)"
     }
 }
 
