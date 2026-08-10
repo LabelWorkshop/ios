@@ -71,8 +71,6 @@ class Library: Hashable, Identifiable, Equatable {
     
     var tags: LibraryTagManager!
     
-    var thumbnailCache: EntryThumbnailCache = EntryThumbnailCache()
-    
     var legacyLibraryAvailable: Bool {
         guard let bookmark = self.bookmark else { return false }
         return FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.json").path)

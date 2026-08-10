@@ -110,7 +110,7 @@ actor ThumbnailLoader {
         square: Bool
     ) async -> UIImage? {
         let cacheName = getCacheName(for: entry, square: square)
-        if let cached = entry.library.thumbnailCache.image(for: cacheName) {
+        if let cached = EntryThumbnailCache.shared.image(for: cacheName) {
             return cached
         }
         
@@ -132,7 +132,7 @@ actor ThumbnailLoader {
                 image = await loadImage(for: url, thumbnail: square)
             }
             guard let image = image else { return nil }
-            entry.library.thumbnailCache.set(image, for: cacheName)
+            EntryThumbnailCache.shared.set(image, for: cacheName)
             return image
         }
         inFlight[cacheName] = task
