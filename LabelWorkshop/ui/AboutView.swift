@@ -13,9 +13,26 @@ extension Bundle {
     }
 }
 
+struct AboutLink: Identifiable {
+    let id: UUID = UUID()
+    let name: LocalizedStringKey
+    let url: URL?
+}
+
 struct AboutView: View {
-    let version: String = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+    let version: String = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String ?? "Unknown"
     @Environment(\.dismiss) private var dismiss
+    
+    let links: [AboutLink] = [
+        AboutLink(
+            name: "GitHub Repository",
+            url: URL(string: "https://github.com/LabelWorkshop/ios")
+        ),
+        AboutLink(
+            name: "Contributors",
+            url: URL(string: "https://github.com/LabelWorkshop/ios/graphs/contributors")
+        )
+    ]
     
     var body: some View {
         NavigationView {
@@ -32,10 +49,14 @@ struct AboutView: View {
                     Text("version \(version)").font(.title3)
                     Text("© purpletennisball 2026").font(.body)
                     HFlow {
-                        Link("Github Repository",
-                             destination: URL(string: "https://github.com/LabelWorkshop/ios")!)
-                        Link("Contributors",
-                             destination: URL(string: "https://github.com/LabelWorkshop/ios/graphs/contributors")!)
+                        ForEach(links) { link in
+                            if let url = link.url {
+                                Link(
+                                    link.name,
+                                    destination: url
+                                )
+                            }
+                        }
                     }.padding(.top, 5)
                 }.frame(maxWidth: .infinity, alignment: .center)
             }

@@ -1241,6 +1241,7 @@
 
     },
     "Github Repository" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1249,6 +1250,9 @@
           }
         }
       }
+    },
+    "GitHub Repository" : {
+
     },
     "Grid" : {
 
