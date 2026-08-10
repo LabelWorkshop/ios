@@ -121,10 +121,10 @@ class Tag: Identifiable, Equatable, Hashable {
             let tagCategories = library.tags.getCategories(of: tag)
             for category in tagCategories {
                 let existingCategory = categories.filter{ $0.parent.id == category.id }
-                if (existingCategory.isEmpty) {
-                    categories.append(TagCategorySet(parent: category, children: [tag]))
+                if let firstExistingCategory = existingCategory.first {
+                    firstExistingCategory.children.append(tag)
                 } else {
-                    existingCategory.first!.children.append(tag)
+                    categories.append(TagCategorySet(parent: category, children: [tag]))
                 }
             }
         }

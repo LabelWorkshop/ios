@@ -76,10 +76,12 @@ class LibraryTagManager {
             .select(TagParentsTable.childId, TagParentsTable.parentId)
             .filter(TagParentsTable.childId == of.id)
         do {
-            for raw in try self.library.db!.prepare(query) {
-                let tag = self.getById(id: raw[TagParentsTable.parentId])
-                if let tag = tag {
-                    parentTags.append(tag)
+            try self.library.withDatabase { db in
+                for raw in try db.prepare(query) {
+                    let tag = self.getById(id: raw[TagParentsTable.parentId])
+                    if let tag = tag {
+                        parentTags.append(tag)
+                    }
                 }
             }
         } catch {print(error)}

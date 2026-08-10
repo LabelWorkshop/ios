@@ -85,7 +85,9 @@ class TextFieldEntry: FieldEntry {
                 .filter(TextFieldsTable.id == self.id)
                 .update(TextFieldsTable.value <- newValue)
             do {
-                try self.entry.library.db!.run(query)
+                _ = try self.entry.library.withDatabase { db in
+                    try db.run(query)
+                }
                 self.value = newValue
             } catch {print(error)}
         }
