@@ -20,7 +20,7 @@ struct AboutLink: Identifiable {
 }
 
 struct AboutView: View {
-    let version: String = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String ?? "Unknown"
+    let version: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
     @Environment(\.dismiss) private var dismiss
     
     let links: [AboutLink] = [
