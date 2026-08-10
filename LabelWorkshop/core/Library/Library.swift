@@ -151,9 +151,10 @@ class Library: Hashable, Identifiable, Equatable {
         guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
         defer { bookmark?.stopAccessingSecurityScopedResource() }
         
-        let libPathString = bookmark?.path
-        guard libPathString != nil else {return []}
-        let libPath = Path(libPathString!)
+        guard let libPathString = bookmark?.path else {
+            throw LibraryError.databaseInvalid
+        }
+        let libPath = Path(libPathString)
         
         var allChildren: [Path] = try libPath.recursiveChildren()
         var newFiles: [Path] = []
