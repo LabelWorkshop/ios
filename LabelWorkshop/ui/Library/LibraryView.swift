@@ -331,6 +331,7 @@ struct LibraryView: View {
                         view.scaleEffect(magnificationValue, anchor: .top)
                     }
                     .animation(.interactiveSpring(), value: magnificationValue)
+                    .animation(.smooth, value: namesShown)
                 }
                 .simultaneousGesture(
                     MagnifyGesture()
