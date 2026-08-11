@@ -109,17 +109,17 @@ actor ThumbnailLoader {
         for entry: Entry,
         square: Bool
     ) async -> UIImage? {
-        let cacheName = "\(entry.id)-\(square)"
-        if let cached = entry.library.thumbnailCache.image(for: cacheName) {
+        if !access.contains(entry.library) {
+            startAccess(for: entry.library)
+        }
+        
+        let cacheName = getCacheName(for: entry, square: square)
+        if let cached = EntryThumbnailCache.shared.image(for: cacheName) {
             return cached
         }
         
         if let existing = inFlight[cacheName] {
             return await existing.value
-        }
-        
-        if !access.contains(entry.library) {
-            startAccess(for: entry.library)
         }
         
         let task = Task<UIImage?, Never>(priority: .userInitiated) {
@@ -132,7 +132,7 @@ actor ThumbnailLoader {
                 image = await loadImage(for: url, thumbnail: square)
             }
             guard let image = image else { return nil }
-            entry.library.thumbnailCache.set(image, for: cacheName)
+            EntryThumbnailCache.shared.set(image, for: cacheName)
             return image
         }
         inFlight[cacheName] = task
@@ -214,6 +214,23 @@ actor ThumbnailLoader {
             } catch {print(error)}
             return nil
         }
+    }
+    
+    func getCacheName(for entry: Entry, square: Bool) -> String {
+        let url = entry.fullPath
+        
+        var modDate: Date = Date(timeIntervalSince1970: 0)
+        var size: Int = 0
+        
+        do {
+            let values = try url?.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
+            modDate = values?.contentModificationDate ?? Date(timeIntervalSince1970: 0)
+            size = values?.fileSize ?? 0
+        } catch {print(error)}
+        
+        let timestamp = Int(modDate.timeIntervalSince1970)
+        
+        return "\(entry.library.bookmarkKey)-\(entry.id)-\(square)-\(timestamp)-\(size)"
     }
 }
 
