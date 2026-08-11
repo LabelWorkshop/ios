@@ -113,7 +113,7 @@ actor ThumbnailLoader {
             startAccess(for: entry.library)
         }
         
-        let cacheName = getCacheName(for: entry, square: square)
+        let cacheName = ThumbnailLoader.getCacheName(for: entry, square: square)
         if let cached = EntryThumbnailCache.shared.image(for: cacheName) {
             return cached
         }
@@ -216,7 +216,7 @@ actor ThumbnailLoader {
         }
     }
     
-    func getCacheName(for entry: Entry, square: Bool) -> String {
+    static func getCacheName(for entry: Entry, square: Bool) -> String {
         let url = entry.fullPath
         
         var modDate: Date = Date(timeIntervalSince1970: 0)
@@ -241,6 +241,7 @@ struct EntryPreView: View {
     @State var text: String?
     @State var video: AVPlayer?
     @State var isUnlinked: Bool = false
+    @State var blurImage: Bool = false
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
@@ -262,6 +263,9 @@ struct EntryPreView: View {
             }
             else if let image {
                 ImageThumbnail(image: image, square: square)
+                    .if(blurImage) { view in
+                        view.blur(radius: 10, opaque: true)
+                    }
             }
             else if let text, !text.isEmpty {
                 TextThumbnail(text: text)
@@ -276,6 +280,13 @@ struct EntryPreView: View {
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(.background.secondary)
         .task {
+            if !square {
+                let cacheName = ThumbnailLoader.getCacheName(for: entry, square: true)
+                if let thumb = EntryThumbnailCache.shared.image(for: cacheName) {
+                    self.image = thumb
+                    self.blurImage = true
+                }
+            }
             let exists = await Task.detached(priority: .utility) {
                 await FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
             }.value
@@ -288,6 +299,7 @@ struct EntryPreView: View {
             } else if self.entry.type == .PlainText {
                 self.text = await ThumbnailLoader.shared.getTextContents(for: entry)
             }
+            self.blurImage = false
         }
     }
 }
