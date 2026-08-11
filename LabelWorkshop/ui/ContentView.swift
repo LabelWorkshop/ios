@@ -32,6 +32,7 @@ struct ContentView: View {
     @State private var visibility: NavigationSplitViewVisibility = .all
     @State private var showFileImporter = false
     @State private var showAbout = false
+    @State private var clearCacheError = false
     
     @Environment(AppState.self) private var appState
     
@@ -41,6 +42,15 @@ struct ContentView: View {
             ContentView.setRawLibraries([])
             try? Tips.resetDatastore()
             UserDefaults.standard.set("0", forKey: "lastOpenVersion")
+        }
+        
+        if UserDefaults.standard.bool(forKey: "resetCacheOnLaunch") {
+            UserDefaults.standard.set(false, forKey: "resetCacheOnLaunch")
+            do {
+                try EntryThumbnailCache.shared.clear()
+            } catch {
+                print(error)
+            }
         }
         
         let rawLibraries: [String] = ContentView.getRawLibraries()
@@ -135,6 +145,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $appState.showWhatsNew) {
             Version030WhatsNew()
+        }
+        .alert("Clear Cache Error", isPresented: $clearCacheError) {} message: {
+            Text("There was an error while trying to clear the cache.")
         }
     }
     

@@ -60,4 +60,25 @@ final class EntryThumbnailCache {
             print(error)
         }
     }
+    
+    func clear() throws {
+        clearMemory()
+        try clearDisk()
+    }
+    
+    func clearDisk() throws {
+        guard let caches = EntryThumbnailCache.cachesDirectory else {
+            throw ThumbnailStorageError.cacheUnavilaible
+        }
+        
+        let fileURLs = try FileManager.default.contentsOfDirectory(at: caches, includingPropertiesForKeys: nil, options: [])
+        
+        for fileURL in fileURLs {
+            try FileManager.default.removeItem(at: fileURL)
+        }
+    }
+    
+    func clearMemory() {
+        self.cache.removeAllObjects()
+    }
 }

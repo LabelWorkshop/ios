@@ -86,6 +86,9 @@
     "Choose from additional zoom levels or switch to the new list view." : {
 
     },
+    "Clear Cache Error" : {
+
+    },
     "Color" : {
       "localizations" : {
         "fr" : {
@@ -1495,6 +1498,9 @@
 
     },
     "Text Preview" : {
+
+    },
+    "There was an error while trying to clear the cache." : {
 
     },
     "There was an error while trying to create your namespace." : {
