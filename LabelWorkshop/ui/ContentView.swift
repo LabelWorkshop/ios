@@ -44,15 +44,6 @@ struct ContentView: View {
             UserDefaults.standard.set("0", forKey: "lastOpenVersion")
         }
         
-        if UserDefaults.standard.bool(forKey: "resetCacheOnLaunch") {
-            UserDefaults.standard.set(false, forKey: "resetCacheOnLaunch")
-            do {
-                try EntryThumbnailCache.shared.clear()
-            } catch {
-                print(error)
-            }
-        }
-        
         let rawLibraries: [String] = ContentView.getRawLibraries()
         var newLibraries: [Library] = []
         for rawLibrary in rawLibraries {
@@ -62,6 +53,16 @@ struct ContentView: View {
         }
         self.libraries = newLibraries
         try? Tips.configure()
+        
+        if UserDefaults.standard.bool(forKey: "resetCacheOnLaunch") {
+            UserDefaults.standard.set(false, forKey: "resetCacheOnLaunch")
+            do {
+                try EntryThumbnailCache.shared.clear()
+            } catch {
+                clearCacheError = true
+                print(error)
+            }
+        }
     }
     
     static func getRawLibraries() -> [String] {
