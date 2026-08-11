@@ -113,7 +113,7 @@ actor ThumbnailLoader {
             startAccess(for: entry.library)
         }
         
-        let cacheName = getCacheName(for: entry, square: square)
+        let cacheName = ThumbnailLoader.getCacheName(for: entry, square: square)
         if let cached = EntryThumbnailCache.shared.image(for: cacheName) {
             return cached
         }
@@ -216,7 +216,7 @@ actor ThumbnailLoader {
         }
     }
     
-    func getCacheName(for entry: Entry, square: Bool) -> String {
+    static func getCacheName(for entry: Entry, square: Bool) -> String {
         let url = entry.fullPath
         
         var modDate: Date = Date(timeIntervalSince1970: 0)
@@ -246,11 +246,6 @@ struct EntryPreView: View {
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
         self.square = square
-    }
-    
-    func doesThumbnailExist(for entry: Entry) -> Bool {
-        let cacheName = "\(entry.id)-\(true)"
-        return entry.library.thumbnailCache.image(for: cacheName) != nil
     }
     
     var body: some View {
@@ -285,9 +280,12 @@ struct EntryPreView: View {
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(.background.secondary)
         .task {
-            if !square && self.doesThumbnailExist(for: entry) {
-                self.image = entry.library.thumbnailCache.image(for: "\(entry.id)-\(true)")
-                self.blurImage = true
+            if !square {
+                let cacheName = ThumbnailLoader.getCacheName(for: entry, square: true)
+                if let thumb = EntryThumbnailCache.shared.image(for: cacheName) {
+                    self.image = thumb
+                    self.blurImage = true
+                }
             }
             let exists = await Task.detached(priority: .utility) {
                 await FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
