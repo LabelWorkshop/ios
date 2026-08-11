@@ -234,6 +234,59 @@ actor ThumbnailLoader {
     }
 }
 
+extension View {
+    @ViewBuilder
+    func badgeGlass<S: Shape>(in shape: S) -> some View {
+        if #available(iOS 26.0, *) {
+            self.glassEffect(.regular, in: shape)
+        } else {
+            self.background(.regularMaterial, in: shape)
+        }
+    }
+    
+
+}
+
+
+struct EntryThumbnailBadges: View {
+    @Environment(\.colorScheme) var colorScheme
+    var entry: Entry
+    var showBadges: Bool {
+        entry.tags?.isFavorite ?? false || entry.tags?.isArchived ?? false
+    }
+    
+    var body: some View {
+        if showBadges {
+            HStack(spacing: 2) {
+                if let tags = entry.tags {
+                    if tags.all.contains(where: {$0.id == 1}) {
+                        ZStack {
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(.yellow)
+                                .font(.system(size: 12))
+                            
+                            if colorScheme == .light {
+                                Image(systemName: "star.fill")
+                                    .foregroundStyle(.black.opacity(0.3))
+                                    .font(.system(size: 12))
+                            }
+                        }
+                    }
+                    if tags.all.contains(where: {$0.id == 0}) {
+                        Image(systemName: "archivebox.fill")
+                            .foregroundStyle(.red)
+                            .font(.system(size: 12))
+                    }
+                }
+            }
+            .padding(2)
+            .badgeGlass(in: RoundedRectangle(cornerRadius: 4))
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(4)
+        }
+    }
+}
+
 struct EntryPreView: View {
     public var entry: Entry
     public var square: Bool = false
@@ -249,33 +302,39 @@ struct EntryPreView: View {
     }
     
     var body: some View {
-        Group {
-            if isUnlinked {
-                IconThumbnail(image: Image(systemName: "link"), tint: .red)
+        ZStack {
+            Group {
+                if isUnlinked {
+                    IconThumbnail(image: Image(systemName: "link"), tint: .red)
+                }
+                else if let video {
+                    LWVideoPlayer(player: video)
+                }
+                else if self.entry.type == .AnimatedImage && !square, let fullPath = entry.fullPath {
+                    AnimatedImage(url: fullPath)
+                        .resizable()
+                        .scaledToFit()
+                }
+                else if let image {
+                    ImageThumbnail(image: image, square: square)
+                        .if(blurImage) { view in
+                            view.blur(radius: 10, opaque: true)
+                        }
+                }
+                else if let text, !text.isEmpty {
+                    TextThumbnail(text: text)
+                }
+                else {
+                    BasicIconThumbnail(entry: entry)
+                }
             }
-            else if let video {
-                LWVideoPlayer(player: video)
+            .if(square) { view in
+                view.aspectRatio(1 / 1, contentMode: .fit)
             }
-            else if self.entry.type == .AnimatedImage && !square, let fullPath = entry.fullPath {
-                AnimatedImage(url: fullPath)
-                    .resizable()
-                    .scaledToFit()
+            
+            if square {
+                EntryThumbnailBadges(entry: entry)
             }
-            else if let image {
-                ImageThumbnail(image: image, square: square)
-                    .if(blurImage) { view in
-                        view.blur(radius: 10, opaque: true)
-                    }
-            }
-            else if let text, !text.isEmpty {
-                TextThumbnail(text: text)
-            }
-            else {
-                BasicIconThumbnail(entry: entry)
-            }
-        }
-        .if(square) { view in
-            view.aspectRatio(1 / 1, contentMode: .fit)
         }
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(.background.secondary)
@@ -303,3 +362,4 @@ struct EntryPreView: View {
         }
     }
 }
+
