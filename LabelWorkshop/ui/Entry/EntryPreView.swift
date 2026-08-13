@@ -238,7 +238,7 @@ extension View {
     @ViewBuilder
     func badgeGlass<S: Shape>(in shape: S) -> some View {
         if #available(iOS 26.0, *) {
-            self.glassEffect(.regular, in: shape)
+            self.glassEffect(.regular.tint(.black.opacity(0.5)), in: shape)
         } else {
             self.background(.regularMaterial, in: shape)
         }
@@ -256,33 +256,27 @@ struct EntryThumbnailBadges: View {
     }
     
     var body: some View {
-        if showBadges {
-            HStack(spacing: 2) {
-                if let tags = entry.tags {
-                    if tags.all.contains(where: {$0.id == 1}) {
-                        ZStack {
+        GeometryReader { geometry in
+            if showBadges && geometry.size.width > 50 {
+                HStack(spacing: 2) {
+                    if let tags = entry.tags {
+                        if tags.all.contains(where: {$0.id == 1}) {
                             Image(systemName: "star.fill")
                                 .foregroundStyle(.yellow)
                                 .font(.system(size: 12))
-                            
-                            if colorScheme == .light {
-                                Image(systemName: "star.fill")
-                                    .foregroundStyle(.black.opacity(0.3))
-                                    .font(.system(size: 12))
-                            }
+                        }
+                        if tags.all.contains(where: {$0.id == 0}) {
+                            Image(systemName: "archivebox.fill")
+                                .foregroundStyle(.red)
+                                .font(.system(size: 12))
                         }
                     }
-                    if tags.all.contains(where: {$0.id == 0}) {
-                        Image(systemName: "archivebox.fill")
-                            .foregroundStyle(.red)
-                            .font(.system(size: 12))
-                    }
                 }
+                .padding(2)
+                .badgeGlass(in: RoundedRectangle(cornerRadius: 4))
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(4)
             }
-            .padding(2)
-            .badgeGlass(in: RoundedRectangle(cornerRadius: 4))
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(4)
         }
     }
 }
