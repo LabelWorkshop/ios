@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A2178819302E45830006D4B4 /* SwiftUIMasonry in Frameworks */ = {isa = PBXBuildFile; productRef = A2178818302E45830006D4B4 /* SwiftUIMasonry */; };
 		A222273C2DFFF4DA003A782E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = A222273B2DFFF4DA003A782E /* SQLite */; };
 		A248772B2E0A31B3006D086E /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = A248772A2E0A31B3006D086E /* Flow */; };
 		A2D1B40A300E1E4E0084BA6F /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = A2D1B409300E1E4E0084BA6F /* SDWebImageSwiftUI */; };
@@ -52,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2178819302E45830006D4B4 /* SwiftUIMasonry in Frameworks */,
 				A2D1B40A300E1E4E0084BA6F /* SDWebImageSwiftUI in Frameworks */,
 				A2E8C4B12FFF215400FEF6C1 /* PathKit in Frameworks */,
 				A248772B2E0A31B3006D086E /* Flow in Frameworks */,
@@ -107,6 +109,7 @@
 				A248772A2E0A31B3006D086E /* Flow */,
 				A2E8C4B02FFF215400FEF6C1 /* PathKit */,
 				A2D1B409300E1E4E0084BA6F /* SDWebImageSwiftUI */,
+				A2178818302E45830006D4B4 /* SwiftUIMasonry */,
 			);
 			productName = LabelWorkshop;
 			productReference = A26207712DFE0ECC00A82BA6 /* LabelWorkshop.app */;
@@ -142,6 +145,7 @@
 				A24877292E0A31B3006D086E /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */,
 				A2E8C4AF2FFF215400FEF6C1 /* XCRemoteSwiftPackageReference "PathKit" */,
 				A2D1B408300E1E4E0084BA6F /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				A2178817302E45830006D4B4 /* XCRemoteSwiftPackageReference "SwiftUIMasonry" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A26207722DFE0ECC00A82BA6 /* Products */;
@@ -397,6 +401,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A2178817302E45830006D4B4 /* XCRemoteSwiftPackageReference "SwiftUIMasonry" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ciaranrobrien/SwiftUIMasonry";
+			requirement = {
+				kind = exactVersion;
+				version = 2.0.1;
+			};
+		};
 		A222273A2DFFF4DA003A782E /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
@@ -432,6 +444,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A2178818302E45830006D4B4 /* SwiftUIMasonry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A2178817302E45830006D4B4 /* XCRemoteSwiftPackageReference "SwiftUIMasonry" */;
+			productName = SwiftUIMasonry;
+		};
 		A222273B2DFFF4DA003A782E /* SQLite */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A222273A2DFFF4DA003A782E /* XCRemoteSwiftPackageReference "SQLite.swift" */;

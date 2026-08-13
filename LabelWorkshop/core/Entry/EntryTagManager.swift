@@ -13,6 +13,10 @@ class EntryTagManager {
     var isHidden: Bool = false
     var isEmpty: Bool { self.tags.isEmpty }
     
+    var isFavorite: Bool {
+        self.tags.contains(where: { $0.id == 1 })
+    }
+    
     init(_ entry: Entry) throws {
         self.entry = entry
         try self.refresh()

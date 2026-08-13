@@ -107,13 +107,13 @@ actor ThumbnailLoader {
     
     func thumbnail(
         for entry: Entry,
-        square: Bool
+        thumbnail: Bool
     ) async -> UIImage? {
         if !access.contains(entry.library) {
             startAccess(for: entry.library)
         }
         
-        let cacheName = ThumbnailLoader.getCacheName(for: entry, square: square)
+        let cacheName = ThumbnailLoader.getCacheName(for: entry, square: thumbnail)
         if let cached = EntryThumbnailCache.shared.image(for: cacheName) {
             return cached
         }
@@ -129,7 +129,7 @@ actor ThumbnailLoader {
             if entry.type == .Video {
                 image = await loadVideoThumbnail(for: url)
             } else {
-                image = await loadImage(for: url, thumbnail: square)
+                image = await loadImage(for: url, thumbnail: thumbnail)
             }
             guard let image = image else { return nil }
             EntryThumbnailCache.shared.set(image, for: cacheName)
@@ -235,16 +235,24 @@ actor ThumbnailLoader {
 }
 
 struct EntryPreView: View {
-    public var entry: Entry
-    public var square: Bool = false
+    private var entry: Entry
+    private var square: Bool = false
+    private var thumbnail: Bool
     @State var image: UIImage? = nil
     @State var text: String?
     @State var video: AVPlayer?
     @State var isUnlinked: Bool = false
     @State var blurImage: Bool = false
     
-    init(entry: Entry, square: Bool = false) {
+    init(entry: Entry, square: Bool) {
         self.entry = entry
+        self.thumbnail = square
+        self.square = square
+    }
+    
+    init(entry: Entry, thumbnail: Bool = false, square: Bool = false) {
+        self.entry = entry
+        self.thumbnail = thumbnail
         self.square = square
     }
     
@@ -256,7 +264,7 @@ struct EntryPreView: View {
             else if let video {
                 LWVideoPlayer(player: video)
             }
-            else if self.entry.type == .AnimatedImage && !square, let fullPath = entry.fullPath {
+            else if self.entry.type == .AnimatedImage && !thumbnail, let fullPath = entry.fullPath {
                 AnimatedImage(url: fullPath)
                     .resizable()
                     .scaledToFit()
@@ -280,7 +288,7 @@ struct EntryPreView: View {
         .clipShape(RoundedRectangle(cornerRadius: square ? 0 : 8))
         .background(.background.secondary)
         .task {
-            if !square {
+            if !thumbnail {
                 let cacheName = ThumbnailLoader.getCacheName(for: entry, square: true)
                 if let thumb = EntryThumbnailCache.shared.image(for: cacheName) {
                     self.image = thumb
@@ -292,10 +300,10 @@ struct EntryPreView: View {
             }.value
             if !exists {
                 isUnlinked = true
-            } else if self.entry.type == .Video && !square {
+            } else if self.entry.type == .Video && !thumbnail {
                 self.video = await ThumbnailLoader.shared.loadVideoPlayer(for: entry)
             } else if self.entry.type.supportsStillFrame {
-                self.image = await ThumbnailLoader.shared.thumbnail(for: entry, square: square)
+                self.image = await ThumbnailLoader.shared.thumbnail(for: entry, thumbnail: thumbnail)
             } else if self.entry.type == .PlainText {
                 self.text = await ThumbnailLoader.shared.getTextContents(for: entry)
             }

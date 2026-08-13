@@ -20,23 +20,25 @@ struct EntryMiniView: View {
     @Binding var namesShown: Bool
     @Binding var disabled: Bool
     @State var deletionError: Bool = false
+    var masonry: Bool
     
-    init(entry: Binding<Entry>, namesShown: Binding<Bool>) {
+    /*init(entry: Binding<Entry>, namesShown: Binding<Bool>) {
         self._entry = entry
         self._namesShown = namesShown
         self._disabled = .constant(false)
-    }
+    }*/
     
-    init(entry: Binding<Entry>, namesShown: Binding<Bool>, disabled: Binding<Bool>) {
+    init(entry: Binding<Entry>, namesShown: Binding<Bool>, disabled: Binding<Bool>, masonry: Bool = false) {
         self._entry = entry
         self._namesShown = namesShown
         self._disabled = disabled
+        self.masonry = masonry
     }
     
     var body: some View {
         NavigationLink(destination: EntryView(entry: entry).id(entry.id)){
             VStack(spacing: 0) {
-                EntryPreView(entry: entry, square: true)
+                EntryPreView(entry: entry, thumbnail: true, square: !masonry)
                 .clipShape(RoundedRectangle(cornerRadius: namesShown ? 8 : 0))
                 .overlay(
                     RoundedRectangle(cornerRadius: namesShown ? 8 : 0)

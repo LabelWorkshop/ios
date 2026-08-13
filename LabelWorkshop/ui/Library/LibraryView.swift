@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIMasonry
 
 enum LibraryZoom: CGFloat {
     case XXLarge
@@ -9,6 +10,17 @@ enum LibraryZoom: CGFloat {
 }
 
 enum LibraryViewType {
+    var icon: Image {
+        switch self {
+        case .Grid:
+            Image(systemName: "square.grid.2x2")
+        case .List:
+            Image(systemName: "list.bullet")
+        case .Masonry:
+            Image("square.grid.3x3.topleft.large")
+        }
+    }
+    
     case Grid
     case List
     case Masonry
@@ -124,8 +136,26 @@ struct LibraryViewPicker: View {
     
     var body: some View {
         Picker("", selection: $viewType) {
-            Label("Grid", systemImage: "square.grid.2x2").tag(LibraryViewType.Grid)
-            Label("List", systemImage: "list.bullet").tag(LibraryViewType.List)
+            Label {
+                Text("Grid")
+            } icon: {
+                LibraryViewType.Grid.icon
+            }
+            .tag(LibraryViewType.Grid)
+
+            Label {
+                Text("List")
+            } icon: {
+                LibraryViewType.List.icon
+            }
+            .tag(LibraryViewType.List)
+
+            Label {
+                Text("Masonry")
+            } icon: {
+                LibraryViewType.Masonry.icon
+            }
+            .tag(LibraryViewType.Masonry)
         }
     }
 }
@@ -161,6 +191,12 @@ struct LibraryTagFilterButton: View {
     }
 }
 
+extension Int {
+    var masonryColumns: MasonryColumnCount {
+        return MasonryColumnCount(integerLiteral: self)
+    }
+}
+
 struct LibraryView: View {
     let library: Library
     @State var tags: [Tag] = []
@@ -181,7 +217,7 @@ struct LibraryView: View {
     @State var namesShown: Bool = true
     @State var hiddenShown: Bool = false
     @State var filterUntagged: Bool = false
-    @State var viewType: LibraryViewType = .Grid
+    @State var viewType: LibraryViewType = .Masonry
     @State private var magnificationValue: CGFloat = 1.0
     @State private var isPinching = false
     
@@ -240,10 +276,12 @@ struct LibraryView: View {
         return viewSizes[self.zoom] ?? 0
     }
     
+    func getColumnCount(_ geometry: GeometryProxy) -> Int {
+        return Int(max((geometry.size.width / getZoomSize()).rounded(.down), 1))
+    }
+    
     func getViewGrid(_ geometry: GeometryProxy) -> [GridItem] {
-        var entriesInRow = (geometry.size.width / getZoomSize()).rounded(.down)
-        if entriesInRow < 1 { entriesInRow = 1 }
-        return Array(repeating: GridItem(.flexible(), spacing: namesShown ? 8 : 1), count: Int(entriesInRow))
+        return Array(repeating: GridItem(.flexible(), spacing: namesShown ? 8 : 1), count: Int(getColumnCount(geometry)))
     }
     
     func addTagToFilter(_ tag: Tag) {
@@ -300,7 +338,7 @@ struct LibraryView: View {
             Task(priority: .utility) {
                 await ThumbnailLoader.shared.thumbnail(
                     for: library.entries.all[i],
-                    square: true
+                    thumbnail: true
                 )
             }
         }
@@ -380,20 +418,44 @@ struct LibraryView: View {
                     return 0
                 }
             case .Masonry:
-                EmptyView()
+                ScrollView {
+                    VMasonry(
+                        columns: getColumnCount(geometry).masonryColumns,
+                        spacing: namesShown ? 8 : 1,
+                        placementMode: .fill
+                    ) {
+                        ForEach(library.entries.all, id: \.path) { entry in
+                            if isEntryVisable(entry) {
+                                EntryMiniView(
+                                    entry: .constant(entry),
+                                    namesShown: $namesShown,
+                                    disabled: $isPinching,
+                                    masonry: true
+                                )
+                                .if(entry.tags?.isFavorite ?? false) { view in
+                                    view.masonryColumnSpan(.fixed(2))
+                                }
+                            }
+                        }
+                    }.padding(namesShown ? namedPadding : unnamedPadding)
+                }
             }
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing){
                 ControlGroup {
                     LibraryZoomButtons(zoom: $zoom, setZoomLevel: setZoomLevel)
-                    if viewType == .Grid {
+                    if viewType != .List {
                         LibraryHideNamesButton(namesShown: $namesShown)
                     }
                     LibraryViewPicker(viewType: $viewType)
                         .fixedSize()
                 } label: {
-                    Label("View Options", systemImage: viewType == .Grid ? "square.grid.2x2" : "list.bullet" )
+                    Label {
+                        Text("View Options")
+                    } icon: {
+                        viewType.icon
+                    }
                 }
                 LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown, tagFilters: $tagFilters, library: library, tags: $tags, showTagFilter: $showTagfilter)
             }
