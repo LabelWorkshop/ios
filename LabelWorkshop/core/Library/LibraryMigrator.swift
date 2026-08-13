@@ -37,7 +37,7 @@ class LibraryMigrator {
     }
     
     func backupDB() async throws {
-        guard let bookmark = library.bookmark else { throw LibraryError.databaseInvalid }
+        guard let bookmark = library.bookmark.bookmarkURL else { throw LibraryError.databaseInvalid }
         guard bookmark.startAccessingSecurityScopedResource() else { throw LibraryError.databaseInvalid }
         defer { bookmark.stopAccessingSecurityScopedResource() }
         
@@ -511,7 +511,7 @@ class LibraryMigrator {
             output.append("\(prefix)*.\(fileExtension.replacingOccurrences(of: ".", with: ""))\n")
         }
         
-        if let ignoreFile = library.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore") {
+        if let ignoreFile = library.bookmark.bookmarkURL?.appendingPathComponent(".TagStudio/.ts_ignore") {
             try output.write(to: ignoreFile, atomically: true, encoding: .utf8)
         }
         

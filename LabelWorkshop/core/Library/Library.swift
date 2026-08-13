@@ -8,27 +8,6 @@ enum LibraryError: Error {
     case fieldTemplateInvalid
 }
 
-func loadBookmark(key: String) -> URL? {
-    guard let data = UserDefaults.standard.data(forKey: key) else {
-        return nil
-    }
-
-    var isStale = false
-    do {
-        let url = try URL(
-            resolvingBookmarkData: data,
-            options: [],
-            relativeTo: nil,
-            bookmarkDataIsStale: &isStale
-        )
-        if isStale {return nil}
-        return url
-    } catch {
-        print(error)
-        return nil
-    }
-}
-
 extension Connection {
     public var legacyDatabaseVersion: Int {
         get { return Int((try? scalar("PRAGMA schema_version") as? Int64) ?? 0) }
@@ -51,15 +30,14 @@ extension Connection {
 @Observable
 class Library: Hashable, Identifiable, Equatable {
     static func == (lhs: Library, rhs: Library) -> Bool {
-        return lhs.bookmarkKey == rhs.bookmarkKey
+        return lhs.bookmark.bookmarkKey == rhs.bookmark.bookmarkKey
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(bookmarkKey)
+        hasher.combine(bookmark.bookmarkKey)
     }
     
-    var bookmarkKey: String
-    var bookmark: URL?
+    var bookmark: BookmarkManager
     var db: Connection?
     var tagColors: TagColorManager!
     var fieldTemplates: FieldTemplateManager?
@@ -72,30 +50,31 @@ class Library: Hashable, Identifiable, Equatable {
     var tags: LibraryTagManager!
     
     var legacyLibraryAvailable: Bool {
-        guard let bookmark = self.bookmark else { return false }
-        return FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.json").path)
+        if let legacyPath = self.bookmark.TSLegacyDatabaseFile?.path {
+            return FileManager.default.fileExists(atPath: legacyPath)
+        }
+        return false
     }
     
     init(bookmarkKey: String) {
-        self.bookmarkKey = bookmarkKey
-        self.bookmark = loadBookmark(key: bookmarkKey)
+        self.bookmark = BookmarkManager(bookmarkKey: bookmarkKey)
         self.isNew = false
         
         self.migrator = LibraryMigrator(library: self)
         
         do {
-            if let bookmark = bookmark {
+            if let TSFolder = bookmark.TSFolder,
+               let TSDatabaseFile = bookmark.TSDatabaseFile {
                 // Create TagStudio folder if not already created
                 try FileManager.default.createDirectory(
-                    at: bookmark.appendingPathComponent(".TagStudio"),
+                    at: TSFolder,
                     withIntermediateDirectories: true,
                     attributes: nil
                 )
-                self.isNew = !FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").path)
+                self.isNew = !FileManager.default.fileExists(atPath: TSDatabaseFile.path)
                 
                 // Inititalize Database
-                let dbFile = bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString
-                self.db = try Connection(dbFile)
+                self.db = try Connection(TSDatabaseFile.absoluteString)
             }
             
             // Get Tags & Tag Colors
@@ -123,51 +102,50 @@ class Library: Hashable, Identifiable, Equatable {
     func refresh() {
         do {
             // Get .ts_ignore file
-            let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore")
-            guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
-            defer { bookmark?.stopAccessingSecurityScopedResource() }
-            if let ignoreFile = ignoreFile {
+            guard let ignoreFile = bookmark.TSIgnoreFile else { return }
+            try bookmark.withAccess {
                 let ignoreData = try Data(contentsOf: ignoreFile)
                 ignoreList = String(data: ignoreData, encoding: .utf8) ?? ""
-            }
-            ignoreList.append("\n.TagStudio\n.DS_Store")
-            
-            if let bookmark = self.bookmark {
-                self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark)
-            }
-            
-            // Find New Entries
-            Task(priority: .background) {
-                do {
-                    try self.addNewEntries()
-                } catch {print(error)}
+                ignoreList.append("\n.TagStudio\n.DS_Store")
+                
+                if let bookmarkURL = self.bookmark.bookmarkURL {
+                    self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmarkURL)
+                }
+                
+                // Find New Entries
+                Task(priority: .background) {
+                    do {
+                        try self.addNewEntries()
+                    } catch {print(error)}
+                }
             }
         } catch {print(error)}
     }
     
     func findNewFiles() throws -> [Path] {
-        guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
-        defer { bookmark?.stopAccessingSecurityScopedResource() }
+        var newFiles: [Path] = []
         
-        guard let libPathString = bookmark?.path else {
+        guard let libPathString = bookmark.bookmarkURL?.path else {
             throw LibraryError.databaseInvalid
         }
-        let libPath = Path(libPathString)
         
-        var allChildren: [Path] = try libPath.recursiveChildren()
-        var newFiles: [Path] = []
-        let entries: [Entry] = self.entries.all
-        
-        // Remove any paths that are already present as entries
-        allChildren.removeAll { child in
-            entries.contains { entry in
-                return entry.fullPath == child.url
+        try bookmark.withAccess {
+            let libPath = Path(libPathString)
+            
+            var allChildren: [Path] = try libPath.recursiveChildren()
+            let entries: [Entry] = self.entries.all
+            
+            // Remove any paths that are already present as entries
+            allChildren.removeAll { child in
+                entries.contains { entry in
+                    return entry.fullPath == child.url
+                }
             }
-        }
-        
-        for child in allChildren {
-            if !(self.matcher?.isIgnored(url: child.url) ?? true) && !child.isDirectory {
-                newFiles.append(child)
+            
+            for child in allChildren {
+                if !(self.matcher?.isIgnored(url: child.url) ?? true) && !child.isDirectory {
+                    newFiles.append(child)
+                }
             }
         }
         
@@ -175,9 +153,11 @@ class Library: Hashable, Identifiable, Equatable {
     }
     
     func getName() -> (String) {
-        guard bookmark?.startAccessingSecurityScopedResource() == true else { return "Unknown" }
-        defer { bookmark?.stopAccessingSecurityScopedResource() }
-        let name = bookmark?.absoluteString.removingPercentEncoding?.split(separator: "/").last ?? "Unknown"
+        var name = "Unknown"
+        bookmark.withAccess {
+            name = String(bookmark.bookmarkURL?.absoluteString.removingPercentEncoding?.split(separator: "/").last ?? "Unknown")
+        }
+        
         return String(name)
     }
     

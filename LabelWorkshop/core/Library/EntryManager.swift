@@ -34,7 +34,7 @@ class EntryManager {
     
     func add(path: URL) throws {
         // Path
-        guard let bookmark = self.library.bookmark else { throw LibraryError.databaseInvalid }
+        guard let bookmark = self.library.bookmark.bookmarkURL else { throw LibraryError.databaseInvalid }
         guard let filepath = path.absoluteString.replacingOccurrences(of: bookmark.absoluteString, with: "").removingPercentEncoding else {
             throw LibraryError.databaseInvalid
         }

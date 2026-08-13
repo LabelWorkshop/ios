@@ -93,14 +93,14 @@ actor ThumbnailLoader {
     
     func startAccess(for library: Library) {
         print("ACCESS STARTED")
-        guard let bookmark = library.bookmark else { return }
+        guard let bookmark = library.bookmark.bookmarkURL else { return }
         access.append(library)
         _ = bookmark.startAccessingSecurityScopedResource()
     }
     
     func stopAccess(for library: Library) {
         print("ACCESS ENDED")
-        guard let bookmark = library.bookmark else { return }
+        guard let bookmark = library.bookmark.bookmarkURL else { return }
         access.removeAll(where: { $0 == library})
         bookmark.stopAccessingSecurityScopedResource()
     }
@@ -230,7 +230,7 @@ actor ThumbnailLoader {
         
         let timestamp = Int(modDate.timeIntervalSince1970)
         
-        return "\(entry.library.bookmarkKey)-\(entry.id)-\(square)-\(timestamp)-\(size)"
+        return "\(entry.library.bookmark.bookmarkKey)-\(entry.id)-\(square)-\(timestamp)-\(size)"
     }
 }
 
