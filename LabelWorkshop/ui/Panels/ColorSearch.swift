@@ -69,6 +69,7 @@ struct ColorSearch<NamespaceActions: View>: View {
                                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                                         .foregroundStyle(.secondary)
                                     namespaceActions(namespace)
+                                        .buttonStyle(.plain)
                                 }
                                 HFlow {
                                     if namespace.colors.isEmpty {
@@ -87,6 +88,7 @@ struct ColorSearch<NamespaceActions: View>: View {
                                             } label: {
                                                 TagPreView(name: .constant(color.name), colors: .constant(color))
                                             }
+                                            .buttonStyle(.plain)
                                         }
                                     }
                                 }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)

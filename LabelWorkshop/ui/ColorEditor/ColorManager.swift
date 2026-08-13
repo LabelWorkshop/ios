@@ -60,7 +60,8 @@ struct ColorManager: View {
                                     .symbolRenderingMode(.hierarchical)
                                     .font(.title)
                             }
-                            .tint(.gray)
+                            .foregroundStyle(.gray)
+                            .buttonStyle(.plain)
                         }
                     }
                 }

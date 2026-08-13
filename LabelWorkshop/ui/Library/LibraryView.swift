@@ -323,6 +323,7 @@ struct LibraryView: View {
                                 GridRow {
                                     EntryMiniView(entry: .constant(entry), namesShown: $namesShown, disabled: $isPinching)
                                         .onAppear {lookaheadRender(for: entry)}
+                                        .buttonStyle(.plain)
                                 }
                             }
                         }

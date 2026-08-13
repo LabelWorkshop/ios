@@ -90,6 +90,7 @@ struct TagSearch: View {
                             }) {
                                 TagView(tag: tag, fullWidth: true)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                 }

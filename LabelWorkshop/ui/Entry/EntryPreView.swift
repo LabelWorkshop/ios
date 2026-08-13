@@ -7,7 +7,7 @@ import SDWebImage
 /// An Icon Thumbnail
 struct IconThumbnail: View {
     var image: Image
-    var tint: Color = .secondary
+    var tint: Color = .gray
     
     var body: some View {
         image
@@ -19,7 +19,7 @@ struct IconThumbnail: View {
                 maxHeight: .infinity
             )
             .aspectRatio(1 / 1, contentMode: .fit)
-            .tint(tint)
+            .foregroundStyle(tint)
     }
 }
 
