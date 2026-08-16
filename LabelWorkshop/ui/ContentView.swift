@@ -84,27 +84,31 @@ struct ContentView: View {
         @Bindable var appState = appState
         NavigationSplitView(columnVisibility: $visibility) {
             LibraryList(libraries: $libraries)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
-                        showAbout = true
-                    }) {
-                        Image(systemName: "info")
-                    }
-                    .sheet(isPresented: $showAbout, content: { AboutView() })
-                }
-            }
             .safeAreaInset(edge: .bottom) {
-                Button(action: {
-                    showFileImporter = true
-                }) {
-                    Label("Add Library", systemImage: "plus")
-                        .padding(16)
+                ZStack {
+                    HStack {
+                        Button(action: {
+                            showAbout = true
+                        }) {
+                            Image(systemName: "info")
+                        }
+                        .compatibleGlassButtonStyle(prominent: false, fallback: .bordered)
+                        .controlSize(.large)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Button(action: {
+                        showFileImporter = true
+                    }) {
+                        Label("Add Library", systemImage: "plus")
+                            .padding(16)
+                    }
+                    .compatibleGlassButtonStyle(prominent: true, fallback: .borderedProminent)
                 }
-                .buttonStyle(ProminentButtonStyle(fallback: .borderedProminent))
+                .padding(.horizontal)
             }
             .navigationTitle("LabelWorkshop")
-            .toolbarTitleDisplayMode(.large) // TODO: CHANGE TO INLINE LARGE
+            .toolbarTitleDisplayMode(.large)
         } content: {
             if let library = appState.selectedLibrary {
                 LibraryView(library: library)
@@ -150,6 +154,7 @@ struct ContentView: View {
         .alert("Clear Cache Error", isPresented: $clearCacheError) {} message: {
             Text("There was an error while trying to clear the cache.")
         }
+        .sheet(isPresented: $showAbout, content: { AboutView() })
     }
     
     static func removeLibrary(at indexSet: IndexSet){
