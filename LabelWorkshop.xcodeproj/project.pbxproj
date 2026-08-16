@@ -402,7 +402,7 @@
 			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.15.4;
+				version = 0.16.0;
 			};
 		};
 		A24877292E0A31B3006D086E /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */ = {
@@ -410,7 +410,7 @@
 			repositoryURL = "https://github.com/tevelee/SwiftUI-Flow";
 			requirement = {
 				kind = exactVersion;
-				version = 3.1.1;
+				version = 3.4.0;
 			};
 		};
 		A2D1B408300E1E4E0084BA6F /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
