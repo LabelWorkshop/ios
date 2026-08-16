@@ -101,7 +101,7 @@ struct ContentView: View {
                     Label("Add Library", systemImage: "plus")
                         .padding(16)
                 }
-                .buttonStyle(ProminentButtonStyle())
+                .buttonStyle(ProminentButtonStyle(fallback: .borderedProminent))
             }
             .navigationTitle("LabelWorkshop")
             .toolbarTitleDisplayMode(.large) // TODO: CHANGE TO INLINE LARGE
