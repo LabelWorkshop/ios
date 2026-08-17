@@ -192,8 +192,10 @@ struct LibraryInfoPanel: View {
                 .modifier(NavigationSubtitleCompat(subtitle: "for \(library.getName())"))
                 .toolbarTitleDisplayMode(.inlineLarge)
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        CloseButton(dismiss: dismiss)
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            CloseButton(dismiss: dismiss)
+                        }
                     }
                 }
                 .containerShape(.rect(cornerRadius: 40))
