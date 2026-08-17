@@ -32,6 +32,25 @@ struct BasicIconThumbnail: View {
     }
 }
 
+/// A Thumbnail showing the file is downloading from iCloud
+struct CloudSyncThumbnail: View {
+    var body: some View {
+        if #available(iOS 18.0, *) {
+            IconThumbnail(image:
+                Image(
+                    systemName: "arrow.trianglehead.2.clockwise.rotate.90.icloud"
+                )
+            ).symbolEffect(.rotate.byLayer, options: .repeat(.continuous))
+        } else {
+            IconThumbnail(image:
+                Image(
+                    systemName: "arrow.trianglehead.2.clockwise.rotate.90.icloud"
+                )
+            ).symbolEffect(.pulse, options: .repeating)
+        }
+    }
+}
+
 /// Displays an Image Thumbnail
 struct ImageThumbnail: View {
     var image: UIImage
@@ -85,6 +104,30 @@ struct LWVideoPlayer: View {
     }
 }
 
+extension URL {
+    var needsDownload: Bool {
+        var downloadStatus: URLUbiquitousItemDownloadingStatus?
+        
+        do {
+            let resourceValues = try self.resourceValues(
+                forKeys: [
+                    URLResourceKey.ubiquitousItemDownloadingStatusKey
+                ]
+            )
+            downloadStatus = resourceValues.ubiquitousItemDownloadingStatus
+        } catch {
+            print(error)
+        }
+        
+        switch downloadStatus {
+        case .notDownloaded:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 actor ThumbnailLoader {
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
     static let shared = ThumbnailLoader()
@@ -122,9 +165,23 @@ actor ThumbnailLoader {
             return await existing.value
         }
         
+        guard let url = entry.fullPath else { return nil }
+        
+        if url.needsDownload {
+            let fileCoordinator = NSFileCoordinator()
+
+            fileCoordinator.coordinate(
+                writingItemAt: url,
+                options: [],
+                error: nil
+            ) { targetURL in
+                do {
+                    try FileManager.default.startDownloadingUbiquitousItem(at: targetURL)
+                } catch {print(error)}
+            }
+        }
+        
         let task = Task<UIImage?, Never>(priority: .userInitiated) {
-            guard let url = entry.fullPath else { return nil }
-            
             var image: UIImage?
             if entry.type == .Video {
                 image = await loadVideoThumbnail(for: url)
@@ -242,6 +299,7 @@ struct EntryPreView: View {
     @State var video: AVPlayer?
     @State var isUnlinked: Bool = false
     @State var blurImage: Bool = false
+    @State var syncFromiCloud: Bool = false
     
     init(entry: Entry, square: Bool = false) {
         self.entry = entry
@@ -252,6 +310,8 @@ struct EntryPreView: View {
         Group {
             if isUnlinked {
                 IconThumbnail(image: Image(systemName: "link"), tint: .red)
+            } else if syncFromiCloud {
+                CloudSyncThumbnail()
             }
             else if let video {
                 LWVideoPlayer(player: video)
@@ -287,9 +347,17 @@ struct EntryPreView: View {
                     self.blurImage = true
                 }
             }
+            
             let exists = await Task.detached(priority: .utility) {
                 await FileManager.default.fileExists(atPath: entry.fullPath?.path ?? "")
             }.value
+            
+            entry.withScopedURL { url in
+                if url.needsDownload && self.entry.type.supportsStillFrame {
+                    syncFromiCloud = true
+                }
+            }
+            
             if !exists {
                 isUnlinked = true
             } else if self.entry.type == .Video && !square {
