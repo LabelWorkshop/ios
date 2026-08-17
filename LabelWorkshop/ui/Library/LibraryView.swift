@@ -89,7 +89,7 @@ struct LibraryInfoButton: View {
     
     var body: some View {
         Button {
-            openSheetWindow("color-manager", sheetBinding: $showLibraryInfo, openWindow: openWindow)
+            openSheetWindow("library-info", sheetBinding: $showLibraryInfo, openWindow: openWindow)
         } label: {
             Label("Library Info", systemImage: "info")
         }

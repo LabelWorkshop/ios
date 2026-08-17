@@ -43,5 +43,9 @@ struct LabelWorkshopApp: App {
         WindowGroup("Color Manager", id:"color-manager") {
             ColorManager(library: appState.selectedLibrary)
         }
+        
+        WindowGroup("Library Info", id: "library-info") {
+            LibraryInfoPanel(library: appState.selectedLibrary)
+        }
     }
 }

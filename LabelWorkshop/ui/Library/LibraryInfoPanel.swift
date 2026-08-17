@@ -127,77 +127,81 @@ struct LibraryFixAllButton: View {
 struct LibraryInfoPanel: View {
     @Environment(\.dismiss) var dismiss
     @ScaledMetric(relativeTo: .body) private var minColumnWidth: CGFloat = 150
-    var library: Library
+    var library: Library?
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack {
-                    ListLikeSection("Statistics")
+        if let library = library {
+            NavigationStack {
+                ScrollView {
                     VStack {
-                        LibraryInfoItem(info: library.entries.count) {
-                            Label("Entries", systemImage: "photo.fill")
-                        }
-                        Divider()
-                        LibraryInfoItem(info: library.tags.count) {
-                            Label("Tags", systemImage: "tag")
-                        }
-                        Divider()
-                        if let fieldTemplates = library.fieldTemplates {
-                            LibraryInfoItem(info: fieldTemplates.count) {
-                                Label("Field Templates", systemImage: "character.textbox")
+                        ListLikeSection("Statistics")
+                        VStack {
+                            LibraryInfoItem(info: library.entries.count) {
+                                Label("Entries", systemImage: "photo.fill")
                             }
                             Divider()
-                        }
-                        LibraryInfoItem(info: library.tagColors.colors.count) {
-                            Label("Colors", systemImage: "paintpalette")
-                        }
-                        Divider()
-                        LibraryInfoItem(info: library.tagColors.namespaces.count) {
-                            Label("Namespaces", systemImage: "rainbow")
-                        }
-                    }
-                    .padding()
-                    .background(.background.quaternary, in: LWConcentricRectangle())
-                    /*ListLikeSection("Clean Up")
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: minColumnWidth))]
-                    ) {
-                        LibraryFixIgnoredButton()
-                        LibraryFixUnlinkedButton()
-                        LibraryFixDuplicateButton()
-                        LibraryFixAllButton()
-                    }*/
-                    ListLikeSection("Other")
-                    VStack {
-                        if let db = library.db {
-                            LibraryInfoItem(info: db.databaseVersion) {
-                                Label("Database Version", systemImage: "cylinder.split.1x2")
+                            LibraryInfoItem(info: library.tags.count) {
+                                Label("Tags", systemImage: "tag")
                             }
                             Divider()
+                            if let fieldTemplates = library.fieldTemplates {
+                                LibraryInfoItem(info: fieldTemplates.count) {
+                                    Label("Field Templates", systemImage: "character.textbox")
+                                }
+                                Divider()
+                            }
+                            LibraryInfoItem(info: library.tagColors.colors.count) {
+                                Label("Colors", systemImage: "paintpalette")
+                            }
+                            Divider()
+                            LibraryInfoItem(info: library.tagColors.namespaces.count) {
+                                Label("Namespaces", systemImage: "rainbow")
+                            }
                         }
-                        LibraryInfoItem {
-                            Image(systemName: library.legacyLibraryAvailable ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundStyle(library.legacyLibraryAvailable ? .green : .red)
-                        } label: {
-                            Label("Legacy Library Available", systemImage: "ellipsis.curlybraces")
+                        .padding()
+                        .background(.background.quaternary, in: LWConcentricRectangle())
+                        /*ListLikeSection("Clean Up")
+                         LazyVGrid(columns: [GridItem(.adaptive(minimum: minColumnWidth))]
+                         ) {
+                         LibraryFixIgnoredButton()
+                         LibraryFixUnlinkedButton()
+                         LibraryFixDuplicateButton()
+                         LibraryFixAllButton()
+                         }*/
+                        ListLikeSection("Other")
+                        VStack {
+                            if let db = library.db {
+                                LibraryInfoItem(info: db.databaseVersion) {
+                                    Label("Database Version", systemImage: "cylinder.split.1x2")
+                                }
+                                Divider()
+                            }
+                            LibraryInfoItem {
+                                Image(systemName: library.legacyLibraryAvailable ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                    .foregroundStyle(library.legacyLibraryAvailable ? .green : .red)
+                            } label: {
+                                Label("Legacy Library Available", systemImage: "ellipsis.curlybraces")
+                            }
                         }
+                        .padding()
+                        .background(.background.quaternary, in: LWConcentricRectangle())
                     }
                     .padding()
-                    .background(.background.quaternary, in: LWConcentricRectangle())
                 }
-                .padding()
-            }
-            .navigationTitle("Library Info")
-            .modifier(NavigationSubtitleCompat(subtitle: "for \(library.getName())"))
-            .toolbarTitleDisplayMode(.inlineLarge)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    CloseButton(dismiss: dismiss)
+                .navigationTitle("Library Info")
+                .modifier(NavigationSubtitleCompat(subtitle: "for \(library.getName())"))
+                .toolbarTitleDisplayMode(.inlineLarge)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        CloseButton(dismiss: dismiss)
+                    }
                 }
+                .containerShape(.rect(cornerRadius: 40))
             }
-            .containerShape(.rect(cornerRadius: 40))
+            .background(.background.secondary)
+        } else {
+            LibraryUnavailableView()
         }
-        .background(.background.secondary)
     }
 }
 
