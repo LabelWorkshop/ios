@@ -66,6 +66,9 @@
     "An error occured while trying to get the tags for this entry." : {
 
     },
+    "App Info" : {
+
+    },
     "Archive" : {
       "extractionState" : "manual"
     },

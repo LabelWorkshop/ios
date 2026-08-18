@@ -84,29 +84,27 @@ struct ContentView: View {
         @Bindable var appState = appState
         NavigationSplitView(columnVisibility: $visibility) {
             LibraryList(libraries: $libraries)
-            .safeAreaInset(edge: .bottom) {
-                ZStack {
-                    HStack {
+                .toolbar {
+                    ToolbarItem(placement: .bottomBar) {
                         Button(action: {
                             showAbout = true
                         }) {
-                            Image(systemName: "info")
+                            Label("App Info", systemImage: "info")
                         }
-                        .compatibleGlassButtonStyle(prominent: false, fallback: .bordered)
-                        .controlSize(.large)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Button(action: {
-                        showFileImporter = true
-                    }) {
-                        Label("Add Library", systemImage: "plus")
-                            .padding(16)
+                    if #available(iOS 26.0, *) {
+                        ToolbarSpacer(.flexible, placement: .bottomBar)
                     }
-                    .compatibleGlassButtonStyle(prominent: true, fallback: .borderedProminent)
+                    
+                    ToolbarItem(placement: .bottomBar) {
+                        Button(action: {
+                            showFileImporter = true
+                        }) {
+                            Label("Add Library", systemImage: "plus")
+                        }.compatibleGlassButtonStyle(prominent: true)
+                    }
                 }
-                .padding(.horizontal)
-            }
             .navigationTitle("LabelWorkshop")
             .toolbarTitleDisplayMode(.large)
         } content: {
