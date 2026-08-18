@@ -27,6 +27,9 @@
         }
       }
     },
+    "Add Field" : {
+
+    },
     "Add Library" : {
 
     },
@@ -39,6 +42,9 @@
           }
         }
       }
+    },
+    "Add Tag" : {
+
     },
     "Alias" : {
       "localizations" : {
@@ -1183,9 +1189,6 @@
     "Favorite" : {
       "extractionState" : "manual"
     },
-    "Field" : {
-
-    },
     "Field Templates" : {
 
     },
@@ -1459,9 +1462,6 @@
 
     },
     "Statistics" : {
-
-    },
-    "Tag" : {
 
     },
     "Tag Initialization Error" : {

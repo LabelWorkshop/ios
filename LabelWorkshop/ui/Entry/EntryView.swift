@@ -263,37 +263,28 @@ struct EntryView: View {
                 EntryShareButton(entry: $entry)
                 EntryDeleteButton(entry: $entry, deletionError: $deletionError)
             }
-            
-            ToolbarItem(placement: .bottomBar) {
+            ToolbarItemGroup(placement: .bottomBar) {
                 Menu {
-                    Menu {
-                        if let fieldTemplates = entry.library.fieldTemplates {
-                            // TODO: Move the button code into a view
-                            Section("Text Fields") {
-                                FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.texts)
-                            }
-                            /*Section("Date Fields") {
-                                FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.dates)
-                            }*/
+                    if let fieldTemplates = entry.library.fieldTemplates {
+                        // TODO: Move the button code into a view
+                        Section("Text Fields") {
+                            FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.texts)
                         }
-                    } label: {
-                        Label("Field", systemImage: "character.textbox")
+                        /*Section("Date Fields") {
+                         FieldAddSection(entry: entry, fieldTemplates: fieldTemplates.dates)
+                         }*/
                     }
-                    .disabled(entry.library.fieldTemplates == nil)
-                    Button {
-                        showTagSelector = true
-                    } label: {
-                        Label("Tag", systemImage: "tag")
-                    }
-                    .disabled(tagInitErrorDisable)
                 } label: {
-                    Button {
-                        
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .buttonStyle(ProminentButtonStyle())
+                    Label("Add Field", image: "character.cursor.ibeam.badge.plus")
                 }
+                .disabled(entry.library.fieldTemplates == nil)
+                
+                Button {
+                    showTagSelector = true
+                } label: {
+                    Label("Add Tag", image: "tag.badge.plus")
+                }
+                .disabled(tagInitErrorDisable)
                 .sheet(isPresented: $showTagSelector) {
                     TagSearch(library: self.entry.library, tags: .constant(entry.library.tags.tags), selectAction: addTag, multiSelect: false, selected: [], closeButton: true)
                 }
