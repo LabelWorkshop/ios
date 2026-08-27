@@ -13,11 +13,22 @@
 		A2E8C4B12FFF215400FEF6C1 /* PathKit in Frameworks */ = {isa = PBXBuildFile; productRef = A2E8C4B02FFF215400FEF6C1 /* PathKit */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A2A0ED1A304088C800FB1F5C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A26207692DFE0ECC00A82BA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A26207702DFE0ECC00A82BA6;
+			remoteInfo = LabelWorkshop;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		A2125B672E02682F0063F489 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A229DAFA2E06E70A007E5655 /* CONTRIBUTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
 		A26207712DFE0ECC00A82BA6 /* LabelWorkshop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LabelWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A262079D2DFE0F1C00A82BA6 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		A2A0ED16304088C800FB1F5C /* LabelWorkshopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LabelWorkshopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2DD42662E03B3F800766174 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -45,6 +56,11 @@
 			path = LabelWorkshop;
 			sourceTree = "<group>";
 		};
+		A2A0ED17304088C800FB1F5C /* LabelWorkshopTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LabelWorkshopTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +72,13 @@
 				A2E8C4B12FFF215400FEF6C1 /* PathKit in Frameworks */,
 				A248772B2E0A31B3006D086E /* Flow in Frameworks */,
 				A222273C2DFFF4DA003A782E /* SQLite in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2A0ED13304088C800FB1F5C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +94,7 @@
 				A2125B672E02682F0063F489 /* README.md */,
 				A262079D2DFE0F1C00A82BA6 /* .gitignore */,
 				A26207732DFE0ECC00A82BA6 /* LabelWorkshop */,
+				A2A0ED17304088C800FB1F5C /* LabelWorkshopTests */,
 				A26207722DFE0ECC00A82BA6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				A26207712DFE0ECC00A82BA6 /* LabelWorkshop.app */,
+				A2A0ED16304088C800FB1F5C /* LabelWorkshopTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -112,6 +137,29 @@
 			productReference = A26207712DFE0ECC00A82BA6 /* LabelWorkshop.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A2A0ED15304088C800FB1F5C /* LabelWorkshopTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2A0ED1C304088C800FB1F5C /* Build configuration list for PBXNativeTarget "LabelWorkshopTests" */;
+			buildPhases = (
+				A2A0ED12304088C800FB1F5C /* Sources */,
+				A2A0ED13304088C800FB1F5C /* Frameworks */,
+				A2A0ED14304088C800FB1F5C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A2A0ED1B304088C800FB1F5C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A2A0ED17304088C800FB1F5C /* LabelWorkshopTests */,
+			);
+			name = LabelWorkshopTests;
+			packageProductDependencies = (
+			);
+			productName = LabelWorkshopTests;
+			productReference = A2A0ED16304088C800FB1F5C /* LabelWorkshopTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -119,11 +167,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					A26207702DFE0ECC00A82BA6 = {
 						CreatedOnToolsVersion = 16.4;
+					};
+					A2A0ED15304088C800FB1F5C = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = A26207702DFE0ECC00A82BA6;
 					};
 				};
 			};
@@ -149,12 +201,20 @@
 			projectRoot = "";
 			targets = (
 				A26207702DFE0ECC00A82BA6 /* LabelWorkshop */,
+				A2A0ED15304088C800FB1F5C /* LabelWorkshopTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A262076F2DFE0ECC00A82BA6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2A0ED14304088C800FB1F5C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -171,7 +231,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A2A0ED12304088C800FB1F5C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A2A0ED1B304088C800FB1F5C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A26207702DFE0ECC00A82BA6 /* LabelWorkshop */;
+			targetProxy = A2A0ED1A304088C800FB1F5C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A26207922DFE0ECE00A82BA6 /* Debug */ = {
@@ -373,6 +448,48 @@
 			};
 			name = Release;
 		};
+		A2A0ED1D304088C800FB1F5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.purpletennisball.LabelWorkshopTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LabelWorkshop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LabelWorkshop";
+			};
+			name = Debug;
+		};
+		A2A0ED1E304088C800FB1F5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.purpletennisball.LabelWorkshopTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LabelWorkshop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LabelWorkshop";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -390,6 +507,15 @@
 			buildConfigurations = (
 				A26207952DFE0ECE00A82BA6 /* Debug */,
 				A26207962DFE0ECE00A82BA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A2A0ED1C304088C800FB1F5C /* Build configuration list for PBXNativeTarget "LabelWorkshopTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2A0ED1D304088C800FB1F5C /* Debug */,
+				A2A0ED1E304088C800FB1F5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
