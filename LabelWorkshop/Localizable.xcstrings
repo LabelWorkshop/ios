@@ -66,6 +66,9 @@
     "An error occured while trying to get the tags for this entry." : {
 
     },
+    "An error occured while trying to import an item." : {
+
+    },
     "App Info" : {
 
     },
@@ -1273,6 +1276,12 @@
 
     },
     "ID" : {
+
+    },
+    "Import Failed" : {
+
+    },
+    "Import File" : {
 
     },
     "Info" : {
