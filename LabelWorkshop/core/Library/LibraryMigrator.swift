@@ -409,9 +409,10 @@ class LibraryMigrator {
         try db.execute("ALTER TABLE entries ADD COLUMN filename TEXT NOT NULL DEFAULT ''")
         
         // Populate filename column
-        try library.entries.all.forEach { entry in
-            let sqlEntry = EntriesTable.table.filter(EntriesTable.id == entry.id)
-            try db.run(sqlEntry.update(EntriesTable.filename <- entry.fullPath?.lastPathComponent ?? ""))
+        for entry in try db.prepare(EntriesTable.table.select(*)) {
+            let sqlEntry = EntriesTable.table.filter(EntriesTable.id == entry[EntriesTable.id])
+            let filename = URL(fileURLWithPath: entry[EntriesTable.path]).lastPathComponent
+            try db.run(sqlEntry.update(EntriesTable.filename <- filename))
         }
     }
     
