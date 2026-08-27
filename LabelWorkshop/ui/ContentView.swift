@@ -4,11 +4,11 @@ import TipKit
 
 struct LibraryList: View {
     @Environment(AppState.self) private var appState
-    @Binding var libraries: [Library]
+    @Binding var libraries: LibraryManager
     
     var body: some View {
         @Bindable var appState = appState
-        if libraries.isEmpty {
+        if libraries.libraries.isEmpty {
             ContentUnavailableView {
                 Label("No Libraries", systemImage: "square.stack")
             } description: {
@@ -16,18 +16,18 @@ struct LibraryList: View {
             }
         } else {
             List(selection: $appState.selectedLibrary) {
-                ForEach(libraries){ library in
+                ForEach($libraries.libraries){ $library in
                     NavigationLink(value: library){
                         Text(library.getName())
                     }
-                }.onDelete(perform: ContentView.removeLibrary)
+                }.onDelete(perform: libraries.remove)
             }
         }
     }
 }
 
 struct ContentView: View {
-    @State private var libraries: [Library] = []
+    @State private var libraries: LibraryManager = LibraryManager()
     
     @State private var visibility: NavigationSplitViewVisibility = .all
     @State private var showFileImporter = false
@@ -39,15 +39,11 @@ struct ContentView: View {
     init() {
         if UserDefaults.standard.bool(forKey: "reset_on_launch") {
             UserDefaults.standard.set(false, forKey: "reset_on_launch")
-            ContentView.setRawLibraries([])
+            libraries.clear()
             try? Tips.resetDatastore()
             UserDefaults.standard.set("0", forKey: "lastOpenVersion")
         }
         
-        let rawLibraries: [String] = ContentView.getRawLibraries()
-        for rawLibrary in rawLibraries {
-            insertLibrary(rawLibrary)
-        }
         try? Tips.configure()
         
         if UserDefaults.standard.bool(forKey: "resetCacheOnLaunch") {
@@ -59,28 +55,6 @@ struct ContentView: View {
                 print(error)
             }
         }
-    }
-    
-    static func getRawLibraries() -> [String] {
-        return UserDefaults.standard.object(forKey: "libraries") as? [String] ?? [String]()
-    }
-    
-    static func setRawLibraries(_ rawLibraries: [String]) {
-        UserDefaults.standard.set(rawLibraries, forKey: "libraries")
-    }
-    
-    @MainActor
-    func insertLibrary(_ bookmarkKey: String) {
-        if let lib = Library.fetch(bookmarkKey: bookmarkKey) {
-            libraries.append(lib)
-        }
-    }
-    
-    func addLibrary(_ bookmarkKey: String) {
-        var rawLibraries = ContentView.getRawLibraries()
-        rawLibraries.append(bookmarkKey)
-        ContentView.setRawLibraries(rawLibraries)
-        insertLibrary(bookmarkKey)
     }
     
     var body: some View {
@@ -136,7 +110,7 @@ struct ContentView: View {
                 } catch {
                     print(error)
                 }
-                addLibrary(id)
+                libraries.add(key: id)
                 folder.stopAccessingSecurityScopedResource()
             case .failure(let error):
                 print(error)
@@ -156,14 +130,6 @@ struct ContentView: View {
             Text("There was an error while trying to clear the cache.")
         }
         .sheet(isPresented: $showAbout, content: { AboutView() })
-    }
-    
-    static func removeLibrary(at indexSet: IndexSet){
-        var rawLibraries = ContentView.getRawLibraries()
-        for index in indexSet {
-            rawLibraries.remove(at: index)
-        }
-        ContentView.setRawLibraries(rawLibraries)
     }
 }
 
