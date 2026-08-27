@@ -15,7 +15,7 @@ LabelWorkshop is a port of [TagStudio](https://github.com/TagStudioDev/TagStudio
 > For updates, suggestions, help, etc you can [join my discord server](https://discord.gg/vQPgX33dzC)!
 
 > [!CAUTION]
-> This project is in an extremly early state. There WILL be bugs, unimplemented features, and crashes.
+> This project is in an early state. Expect instability and errors.
 
 # Contributing
 Check out the [Contributation Guidelines](https://github.com/LabelWorkshop/ios/blob/main/CONTRIBUTING.md)

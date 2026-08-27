@@ -1,12 +1,16 @@
 site_name: LabelWorkshop
 site_url: https://labelworkshop.github.io/
-rpeo_url: https://github.com/LabelWorkshop/ios
+site_description: TagStudio port for iOS and iPadOS.
+repo_name: LabelWorkshop/ios
+repo_url: https://github.com/LabelWorkshop/ios
+edit_uri: edit/main/docs/
 
 theme:
   name: material
   palette:
     - scheme: slate
       primary: deep orange
+      accent: deep orange
   features:
     - navigation.tabs
     - navigation.sections
@@ -14,6 +18,8 @@ theme:
     - content.tabs.link
 
 markdown_extensions:
+  - admonition
+  - attr_list
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
@@ -22,4 +28,3 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Getting Started: getting_started.md
-
