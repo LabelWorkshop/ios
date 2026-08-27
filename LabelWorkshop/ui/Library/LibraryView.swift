@@ -161,6 +161,18 @@ struct LibraryTagFilterButton: View {
     }
 }
 
+struct LibraryImportButton: View {
+    @Binding var showFilePicker: Bool
+    
+    var body: some View {
+        Button(action: {
+            showFilePicker = true
+        }) {
+            Label("Import File", systemImage: "square.and.arrow.down")
+        }
+    }
+}
+
 struct LibraryView: View {
     let library: Library
     @State var tags: [Tag] = []
@@ -171,6 +183,8 @@ struct LibraryView: View {
     @State var showColorManager: Bool = false
     @State var deletionError: Bool = false
     @State var showLibraryInfo: Bool = false
+    @State var showFilePicker = false
+    @State var importError = false
     
     // Filtering
     @State var searchQuery: String = ""
@@ -396,6 +410,8 @@ struct LibraryView: View {
                     Label("View Options", systemImage: viewType == .Grid ? "square.grid.2x2" : "list.bullet" )
                 }
                 LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown, tagFilters: $tagFilters, library: library, tags: $tags, showTagFilter: $showTagfilter)
+                
+                LibraryImportButton(showFilePicker: $showFilePicker)
             }
             
             ToolbarItemGroup(placement: .secondaryAction) {
@@ -426,6 +442,41 @@ struct LibraryView: View {
         .alert("Delete Failed", isPresented: $deletionError) {
         } message: {
             Text("An error occured while trying to delete this entry.")
+        }
+        .alert("Import Failed", isPresented: $importError) {
+        } message: {
+            Text("An error occured while trying to import an item.")
+        }
+        .fileImporter(
+            isPresented: $showFilePicker,
+            allowedContentTypes: [.item]
+        ) { result in
+            switch result {
+            case .success(let file):
+                guard file.startAccessingSecurityScopedResource() else { return }
+                defer { file.stopAccessingSecurityScopedResource() }
+                
+                do {
+                    let filename = file.lastPathComponent
+                    let fileData = try Data(contentsOf: file)
+                    let targetURL = library.bookmark.appendingPathComponent(filename)
+                    try fileData.write(to: targetURL)
+                } catch {
+                    print(error)
+                }
+                
+                Task(priority: .background) {
+                    do {
+                        try library.addNewEntries()
+                    } catch {
+                        print(error)
+                        importError = true
+                    }
+                }
+            case .failure(let error):
+                print(error)
+                importError = true
+            }
         }
     }
 }
