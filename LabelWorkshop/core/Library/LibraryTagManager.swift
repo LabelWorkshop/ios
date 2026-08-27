@@ -95,7 +95,7 @@ class LibraryTagManager {
                 TagsTable.isCategory <- false,
                 TagsTable.isHidden <- false
             )
-            guard let rowId = try self.library.db?.run(query) else {return nil}
+            let rowId = try self.library.db.run(query)
             self.refresh()
             return Tag (
                 library: self.library,
@@ -128,7 +128,7 @@ class LibraryTagManager {
                     TagParentsTable.parentId <- parentTag.id,
                     TagParentsTable.childId <- tag.id
                 )
-                try self.library.db?.run(query)
+                try self.library.db.run(query)
                 continue
             }
         }
@@ -138,7 +138,7 @@ class LibraryTagManager {
                 let query = TagParentsTable.table
                     .filter(TagParentsTable.parentId == currentParentTag.id && TagParentsTable.childId == tag.id)
                     .delete()
-                try self.library.db?.run(query)
+                try self.library.db.run(query)
             }
         }
     }
@@ -161,12 +161,12 @@ class LibraryTagManager {
         let query4 = TagParentsTable.table.filter(
             TagParentsTable.childId == tag.id || TagParentsTable.parentId == tag.id
         ).delete()
-        if let db = self.library.db {
-            try db.run(query)
-            try db.run(query2)
-            try db.run(query3)
-            try db.run(query4)
-        }
+        
+        try self.library.db.run(query)
+        try self.library.db.run(query2)
+        try self.library.db.run(query3)
+        try self.library.db.run(query4)
+        
         self.refresh()
     }
     
@@ -175,10 +175,9 @@ class LibraryTagManager {
     }
     
     func getAliases(of tag: Tag) throws -> [TagAlias] {
-        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
         let query = TagAliasesTable.table.select(*).filter(TagAliasesTable.tagId == tag.id)
         var tagAliases: [TagAlias] = []
-        for rawAlias in try db.prepare(query) {
+        for rawAlias in try self.library.db.prepare(query) {
             tagAliases.append(
                 TagAlias(
                     id: rawAlias[TagAliasesTable.id],
@@ -192,12 +191,11 @@ class LibraryTagManager {
     }
     
     func newAlias(for tag: Tag, _ name: String) throws {
-        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
         let query = TagAliasesTable.table.insert(
             TagAliasesTable.name <- name,
             TagAliasesTable.tagId <- tag.id
         )
-        try db.run(query)
+        try self.library.db.run(query)
     }
     
     func setAliases(for tag: Tag, _ aliases: [TagAlias]) throws {
@@ -232,8 +230,7 @@ class LibraryTagManager {
         value: T
     ) throws {
         let query = TagsTable.table.filter(TagsTable.id == tag.id)
-        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
-        try db.run(query.update(column <- value))
+        try self.library.db.run(query.update(column <- value))
     }
     
     func setColumn<T: Value>(
@@ -242,13 +239,11 @@ class LibraryTagManager {
         value: T
     ) throws {
         let query = TagsTable.table.filter(TagsTable.id == tag.id)
-        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
-        try db.run(query.update(column <- value))
+        try self.library.db.run(query.update(column <- value))
     }
     
     func updateTag(_ tag: Tag, options: TagOptions) throws {
-        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
-        try db.transaction {
+        try self.library.db.transaction {
             if let name = options.name {
                 try setColumn(for: tag, column: TagsTable.name, value: name)
                 tag.name = name

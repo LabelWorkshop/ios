@@ -17,7 +17,7 @@ class Entry {
         self.path = path
         self.library = library
         self.id = id
-        if library.bookmark != nil { self.fullPath = library.bookmark?.appendingPathComponent(path) }
+        self.fullPath = library.bookmark.appendingPathComponent(path)
         
         // Get Ext Type
         let ext = path.split(separator: ".").last?.lowercased() ?? ""
@@ -63,14 +63,13 @@ class Entry {
         _ body: (URL) throws -> T?
     ) rethrows -> T? {
         guard let url = self.fullPath,
-              let bookmark = self.library.bookmark,
-              bookmark.startAccessingSecurityScopedResource()
+              self.library.bookmark.startAccessingSecurityScopedResource()
         else {
             return nil
         }
 
         defer {
-            bookmark.stopAccessingSecurityScopedResource()
+            self.library.bookmark.stopAccessingSecurityScopedResource()
         }
 
         return try body(url)

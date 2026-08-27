@@ -94,11 +94,9 @@ class TextFieldEntry: FieldEntry {
     }
     
     override func refresh() throws {
-        if let db = self.entry.library.db {
-            if let row = try db.pluck(TextFieldsTable.table
-                .filter(TextFieldsTable.id == self.id)) {
-                self.value = row[TextFieldsTable.value]
-            }
+        if let row = try self.entry.library.db.pluck(TextFieldsTable.table
+            .filter(TextFieldsTable.id == self.id)) {
+            self.value = row[TextFieldsTable.value]
         }
     }
 }

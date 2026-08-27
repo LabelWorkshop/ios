@@ -37,22 +37,18 @@ class LibraryMigrator {
     }
     
     func backupDB() async throws {
-        guard let bookmark = library.bookmark else { throw LibraryError.databaseInvalid }
-        guard bookmark.startAccessingSecurityScopedResource() else { throw LibraryError.databaseInvalid }
-        defer { bookmark.stopAccessingSecurityScopedResource() }
+        guard library.bookmark.startAccessingSecurityScopedResource() else { throw LibraryError.databaseInvalid }
+        defer { library.bookmark.stopAccessingSecurityScopedResource() }
         
-        let backupPath = bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite.bak")
+        let backupPath = library.bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite.bak")
         let backupDB = try Connection(backupPath.path)
         
-        guard let db = library.db else { throw LibraryError.databaseInvalid }
-        
-        let _ = try db.backup(usingConnection: backupDB)
+        let _ = try library.db.backup(usingConnection: backupDB)
         try backupDB.vacuum()
     }
     
     func migrate() async throws {
         guard self.state == .Unknown else {return}
-        guard let db = library.db else { throw LibraryError.databaseInvalid }
         print("Starting migration for \"\(library.getName())\"")
         
         let migrations = [
@@ -72,14 +68,14 @@ class LibraryMigrator {
         
         var databaseVersion: Int = 0
         
-        if !library.isNew && db.legacyDatabaseVersion < 8 {
+        if !library.isNew && library.db.legacyDatabaseVersion < 8 {
             throw LibraryError.databaseUnmigrateable
         }
         
-        if db.databaseVersion == 0 {
-            databaseVersion = db.legacyDatabaseVersion
+        if library.db.databaseVersion == 0 {
+            databaseVersion = library.db.legacyDatabaseVersion
         } else {
-            databaseVersion = db.databaseVersion
+            databaseVersion = library.db.databaseVersion
         }
         
         print("DB Version: \(databaseVersion)")
@@ -108,12 +104,12 @@ class LibraryMigrator {
                 if self.debug == .Crash {
                     throw LibraryError.databaseUnmigrateable
                 }
-                try db.transaction {
-                    try migration.run(db)
+                try library.db.transaction {
+                    try migration.run(library.db)
                     if migration.legacyVersioning {
-                        db.legacyDatabaseVersion = migration.version
+                        library.db.legacyDatabaseVersion = migration.version
                     } else {
-                        db.databaseVersion = migration.version
+                        library.db.databaseVersion = migration.version
                     }
                 }
                 print("Migrated to version \(migration.version)")
@@ -511,9 +507,8 @@ class LibraryMigrator {
             output.append("\(prefix)*.\(fileExtension.replacingOccurrences(of: ".", with: ""))\n")
         }
         
-        if let ignoreFile = library.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore") {
-            try output.write(to: ignoreFile, atomically: true, encoding: .utf8)
-        }
+        let ignoreFile = library.bookmark.appendingPathComponent(".TagStudio/.ts_ignore")
+        try output.write(to: ignoreFile, atomically: true, encoding: .utf8)
         
         try db.execute("DROP TABLE preferences")
     }

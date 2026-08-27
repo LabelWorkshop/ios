@@ -17,11 +17,10 @@ class EntryFieldManager {
     }
     
     func refresh() throws {
-        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
         var newFields: [FieldEntry] = []
         let query = TextFieldsTable.table
             .select(*).filter(TextFieldsTable.entryId == self.entry.id)
-        for rawField in try db.prepare(query) {
+        for rawField in try self.entry.library.db.prepare(query) {
             let fieldEntry = FieldEntry.get(
                 id: rawField[TextFieldsTable.id],
                 name: rawField[TextFieldsTable.name],
@@ -34,7 +33,6 @@ class EntryFieldManager {
     }
     
     func add(_ template: FieldTemplate) throws -> FieldEntry? {
-        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
         var setters: [Setter] = [
             TextFieldsTable.entryId <- self.entry.id,
             TextFieldsTable.name <- template.name,
@@ -44,7 +42,7 @@ class EntryFieldManager {
             setters.append(TextFieldsTable.isMultiline <- false)
         }
         let query = template.type.entriesTable.insert(setters)
-        let id: Int64? = try db.run(query)
+        let id: Int64? = try self.entry.library.db.run(query)
         if let id = id {
             let fieldEntry = FieldEntry.get(
                 id: Int(id),
@@ -59,8 +57,7 @@ class EntryFieldManager {
     }
     
     func remove(field: FieldEntry) throws {
-        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
-        try db.run(field.type.entriesTable
+        try self.entry.library.db.run(field.type.entriesTable
             .filter(TextFieldsTable.id == field.id)
             .delete())
         self.fields.remove(at:

@@ -23,8 +23,7 @@ class EntryManager {
     
     func refresh() throws {
         var updatedEntries: [Entry] = []
-        guard let db = self.library.db else { return }
-        for rawEntry in try db.prepare(EntriesTable.table) {
+        for rawEntry in try self.library.db.prepare(EntriesTable.table) {
             let path: String = rawEntry[EntriesTable.path]
             let id: Int = rawEntry[EntriesTable.id]
             updatedEntries.append(Entry(library: self.library, path: path, id: id))
@@ -34,8 +33,7 @@ class EntryManager {
     
     func add(path: URL) throws {
         // Path
-        guard let bookmark = self.library.bookmark else { throw LibraryError.databaseInvalid }
-        guard let filepath = path.absoluteString.replacingOccurrences(of: bookmark.absoluteString, with: "").removingPercentEncoding else {
+        guard let filepath = path.absoluteString.replacingOccurrences(of: self.library.bookmark.absoluteString, with: "").removingPercentEncoding else {
             throw LibraryError.databaseInvalid
         }
         // Filename
@@ -48,7 +46,7 @@ class EntryManager {
             EntriesTable.suffix <- path.pathExtension
         )
         
-        guard let id = try self.library.db?.run(insertEntry) else {throw EntryManagerError.insertionFailed}
+        let id = try self.library.db.run(insertEntry)
         
         self.entries.append(Entry(library: self.library, path: filepath, id: Int(id)))
     }
@@ -68,10 +66,10 @@ class EntryManager {
                 .filter(EntriesTable.id == entry.id)
                 .delete()
         ]
-        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
-        try db.transaction {
+        
+        try self.library.db.transaction {
             for query in queries {
-                try db.run(query)
+                try self.library.db.run(query)
             }
             self.entries.removeAll(where: { $0.id == entry.id })
         }

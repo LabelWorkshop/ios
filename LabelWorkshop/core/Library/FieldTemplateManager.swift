@@ -19,11 +19,9 @@ class FieldTemplateManager {
     }
     
     func refresh() throws {
-        guard let db = self.library.db else { throw LibraryError.databaseInvalid }
-        
         // Get Field Templates
         var newFieldTemplates: [FieldTemplate] = []
-        for rawFieldTemplates in try db.prepare(TextFieldTemplatesTable.table) {
+        for rawFieldTemplates in try self.library.db.prepare(TextFieldTemplatesTable.table) {
             newFieldTemplates.append(
                 FieldTemplate(
                     id: rawFieldTemplates[TextFieldTemplatesTable.id],
@@ -32,7 +30,7 @@ class FieldTemplateManager {
                 )
             )
         }
-        for rawFieldTemplates in try db.prepare(DateFieldTemplatesTable.table) {
+        for rawFieldTemplates in try self.library.db.prepare(DateFieldTemplatesTable.table) {
             newFieldTemplates.append(
                 FieldTemplate(
                     id: rawFieldTemplates[DateFieldTemplatesTable.id],

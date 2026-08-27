@@ -27,7 +27,7 @@ struct LibraryList: View {
 }
 
 struct ContentView: View {
-    @State private var libraries: [Library]
+    @State private var libraries: [Library] = []
     
     @State private var visibility: NavigationSplitViewVisibility = .all
     @State private var showFileImporter = false
@@ -45,13 +45,9 @@ struct ContentView: View {
         }
         
         let rawLibraries: [String] = ContentView.getRawLibraries()
-        var newLibraries: [Library] = []
         for rawLibrary in rawLibraries {
-            newLibraries.append(
-                Library(bookmarkKey: rawLibrary)
-            )
+            insertLibrary(rawLibrary)
         }
-        self.libraries = newLibraries
         try? Tips.configure()
         
         if UserDefaults.standard.bool(forKey: "resetCacheOnLaunch") {
@@ -73,11 +69,18 @@ struct ContentView: View {
         UserDefaults.standard.set(rawLibraries, forKey: "libraries")
     }
     
+    @MainActor
+    func insertLibrary(_ bookmarkKey: String) {
+        if let lib = Library.fetch(bookmarkKey: bookmarkKey) {
+            libraries.append(lib)
+        }
+    }
+    
     func addLibrary(_ bookmarkKey: String) {
         var rawLibraries = ContentView.getRawLibraries()
         rawLibraries.append(bookmarkKey)
         ContentView.setRawLibraries(rawLibraries)
-        libraries.append(Library(bookmarkKey: bookmarkKey))
+        insertLibrary(bookmarkKey)
     }
     
     var body: some View {

@@ -169,12 +169,10 @@ struct LibraryInfoPanel: View {
                     }*/
                     ListLikeSection("Other")
                     VStack {
-                        if let db = library.db {
-                            LibraryInfoItem(info: db.databaseVersion) {
-                                Label("Database Version", systemImage: "cylinder.split.1x2")
-                            }
-                            Divider()
+                        LibraryInfoItem(info: library.db.databaseVersion) {
+                            Label("Database Version", systemImage: "cylinder.split.1x2")
                         }
+                        Divider()
                         LibraryInfoItem {
                             Image(systemName: library.legacyLibraryAvailable ? "checkmark.circle.fill" : "xmark.circle.fill")
                                 .foregroundStyle(library.legacyLibraryAvailable ? .green : .red)

@@ -22,7 +22,7 @@ struct TagAlias: Identifiable {
                 .select(*)
                 .filter(TagAliasesTable.id == self.id)
                 .update(TagAliasesTable.name <- name)
-            try tag?.library?.db?.run(query)
+            try tag?.library?.db.run(query)
             self.name = name
         } catch {print(error)}
     }
@@ -33,7 +33,7 @@ struct TagAlias: Identifiable {
                 .select(*)
                 .filter(TagAliasesTable.id == id)
                 .delete()
-            try tag?.library?.db?.run(query)
+            try tag?.library?.db.run(query)
         } catch {print(error)}
     }
 }

@@ -59,8 +59,8 @@ class Library: Hashable, Identifiable, Equatable {
     }
     
     var bookmarkKey: String
-    var bookmark: URL?
-    var db: Connection?
+    var bookmark: URL
+    var db: Connection
     var tagColors: TagColorManager!
     var fieldTemplates: FieldTemplateManager?
     var ignoreList: String = "\n.TagStudio\n.DS_Store"
@@ -72,31 +72,40 @@ class Library: Hashable, Identifiable, Equatable {
     var tags: LibraryTagManager!
     
     var legacyLibraryAvailable: Bool {
-        guard let bookmark = self.bookmark else { return false }
-        return FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.json").path)
+        return FileManager.default.fileExists(atPath: self.bookmark.appendingPathComponent(".TagStudio/ts_library.json").path)
     }
     
-    init(bookmarkKey: String) {
+    static func fetch(bookmarkKey: String) -> Library? {
+        guard let bookmark = loadBookmark(key: bookmarkKey) else { return nil }
+        let dbFile = bookmark
+            .appendingPathComponent(
+                ".TagStudio/ts_library.sqlite"
+            ).absoluteString
+        do {
+            let db = try Connection(dbFile)
+            return Library(bookmarkKey: bookmarkKey, bookmark: bookmark, db: db)
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+    
+    init(bookmarkKey: String, bookmark: URL, db: Connection) {
         self.bookmarkKey = bookmarkKey
-        self.bookmark = loadBookmark(key: bookmarkKey)
+        self.bookmark = bookmark
+        self.db = db
         self.isNew = false
         
         self.migrator = LibraryMigrator(library: self)
         
         do {
-            if let bookmark = bookmark {
-                // Create TagStudio folder if not already created
-                try FileManager.default.createDirectory(
-                    at: bookmark.appendingPathComponent(".TagStudio"),
-                    withIntermediateDirectories: true,
-                    attributes: nil
-                )
-                self.isNew = !FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").path)
-                
-                // Inititalize Database
-                let dbFile = bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").absoluteString
-                self.db = try Connection(dbFile)
-            }
+            // Create TagStudio folder if not already created
+            try FileManager.default.createDirectory(
+                at: bookmark.appendingPathComponent(".TagStudio"),
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+            self.isNew = !FileManager.default.fileExists(atPath: bookmark.appendingPathComponent(".TagStudio/ts_library.sqlite").path)
             
             // Get Tags & Tag Colors
             self.tagColors = TagColorManager(library: self)
@@ -123,18 +132,16 @@ class Library: Hashable, Identifiable, Equatable {
     func refresh() {
         do {
             // Get .ts_ignore file
-            let ignoreFile = self.bookmark?.appendingPathComponent(".TagStudio/.ts_ignore")
-            guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
-            defer { bookmark?.stopAccessingSecurityScopedResource() }
-            if let ignoreFile = ignoreFile {
-                let ignoreData = try Data(contentsOf: ignoreFile)
-                ignoreList = String(data: ignoreData, encoding: .utf8) ?? ""
-            }
+            let ignoreFile = self.bookmark.appendingPathComponent(".TagStudio/.ts_ignore")
+            guard bookmark.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
+            defer { bookmark.stopAccessingSecurityScopedResource() }
+            
+            let ignoreData = try Data(contentsOf: ignoreFile)
+            ignoreList = String(data: ignoreData, encoding: .utf8) ?? ""
+            
             ignoreList.append("\n.TagStudio\n.DS_Store")
             
-            if let bookmark = self.bookmark {
-                self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: bookmark)
-            }
+            self.matcher = TSIgnoreMatcher(contents: ignoreList, baseURL: self.bookmark)
             
             // Find New Entries
             Task(priority: .background) {
@@ -146,12 +153,11 @@ class Library: Hashable, Identifiable, Equatable {
     }
     
     func findNewFiles() throws -> [Path] {
-        guard bookmark?.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
-        defer { bookmark?.stopAccessingSecurityScopedResource() }
+        guard bookmark.startAccessingSecurityScopedResource() == true else { throw LibraryError.databaseInvalid }
+        defer { bookmark.stopAccessingSecurityScopedResource() }
         
-        guard let libPathString = bookmark?.path else {
-            throw LibraryError.databaseInvalid
-        }
+        let libPathString = bookmark.path
+            
         let libPath = Path(libPathString)
         
         var allChildren: [Path] = try libPath.recursiveChildren()
@@ -175,9 +181,9 @@ class Library: Hashable, Identifiable, Equatable {
     }
     
     func getName() -> (String) {
-        guard bookmark?.startAccessingSecurityScopedResource() == true else { return "Unknown" }
-        defer { bookmark?.stopAccessingSecurityScopedResource() }
-        let name = bookmark?.absoluteString.removingPercentEncoding?.split(separator: "/").last ?? "Unknown"
+        guard bookmark.startAccessingSecurityScopedResource() == true else { return "Unknown" }
+        defer { bookmark.stopAccessingSecurityScopedResource() }
+        let name = bookmark.absoluteString.removingPercentEncoding?.split(separator: "/").last ?? "Unknown"
         return String(name)
     }
     
@@ -188,13 +194,10 @@ class Library: Hashable, Identifiable, Equatable {
         }
     }
     
+    @available(*, deprecated)
     func withDatabase<T>(
         _ body: (Connection) throws -> T?
     ) rethrows -> T? {
-        guard let db = self.db else {
-            return nil
-        }
-
         return try body(db)
     }
 }

@@ -32,9 +32,7 @@ class TagColorManager {
         
         var updatedColors = [TagColor.none]
         
-        guard let db = self.library.db else { return }
-        
-        for rawColor in try db.prepare(query) {
+        for rawColor in try self.library.db.prepare(query) {
             let namespace = rawColor[TagColorsTable.namespace]
             let slug = rawColor[TagColorsTable.slug]
             updatedColors.append(
@@ -53,21 +51,19 @@ class TagColorManager {
     }
     
     func refreshNamespaces() throws {
-        let namespacesRows = try self.library.db?.prepare(
+        let namespacesRows = try self.library.db.prepare(
             NamespacesTable.table.select(*)
         )
         
         var newNamespaces: [TagColorNamespace] = []
         
-        if let namespacesRows {
-            let namespacesArray = Array(namespacesRows)
-            for namespace in namespacesArray {
-                newNamespaces.append(TagColorNamespace(
-                    namespace: namespace[NamespacesTable.namespace],
-                    name: namespace[NamespacesTable.name],
-                    manager: self
-                ))
-            }
+        let namespacesArray = Array(namespacesRows)
+        for namespace in namespacesArray {
+            newNamespaces.append(TagColorNamespace(
+                namespace: namespace[NamespacesTable.namespace],
+                name: namespace[NamespacesTable.name],
+                manager: self
+            ))
         }
         
         namespaces = newNamespaces
@@ -84,7 +80,7 @@ class TagColorManager {
     }
     
     func newNamespace(name: String, namespace: String) throws {
-        try self.library.db?.run(
+        try self.library.db.run(
             NamespacesTable.table.insert(
                 NamespacesTable.name <- name,
                 NamespacesTable.namespace <- namespace
@@ -94,7 +90,7 @@ class TagColorManager {
     }
     
     func deleteNamespace(namespace: String) throws {
-        try self.library.db?.run(
+        try self.library.db.run(
             NamespacesTable.table.filter(
                 NamespacesTable.namespace == namespace
             ).delete()
@@ -107,7 +103,7 @@ class TagColorManager {
     }
     
     func renameNamespace(namespace: String, to name: String) throws {
-        try self.library.db?.run(
+        try self.library.db.run(
             NamespacesTable.table.filter(
                 NamespacesTable.namespace == namespace
             )
@@ -135,7 +131,7 @@ class TagColorManager {
             throw TagColorError.hexConversionError
         }
         
-        try self.library.db?.run(
+        try self.library.db.run(
             TagColorsTable.table.insert(
                 TagColorsTable.namespace <- namespace,
                 TagColorsTable.primary <- primaryHex,
@@ -184,7 +180,7 @@ class TagColorManager {
         slug: String,
         secondaryAsBorder: Bool
     ) throws {
-        try self.library.db?.run(
+        try self.library.db.run(
             TagColorsTable.table.filter(
                 TagColorsTable.slug == oldSlug
             ).update(

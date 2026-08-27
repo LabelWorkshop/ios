@@ -144,7 +144,7 @@ class Tag: Identifiable, Equatable, Hashable {
             TagsTable.isHidden
         ).filter(TagsTable.id == id)
         do {
-            for rawTag in try library.db!.prepare(query) {
+            for rawTag in try library.db.prepare(query) {
                 let name = rawTag[TagsTable.name]
                 let namespace = rawTag[TagsTable.colorNamespace] ?? ""
                 let slug = rawTag[TagsTable.colorSlug] ?? ""

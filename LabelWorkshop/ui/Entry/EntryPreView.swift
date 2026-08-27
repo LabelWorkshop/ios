@@ -92,17 +92,13 @@ actor ThumbnailLoader {
     private var access: [Library] = []
     
     func startAccess(for library: Library) {
-        print("ACCESS STARTED")
-        guard let bookmark = library.bookmark else { return }
         access.append(library)
-        _ = bookmark.startAccessingSecurityScopedResource()
+        _ = library.bookmark.startAccessingSecurityScopedResource()
     }
     
     func stopAccess(for library: Library) {
-        print("ACCESS ENDED")
-        guard let bookmark = library.bookmark else { return }
         access.removeAll(where: { $0 == library})
-        bookmark.stopAccessingSecurityScopedResource()
+        library.bookmark.stopAccessingSecurityScopedResource()
     }
     
     func thumbnail(

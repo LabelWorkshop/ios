@@ -21,10 +21,9 @@ class EntryTagManager {
     /// Refresh the list of tags
     func refresh() throws {
         let query = TagEntriesTable.table.select(*).filter(TagEntriesTable.entryId == self.entry.id)
-        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
         var tags: [Tag] = []
         do {
-            for rawTag in try db.prepare(query) {
+            for rawTag in try self.entry.library.db.prepare(query) {
                 let tag = self.entry.library.tags.getById(id: rawTag[TagEntriesTable.id])
                 if let tag = tag {
                     tags.append(tag)
@@ -61,10 +60,8 @@ class EntryTagManager {
             return
         }
         
-        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
-        
         let query = TagEntriesTable.table.insert(TagEntriesTable.id <- tag.id, TagEntriesTable.entryId <- self.entry.id)
-        try db.run(query)
+        try self.entry.library.db.run(query)
         try self.refresh()
     }
     
@@ -74,8 +71,8 @@ class EntryTagManager {
             .filter(TagEntriesTable.id == tag.id)
             .filter(TagEntriesTable.entryId == self.entry.id)
             .delete()
-        guard let db = self.entry.library.db else { throw LibraryError.databaseInvalid }
-        try db.run(query)
+        
+        try self.entry.library.db.run(query)
         try self.refresh()
     }
 }
