@@ -173,6 +173,48 @@ struct LibraryImportButton: View {
     }
 }
 
+struct LibrarySortButton: View {
+    @Binding var sort: SortType
+    @Binding var ascending: Bool
+    
+    var body: some View {
+        Menu {
+            Picker("Sort By", selection: $sort) {
+                Text("Date Added").tag(SortType.id)
+                Text("Path").tag(SortType.path)
+                Text("Filename").tag(SortType.filename)
+            }
+            Picker("Sort Order", selection: $ascending) {
+                Text("Ascending").tag(true)
+                Text("Descending").tag(false)
+            }
+        
+        } label: {
+            Label("Sort", systemImage: "arrow.up.arrow.down")
+        }
+    }
+}
+
+struct LibraryViewOptionsButton: View {
+    @Binding var zoom: LibraryZoom
+    @Binding var viewType: LibraryViewType
+    @Binding var namesShown: Bool
+    var setZoomLevel: (Int) -> Void
+    
+    var body: some View {
+        Menu {
+            LibraryZoomButtons(zoom: $zoom, setZoomLevel: setZoomLevel)
+            if viewType == .Grid {
+                LibraryHideNamesButton(namesShown: $namesShown)
+            }
+            LibraryViewPicker(viewType: $viewType)
+                .fixedSize()
+        } label: {
+            Label("View Options", systemImage: viewType == .Grid ? "square.grid.2x2" : "list.bullet" )
+        }
+    }
+}
+
 struct LibraryView: View {
     let library: Library
     @State var tags: [Tag] = []
@@ -198,10 +240,13 @@ struct LibraryView: View {
     @State var viewType: LibraryViewType = .Grid
     @State private var magnificationValue: CGFloat = 1.0
     @State private var isPinching = false
+    @State var sort: SortType = .id
+    @State var ascending: Bool = true
     
     @Environment(AppState.self) private var appState
     @Environment(\.openURL) private var openURL
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
     let LIST_VIEW_SIZES: [LibraryZoom: CGFloat] = [
         .XXLarge: 120,
@@ -325,20 +370,21 @@ struct LibraryView: View {
     var body: some View {
         @Bindable var appState = appState
         GeometryReader { geometry in
+            let sortedEntries = library.entries.getSorted(sort, ascending: ascending)
             switch self.viewType {
             case .Grid:
+                let columns = getViewGrid(geometry)
+                let itemSpacing: CGFloat = namesShown ? 8 : 1
                 ScrollView {
                     if let migrator = library.migrator, !self.migrationClosed {
                         MigrationProgress(migrator: migrator, closed: $migrationClosed)
                     }
-                    LazyVGrid(columns: getViewGrid(geometry), spacing: namesShown ? 8 : 1) {
-                        ForEach(library.entries.all, id: \.path) { entry in
-                            if isEntryVisable(entry) {
-                                GridRow {
-                                    EntryMiniView(entry: .constant(entry), namesShown: $namesShown, disabled: $isPinching)
-                                        .onAppear {lookaheadRender(for: entry)}
-                                        .buttonStyle(.plain)
-                                }
+                    LazyVGrid(columns: columns, spacing: itemSpacing) {
+                        ForEach(sortedEntries.filter { isEntryVisable($0) }, id: \.path) { entry in
+                            GridRow {
+                                EntryMiniView(entry: .constant(entry), namesShown: $namesShown, disabled: $isPinching)
+                                    .onAppear { lookaheadRender(for: entry) }
+                                    .buttonStyle(.plain)
                             }
                         }
                     }.padding(namesShown ? namedPadding : unnamedPadding)
@@ -372,22 +418,21 @@ struct LibraryView: View {
                 )
             case .List:
                 List {
-                    ForEach(library.entries.all, id: \.path) { entry in
-                        if isEntryVisable(entry) {
-                            NavigationLink(destination: EntryView(entry: entry).id(entry.id)){
-                                HStack {
-                                    EntryPreView(entry: entry, square: true)
-                                        .clipShape(.rect(cornerRadius: 8))
-                                        .frame(maxHeight: getZoomSize())
-                                    VStack {
-                                        Text(entry.path).lineLimit(2)
-                                    }
+                    ForEach(sortedEntries.filter { isEntryVisable($0) }, id: \.path) { entry in
+                        NavigationLink(destination: EntryView(entry: entry).id(entry.id)){
+                            HStack {
+                                EntryPreView(entry: entry, square: true)
+                                    .clipShape(.rect(cornerRadius: 8))
+                                    .frame(maxHeight: getZoomSize())
+                                VStack {
+                                    Text(entry.path).lineLimit(2)
                                 }
-                            }.contextMenu {
-                                EntryContextMenu(entry: .constant(entry), deletionError: $deletionError)
                             }
-                            .onAppear {lookaheadRender(for: entry)}
                         }
+                        .contextMenu {
+                            EntryContextMenu(entry: .constant(entry), deletionError: $deletionError)
+                        }
+                        .onAppear { lookaheadRender(for: entry) }
                     }
                 }
                 .alignmentGuide(.listRowSeparatorLeading) { viewDimensions in
@@ -398,22 +443,28 @@ struct LibraryView: View {
             }
         }
         .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing){
-                ControlGroup {
-                    LibraryZoomButtons(zoom: $zoom, setZoomLevel: setZoomLevel)
-                    if viewType == .Grid {
-                        LibraryHideNamesButton(namesShown: $namesShown)
-                    }
-                    LibraryViewPicker(viewType: $viewType)
-                        .fixedSize()
-                } label: {
-                    Label("View Options", systemImage: viewType == .Grid ? "square.grid.2x2" : "list.bullet" )
-                }
-                LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown, tagFilters: $tagFilters, library: library, tags: $tags, showTagFilter: $showTagfilter)
-                
+            ToolbarItem(placement: .bottomBar){
                 LibraryImportButton(showFilePicker: $showFilePicker)
             }
-            
+
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+            }
+
+            ToolbarItem(placement: .bottomBar){
+                LibraryViewOptionsButton(zoom: $zoom, viewType: $viewType, namesShown: $namesShown, setZoomLevel: setZoomLevel)
+            }
+
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.fixed, placement: .bottomBar)
+            }
+
+            ToolbarItemGroup(placement: .bottomBar){
+                LibraryFilterButton(filterUntagged: $filterUntagged, hiddenShown: $hiddenShown, tagFilters: $tagFilters, library: library, tags: $tags, showTagFilter: $showTagfilter)
+
+                LibrarySortButton(sort: $sort, ascending: $ascending)
+            }
+
             ToolbarItemGroup(placement: .secondaryAction) {
                 LibraryTagManagerButton()
                 LibraryColorManagerButton(showColorManager: $showColorManager)
