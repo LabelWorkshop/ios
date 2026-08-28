@@ -5,6 +5,12 @@ enum EntryManagerError: Error {
     case insertionFailed
 }
 
+enum SortType {
+    case id
+    case filename
+    case path
+}
+
 @Observable
 class EntryManager {
     let library: Library
@@ -77,5 +83,31 @@ class EntryManager {
     
     func getIndex(of entry: Entry) -> Int? {
         entries.firstIndex(where: {$0.id == entry.id})
+    }
+    
+    func getSorted(_ sort: SortType, ascending: Bool) -> [Entry] {
+        var sorted: [Entry] = []
+        switch sort {
+        case .path:
+            sorted = self.entries.sorted {
+                $0.path.localizedCaseInsensitiveCompare($1.path) == .orderedAscending
+            }
+        case .id:
+            sorted = self.entries.sorted {
+                $0.id < $1.id
+            }
+        case .filename:
+            sorted = self.entries.sorted {
+                let filename0 = $0.fullPath?.lastPathComponent ?? ""
+                let filename1 = $1.fullPath?.lastPathComponent ?? ""
+                return filename0.localizedCaseInsensitiveCompare(filename1) == .orderedAscending
+            }
+        }
+        
+        if !ascending {
+            sorted.reverse()
+        }
+        
+        return sorted
     }
 }

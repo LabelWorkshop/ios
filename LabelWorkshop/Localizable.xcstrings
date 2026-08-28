@@ -75,6 +75,9 @@
     "Archive" : {
       "extractionState" : "manual"
     },
+    "Ascending" : {
+
+    },
     "Bug Fixes & Performance Improvements" : {
 
     },
@@ -1148,6 +1151,9 @@
     "Database Version" : {
 
     },
+    "Date Added" : {
+
+    },
     "Delete" : {
 
     },
@@ -1163,6 +1169,9 @@
           }
         }
       }
+    },
+    "Descending" : {
+
     },
     "Deselect All" : {
       "localizations" : {
@@ -1201,6 +1210,9 @@
           }
         }
       }
+    },
+    "Filename" : {
+
     },
     "Filter" : {
 
@@ -1405,6 +1417,9 @@
     "Parents" : {
 
     },
+    "Path" : {
+
+    },
     "Preview text files directly in the app." : {
 
     },
@@ -1462,6 +1477,15 @@
 
     },
     "Something went wrong." : {
+
+    },
+    "Sort" : {
+
+    },
+    "Sort By" : {
+
+    },
+    "Sort Order" : {
 
     },
     "Start by pressing Add Library." : {
