@@ -60,6 +60,9 @@ class Tag: Identifiable, Equatable, Hashable {
     var isCategory: Bool
     var disambiguationId: Int?
     var isHidden: Bool?
+    var isDeletable: Bool {
+        id > 999
+    }
     
     init(
         library: Library,

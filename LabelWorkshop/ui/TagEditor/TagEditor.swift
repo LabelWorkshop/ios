@@ -87,25 +87,27 @@ struct TagDetailsView: View {
                     }
                     .buttonStyle(ProminentButtonStyle())
                 }
-                ToolbarItem(placement: .bottomBar){
-                    Button(role: .destructive, action: {
-                        tagDeleteConfirmation = true
-                    }) {
-                        Image(systemName: "trash")
-                    }.tint(.red)
-                    .confirmationDialog(
-                        Text("This tag and all references of it will be deleted."),
-                        isPresented: $tagDeleteConfirmation,
-                        titleVisibility: .visible
-                    ) {
+                if tag.isDeletable {
+                    ToolbarItem(placement: .bottomBar){
                         Button(role: .destructive, action: {
-                            do {
-                                try self.library.tags.delete(tag)
-                                tagDeleteConfirmation = false
-                                dismiss()
-                            } catch {print(error)}
+                            tagDeleteConfirmation = true
                         }) {
-                            Text("Delete Tag")
+                            Label("Delete Tag", systemImage: "trash")
+                        }.tint(.red)
+                        .confirmationDialog(
+                            Text("This tag and all references of it will be deleted."),
+                            isPresented: $tagDeleteConfirmation,
+                            titleVisibility: .visible
+                        ) {
+                            Button(role: .destructive, action: {
+                                do {
+                                    try self.library.tags.delete(tag)
+                                    tagDeleteConfirmation = false
+                                    dismiss()
+                                } catch {print(error)}
+                            }) {
+                                Text("Delete Tag")
+                            }
                         }
                     }
                 }
